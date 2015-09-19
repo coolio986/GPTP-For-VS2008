@@ -5,28 +5,38 @@
 //Helper functions
 void updateMineralPatchImage(CUnit *mineralPatch);
 void setResourceAmountCarried(CUnit *worker, u8 amountCarried, u32 chunkImageId, bool isMineral);
+int min_amount = 5;
+int gas_amount = 4;
+int rmin_amount = 7;
+int rgas_amount = 6;
+int dep_amount = 0;
 
 //-------- Actual hooks --------//
 
-namespace hooks {
+namespace hooks { //KYSXD big changes
 
 //Harvests minerals/gas from the @p resource and returns the amount that a
 //worker should carry.
 u8 harvestResourceFrom(CUnit *resource, bool isMineral) {
+  int harvest_amount = 0;
   //Default StarCraft behavior
-
-  if (resource->building.resource.resourceAmount < 8) {
+  if (isMineral) {
+    harvest_amount = min_amount;
+  }
+  else {harvest_amount = gas_amount;
+  }
+  if (resource->building.resource.resourceAmount < harvest_amount) {
     if (isMineral) {
       resource->remove();
       return (u8) resource->building.resource.resourceAmount;
     }
     else {
       resource->building.resource.resourceAmount = 0;
-      return 2;
+      return dep_amount;
     }
   }
   else {
-    resource->building.resource.resourceAmount -= 8;
+    resource->building.resource.resourceAmount -= harvest_amount;
     
     if (isMineral) {
       if (resource->building.resource.resourceAmount > 0)
@@ -34,10 +44,9 @@ u8 harvestResourceFrom(CUnit *resource, bool isMineral) {
       else
         resource->remove();
     }
-    else if (resource->building.resource.resourceAmount < 8)
+    else if (resource->building.resource.resourceAmount < harvest_amount)
       scbw::showErrorMessageWithSfx(resource->playerId, 875, 20); //Gas depleted message and sound
-    
-    return 8;
+    return harvest_amount;
   }
 }
 
@@ -62,7 +71,7 @@ void transferResourceToWorkerHook(CUnit *worker, CUnit *resource) {
     return;
 
   u8 resourceAmount = harvestResourceFrom(resource, isMineral);
-  if (resourceAmount < 8)
+  if (resourceAmount < min_amount)
     chunkImageId += 1;  //Use depleted (smaller) chunk image
 
   if (resourceAmount > 0) {
@@ -120,8 +129,8 @@ void setResourceAmountCarried(CUnit *worker, u8 amountCarried, u32 chunkImageId,
   worker->resourceType = isMineral ? 2 : 1;
   
   CImage *chunkImage = worker->sprite->createOverlay(chunkImageId);
-  if (chunkImage && !(chunkImage->flags & CImage_Flags::Flag07)) {
-    chunkImage->flags |= CImage_Flags::Flag07;
+  if (chunkImage && !(chunkImage->flags & 0x80)) {
+    chunkImage->flags |= 0x80;
     updateImagePositionOffset(chunkImage);
   }
 
