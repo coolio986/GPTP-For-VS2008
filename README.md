@@ -28,5 +28,6 @@ Just some works for Starcraft: Brood War.
 
 **If you have any request...**
 
-Feel free to send a message to KYSXDreplays@hotmail.com
+Feel free to send a message to KYSXDreplays@hotmail.com.
+
 Also, you can take a look to my youtube channel to look at demos and gameplays: https://www.youtube.com/user/KYSXD
