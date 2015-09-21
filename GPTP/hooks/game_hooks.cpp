@@ -116,6 +116,10 @@ bool nextFrame() {
       }
       //KYSXD worker no collision if harvesting - end
 
+      if (unit->id == UnitId::barracks && unit->mainOrderId == OrderId::Die) {
+        scbw::createUnitAtPos(UnitId::barracks, unit->playerId, unit->getX(), unit->getY());
+      }
+
       //Idle worker count
       if (unit->playerId == *LOCAL_HUMAN_ID
           && units_dat::BaseProperty[unit->id] & UnitProperty::Worker

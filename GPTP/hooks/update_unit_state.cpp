@@ -101,8 +101,12 @@ void updateUnitStateHook(CUnit* unit) {
   }
 
   //Supposedly, allows Zerglings to attack after unburrowing without delay.
-  if (unit)
+  if (unit->id == UnitId::zergling || unit->id == UnitId::Hero_DevouringOne)
+    if (unit->groundWeaponCooldown == 0)
+      unit->orderQueueTimer = 0;
+  if (unit->id == UnitId::interceptor) {
     unit->orderQueueTimer = 0;
+  }
 
   //Clear the healing flag every frame
   unit->isBeingHealed = 0;
