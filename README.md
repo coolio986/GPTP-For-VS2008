@@ -1,7 +1,21 @@
-# GPTP-For-VS2008
+# GPTP-For-VS2008.
+--------
 The General Plugin Template Project of Starcraft adapted to Visual Studio 2008
 
-Just some works for Starcraft: Brood War.
+Branches
+--------
+
+I publish source three rolling branches:
+
+The **[release branch](https://github.com/KYSXD/GPTP-For-VS2008/tree/release)** is extensively tested. I work hard to make releases stable and reliable, and aim to publish new releases every few months.
+This branch tracks all the changes i made for *Starcraft V*.
+
+The **[stable branch](https://github.com/KYSXD/GPTP-For-VS2008/tree/stable)** is updated every time a new update is released without bugs.
+
+The **[update branch](https://github.com/KYSXD/GPTP-For-VS2008/tree/update)** tracks live changes by [BoomerangAide](https://github.com/BoomerangAide/GPTP-For-VS2008). 
+This is the cutting edge and may be buggy - it may not even compile.
+
+Other short-lived branches may pop-up from time to time as i stabilize new releases or hotfixes.
 
 **Work done:**
 
@@ -23,11 +37,11 @@ Just some works for Starcraft: Brood War.
 - Add worker count for CC, Nexus and Hatchery/Lair/Hive.
 - Add worker count for Refinery, Assimilator and Extractor.
 - Add 12/15 button box (from the 3x3 command box).
-- Rework the pathfinding (like SCII pathfinding, based on https://www.youtube.com/watch?v=SDH1AZLMZkY ).
-- Rework the game layer size (in order to achieve this: http://www.moddb.com/members/kysxd/images/hud-20-wip1 ).
+- Rework the pathfinding, like SCII pathfinding, based on the [Daedalus Lib](https://www.youtube.com/watch?v=SDH1AZLMZkY).
+- Rework the game layer size in order to achieve [this HUD](http://www.moddb.com/members/kysxd/images/hud-20-wip1 ).
 
 **If you have any request...**
 
 Feel free to send a message to KYSXDreplays@hotmail.com.
 
-Also, you can take a look to my youtube channel to look at demos and gameplays: https://www.youtube.com/user/KYSXD
+Also, you can take a look to my [youtube channel](https://www.youtube.com/user/KYSXD) to look at demos and gameplays.
