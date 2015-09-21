@@ -41,12 +41,9 @@ void weaponDamageHook(s32     damage,
   if (target->hitPoints == 0 || (target->status & UnitStatus::Invincible))
     return;
 
-  //KYSXD edit start - CPU can't attack humans
   if (scbw::isCheatEnabled(CheatFlags::PowerOverwhelming)         //If Power Overwhelming is enabled
-      && playerTable[attackingPlayer].type == PlayerType::Computer  //and the attacker is a computer player
-      && playerTable[target->playerId].type != PlayerType::Human    //and the target is not human
-      && !(*GAME_TYPE == 10))                                       //and the game type is not custom
-    damage = 0; //KYSXD end
+      && playerTable[attackingPlayer].type != PlayerType::Human)  //and the attacker is not a human player
+    damage = 0;
 
   if (target->status & UnitStatus::IsHallucination)
     damage *= 2;
