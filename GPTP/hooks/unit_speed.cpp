@@ -3,6 +3,7 @@
 #include "unit_speed.h"
 #include "../SCBW/enumerations.h"
 #include "../SCBW/scbwdata.h"
+#include <SCBW/api.h>
 
 //V241 for VS2008
 
@@ -12,21 +13,48 @@ namespace hooks {
 ///
 /// @return		The modified speed value.
 u32 getModifiedUnitSpeedHook(const CUnit* unit, u32 baseSpeed) {
-	//Default StarCraft behavior
+	//KYSXD new behavior
 	u32 speed = baseSpeed;
-	int speedModifier = (unit->stimTimer ? 1 : 0) - (unit->ensnareTimer ? 1 : 0)
-                      + (unit->status & UnitStatus::SpeedUpgrade ? 1 : 0);
-	if (speedModifier > 0) {
-		if (unit->id == UnitId::scout || unit->id == UnitId::Hero_Mojo || unit->id == UnitId::Hero_Artanis)
-      speed = 1707;
-		else {
-			speed += speed >> 1;
-			if (speed < 853)
-        speed = 853;
-		}
+	u32 upgrademodifier = 10;
+	u32 creepmodifier = 10;
+	if (unit->status & UnitStatus::SpeedUpgrade) {
+		switch(unit->id) {
+			case UnitId::zergling:
+				upgrademodifier = 25; //Was upgrademodifier = 16
+			case UnitId::overlord:
+				if (speed < 853) {
+					speed = 853;
+				}
+				upgrademodifier = 10; //Was upgrademodifier = 32
+			case UnitId::zealot:
+				upgrademodifier = 13;
+			case UnitId::hydralisk:
+				upgrademodifier = 16;
+			case UnitId::vulture:
+				upgrademodifier = 15;
+			case UnitId::hunter_killer:
+				upgrademodifier = 15;
+            default: 13;
+        }
 	}
-	else if (speedModifier < 0)
-		speed >>= 1;
+	//KYSXD zerg speed start
+	ActiveTile actTile = scbw::getActiveTileAt(unit->getX(), unit->getY());
+	if (unit->getRace() == RaceId::Zerg
+		&& !(unit->status & UnitStatus::InAir)
+		&& actTile.hasCreep) {
+		if (unit->id != UnitId::drone) {
+			if (unit->id == UnitId::hydralisk) {
+				creepmodifier = (unit->status & UnitStatus::SpeedUpgrade ? 10 : 16);
+			}
+			else  {
+				creepmodifier = 13;
+			}
+		}
+	} //KYSXD zerg speed end
+	speed = (speed * (unit->stimTimer ? (15) : 10) *
+					(unit->ensnareTimer ? (5) : 10) *
+					upgrademodifier *
+					creepmodifier)/10000;
 	return speed;
 }
 

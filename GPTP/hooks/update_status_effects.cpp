@@ -16,30 +16,30 @@ class irradiateProc : public scbw::UnitFinderCallbackProcInterface {
     irradiateProc(CUnit *irradiatedUnit)
       : irradiatedUnit(irradiatedUnit) {}
 
-	void proc(CUnit *unit) {
-		//Damage organic units only
-		if (!(units_dat::BaseProperty[unit->id] & UnitProperty::Organic))
-		  return;
+  void proc(CUnit *unit) {
+    //Damage organic units only
+    if (!(units_dat::BaseProperty[unit->id] & UnitProperty::Organic))
+      return;
 
-		//Don't damage buildings
-		if (units_dat::BaseProperty[unit->id] & UnitProperty::Building)
-		  return;
+    //Don't damage buildings
+    if (units_dat::BaseProperty[unit->id] & UnitProperty::Building)
+      return;
 
-		//Don't damage larvae, eggs, and lurker eggs
-		if (unit->id == UnitId::larva || unit->id == UnitId::egg || unit->id == UnitId::lurker_egg)
-		  return;
+    //Don't damage larvae, eggs, and lurker eggs
+    if (unit->id == UnitId::larva || unit->id == UnitId::egg || unit->id == UnitId::lurker_egg)
+      return;
 
-		//Irradiate splash damage does not affect burrowed units
-		if (unit != irradiatedUnit && unit->status & UnitStatus::Burrowed)
-		  return;
+    //Irradiate splash damage does not affect burrowed units
+    if (unit != irradiatedUnit && unit->status & UnitStatus::Burrowed)
+      return;
 
-		//Check if the unit is within distance, or is inside the same transport
-		if (irradiatedUnit->status & UnitStatus::InTransport
-			|| irradiatedUnit->getDistanceToTarget(unit) <= 32)
-		{
-		  const s32 damage = weapons_dat::DamageAmount[WeaponId::Irradiate] * 256 / weapons_dat::Cooldown[WeaponId::Irradiate];
-		  unit->damageWith(damage, WeaponId::Irradiate, irradiatedUnit->irradiatedBy, irradiatedUnit->irradiatePlayerId);
-		}
+    //Check if the unit is within distance, or is inside the same transport
+    if (irradiatedUnit->status & UnitStatus::InTransport
+      || irradiatedUnit->getDistanceToTarget(unit) <= 32)
+    {
+      const s32 damage = weapons_dat::DamageAmount[WeaponId::Irradiate] * 256 / weapons_dat::Cooldown[WeaponId::Irradiate];
+      unit->damageWith(damage, WeaponId::Irradiate, irradiatedUnit->irradiatedBy, irradiatedUnit->irradiatePlayerId);
+    }
     }
 };
 
@@ -53,7 +53,7 @@ void doIrradiateDamage(CUnit *irradiatedUnit) {
 
   //No splash if burrowed
   if (irradiatedUnit->status & UnitStatus::Burrowed) {
-	  irradiation.proc(irradiatedUnit);
+    irradiation.proc(irradiatedUnit);
   }
   //If inside a transport, damage all units loaded within
   else if (irradiatedUnit->status & UnitStatus::InTransport) {
@@ -64,7 +64,7 @@ void doIrradiateDamage(CUnit *irradiatedUnit) {
       for (int i = 0; i < units_dat::SpaceProvided[transport->id]; ++i) {
         CUnit *loadedUnit = transport->getLoadedUnit(i);
         if (loadedUnit)
-			irradiation.proc(loadedUnit);
+      irradiation.proc(loadedUnit);
       }
     }
 
@@ -88,6 +88,11 @@ void updateStatusEffectsHook(CUnit *unit) {
     unit->stasisTimer--;
     if (unit->stasisTimer == 0)
       unit->removeStasisField();
+  }
+
+  //KYSXD unused timer
+  if (unit->unusedTimer) {
+    unit->unusedTimer--;
   }
 
   if (unit->stimTimer) {
