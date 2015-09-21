@@ -89,7 +89,7 @@ void updateUnitStateHook(CUnit* unit) {
   if (units_dat::ShieldsEnabled[unit->id]) {
     s32 maxShields = (s32)(units_dat::MaxShieldPoints[unit->id]) << 8;
     if (unit->shields != maxShields) {
-      unit->shields += 36; //KYSXD shield regen
+      unit->shields += 7;
       if (unit->shields > maxShields)
         unit->shields = maxShields;
       if (unit->sprite->flags & CSprite_Flags::Selected) {  //If the unit is currently selected, redraw its graphics
@@ -104,9 +104,6 @@ void updateUnitStateHook(CUnit* unit) {
   if (unit->id == UnitId::zergling || unit->id == UnitId::Hero_DevouringOne)
     if (unit->groundWeaponCooldown == 0)
       unit->orderQueueTimer = 0;
-  if (unit->id == UnitId::interceptor) {
-    unit->orderQueueTimer = 0;
-  }
 
   //Clear the healing flag every frame
   unit->isBeingHealed = 0;

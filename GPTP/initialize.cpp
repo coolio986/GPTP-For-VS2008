@@ -52,18 +52,6 @@
 ///    memoryPatch(address_to_patch, value_to_patch_with);
 
 BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
-  //KYSXD W-Mode start
-  int msgboxID = MessageBox(NULL, "You are starting StarCraft:V\nDo you want to play in W-Mode?", PLUGIN_NAME , MB_YESNOCANCEL);
-  switch (msgboxID) {
-    case IDYES:
-      HINSTANCE hDll;
-      hDll =LoadLibrary("./WMODE.dll");
-      hDll =LoadLibrary("./WMODE_FIX.dll");
-      break;
-    case IDCANCEL:
-      exit(0);
-  }//KYSXD W-Mode end
-
   //StarCraft.exe version check
   char exePath[300];
   const DWORD pathLen = GetModuleFileName(NULL, exePath, sizeof(exePath));
