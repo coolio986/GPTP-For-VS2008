@@ -104,7 +104,8 @@ void updateUnitStateHook(CUnit* unit) {
   if (unit->id == UnitId::zergling || unit->id == UnitId::Hero_DevouringOne)
     if (unit->groundWeaponCooldown == 0)
       unit->orderQueueTimer = 0;
-  if (unit->id == UnitId::interceptor) {
+  if (unit->id == UnitId::interceptor
+    ||(units_dat::BaseProperty[unit->id] & UnitProperty::Worker)) {
     unit->orderQueueTimer = 0;
   }
 

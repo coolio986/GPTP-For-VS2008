@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ks_c_5601-1987"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="GPTP"
 	ProjectGUID="{BAE0A287-3166-4C79-9F90-0C6A6DDB5A69}"
 	RootNamespace="GPTP"
@@ -187,12 +187,12 @@
 			>
 			<File
 				RelativePath=".\hooks\interface\buttonsets.cpp"
-			>
+				>
 			</File>
 			<File
 				RelativePath=".\hooks\interface\buttonsets_inject.cpp"
-			>
-			</File>			
+				>
+			</File>
 			<File
 				RelativePath=".\configure.cpp"
 				>
@@ -209,7 +209,7 @@
 				RelativePath=".\hooks\infestation_inject.cpp"
 				>
 			</File>
-			<File			
+			<File
 				RelativePath=".\initialize.cpp"
 				>
 			</File>
@@ -236,7 +236,7 @@
 			<File
 				RelativePath=".\hooks\interface\selection_inject.cpp"
 				>
-			</File>			
+			</File>
 			<File
 				RelativePath=".\hooks\siege_transform.cpp"
 				>
@@ -244,7 +244,7 @@
 			<File
 				RelativePath=".\hooks\siege_transform_inject.cpp"
 				>
-			</File>			
+			</File>
 			<Filter
 				Name="Subfolders"
 				>
@@ -674,7 +674,7 @@
 			<File
 				RelativePath=".\hooks\interface\buttonsets.h"
 				>
-			</File>			
+			</File>
 			<File
 				RelativePath=".\definitions.h"
 				>
@@ -682,7 +682,7 @@
 			<File
 				RelativePath=".\SCBW\enumerations\FlingyId.h"
 				>
-			</File>			
+			</File>
 			<File
 				RelativePath=".\hook_tools.h"
 				>
@@ -690,11 +690,11 @@
 			<File
 				RelativePath=".\SCBW\enumerations\IconId.h"
 				>
-			</File>			
+			</File>
 			<File
 				RelativePath=".\hooks\infestation.h"
 				>
-			</File>			
+			</File>
 			<File
 				RelativePath=".\logger.h"
 				>
@@ -714,11 +714,11 @@
 			<File
 				RelativePath=".\hooks\interface\selection.h"
 				>
-			</File>			
+			</File>
 			<File
 				RelativePath=".\hooks\siege_transform.h"
 				>
-			</File>			
+			</File>
 			<File
 				RelativePath=".\SCBW\enumerations\SoundId.h"
 				>
@@ -726,7 +726,7 @@
 			<File
 				RelativePath=".\SCBW\enumerations\SpriteId.h"
 				>
-			</File>			
+			</File>
 			<File
 				RelativePath=".\types.h"
 				>

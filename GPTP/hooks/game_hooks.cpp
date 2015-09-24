@@ -32,6 +32,36 @@ class HarvestTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
 };
 HarvestTargetFinder harvestTargetFinder;
 
+class ContainerTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
+  const CUnit *mineral;
+  public:
+    void setContainer(const CUnit *mineral) { this->mineral = mineral; }
+    bool match(const CUnit *unit) {
+      if (!unit)
+        return false;
+
+      if (mineral->getDistanceToTarget(unit) > 288) //Building distance
+        return false;
+
+     if(scbw::getActiveTileAt(mineral->getX(), mineral->getY()).groundHeight
+       != scbw::getActiveTileAt(unit->getX(), unit->getY()).groundHeight)
+       return false;
+
+      if(!(unit->hasPathToUnit(mineral)))
+        return false;
+
+      if ((unit->id != UnitId::command_center) &&
+          (unit->id != UnitId::nexus) &&
+          (unit->id != UnitId::hatchery) &&
+          (unit->id != UnitId::lair) &&
+          (unit->id != UnitId::hive))
+        return false;
+
+      return true;
+    }
+};
+ContainerTargetFinder containerTargetFinder;
+
 namespace hooks {
 
 /// This hook is called every frame; most of your plugin's logic goes here.
@@ -93,6 +123,61 @@ bool nextFrame() {
     //Loop through all visible units in the game.
     for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
 
+      //KYSXD draws lines from the mineral field to nearest resource container
+      if (unit->id == UnitId::mineral_field_1
+        ||unit->id == UnitId::mineral_field_2
+        ||unit->id == UnitId::mineral_field_3) {        
+        containerTargetFinder.setContainer(unit);
+        unit->building.addon = scbw::UnitFinder::getNearestTarget(
+          unit->getX() - 288, unit->getY() - 288,
+          unit->getX() + 288, unit->getY() + 288,
+          unit,
+          containerTargetFinder);
+      }
+
+      if(unit->id == UnitId::command_center
+        ||unit->id == UnitId::nexus
+        ||unit->id == UnitId::hatchery
+        ||unit->id == UnitId::lair
+        ||unit->id == UnitId::hive) {
+        u32 nearmineral = 0;
+        static scbw::UnitFinder mineralfinder;
+        mineralfinder.search(unit->getX()-300, unit->getY()-300, unit->getX()+300, unit->getY()+300);
+        for(int k = 0; k < mineralfinder.getUnitCount(); ++k) {
+          if ((mineralfinder.getUnit(k)->id == UnitId::mineral_field_1
+            || mineralfinder.getUnit(k)->id == UnitId::mineral_field_2
+            || mineralfinder.getUnit(k)->id == UnitId::mineral_field_3)
+            && mineralfinder.getUnit(k)->building.addon == unit) {
+              nearmineral++;
+          }
+        }
+        u32 nearworkers = 0;
+        for(CUnit *thisunit = *firstVisibleUnit; thisunit; thisunit = thisunit->link.next){
+          if((units_dat::BaseProperty[thisunit->id] & UnitProperty::Worker)
+            && thisunit->worker.targetResource.unit != NULL
+            && thisunit->worker.targetResource.unit->building.addon != NULL
+            && thisunit->worker.targetResource.unit->building.addon == unit
+            &&(thisunit->mainOrderId == OrderId::Harvest1
+              || thisunit->mainOrderId == OrderId::Harvest2
+              || thisunit->mainOrderId == OrderId::Harvest3
+              || thisunit->mainOrderId == OrderId::Harvest4
+              || thisunit->mainOrderId == OrderId::Harvest5
+              || thisunit->mainOrderId == OrderId::HarvestGas1
+              || thisunit->mainOrderId == OrderId::HarvestGas2
+              || thisunit->mainOrderId == OrderId::HarvestGas3
+              || thisunit->mainOrderId == OrderId::ReturnGas
+              || thisunit->mainOrderId == OrderId::ReturnMinerals
+              || thisunit->mainOrderId == OrderId::HarvestMinerals2
+              || thisunit->mainOrderId == OrderId::MoveToMinerals
+              || thisunit->mainOrderId == OrderId::MiningMinerals)) {
+              nearworkers++;
+          }
+        }
+        char unitcount[64];
+        sprintf_s(unitcount, "Workers: %d / %d", nearworkers, nearmineral);
+        graphics::drawText(unit->getX()-32, unit->getY()-30, unitcount, graphics::FONT_MEDIUM, graphics::ON_MAP);
+      }
+
       //KYSXD worker no collision if harvesting - start
       if (units_dat::BaseProperty[unit->id] & UnitProperty::Worker) {
         if (unit->mainOrderId == OrderId::Harvest1
@@ -116,11 +201,7 @@ bool nextFrame() {
       }
       //KYSXD worker no collision if harvesting - end
 
-      if (unit->id == UnitId::barracks && unit->mainOrderId == OrderId::Die) {
-        scbw::createUnitAtPos(UnitId::barracks, unit->playerId, unit->getX(), unit->getY());
-      }
-
-      //Idle worker count
+      //KYSXD Idle worker count
       if (unit->playerId == *LOCAL_HUMAN_ID
           && units_dat::BaseProperty[unit->id] & UnitProperty::Worker
           && unit->mainOrderId == OrderId::PlayerGuard) {
@@ -132,13 +213,6 @@ bool nextFrame() {
     //KYSXD - For selected units - From SC Transition - start
     for (int i = 0; i < *clientSelectionCount; ++i) {
       CUnit *selUnit = clientSelectionGroup->unit[i];
-
-      if (selUnit->id == UnitId::scv) {
-        char idleworkers[64];
-        u16 timer = selUnit->orderQueueTimer;
-        sprintf_s(idleworkers, "orderQueueTimer: %d", timer);
-        graphics::drawText(560, 60, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
-      }
 
       //Draw attack radius circles for Siege Mode Tanks in current selection
       if (selUnit->id == UnitId::siege_tank_s) {
@@ -186,11 +260,11 @@ bool nextFrame() {
       }
       //KYSXD - For selected units - From SC Transition - end
 
-    if (idleWorkerCount != 0) {
-      char idleworkers[64];
-      sprintf_s(idleworkers, "Idle Worker: %d", idleWorkerCount);
-      graphics::drawText(560, 30, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
-    }
+      if (idleWorkerCount != 0) {
+        char idleworkers[64];
+        sprintf_s(idleworkers, "Idle Worker: %d", idleWorkerCount);
+        graphics::drawText(560, 30, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+      }
 
     }
 
