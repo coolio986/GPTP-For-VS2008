@@ -10,6 +10,39 @@
 
 #include <SCBW/UnitFinder.h>
 
+bool isInHarvestState(const CUnit *worker) {
+  if (worker->unusedTimer == 0) {
+    return false;
+  }
+  else return true;
+}
+
+bool isMineral(const CUnit *resource) {
+  if (176 <= resource->id && resource->id <= 178) {
+    return true;
+  }
+  else return false;
+}
+
+bool hasHarvestOrders(const CUnit *worker) {
+  if (worker->mainOrderId == OrderId::Harvest1
+      || worker->mainOrderId == OrderId::Harvest2
+      || worker->mainOrderId == OrderId::Harvest3
+      || worker->mainOrderId == OrderId::Harvest4
+      || worker->mainOrderId == OrderId::Harvest5
+      || worker->mainOrderId == OrderId::HarvestGas1
+      || worker->mainOrderId == OrderId::HarvestGas2
+      || worker->mainOrderId == OrderId::HarvestGas3
+      || worker->mainOrderId == OrderId::ReturnGas
+      || worker->mainOrderId == OrderId::ReturnMinerals
+      || worker->mainOrderId == OrderId::HarvestMinerals2
+      || worker->mainOrderId == OrderId::MoveToMinerals
+      || worker->mainOrderId == OrderId::MiningMinerals){
+    return true;
+  }
+  else return false;
+}
+
 //KYSXD custom helper class
 class HarvestTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
   const CUnit *worker;
@@ -22,9 +55,7 @@ class HarvestTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
       if (worker->getDistanceToTarget(unit) > 512) //Harvest distance
         return false;
 
-      if ((unit->id != UnitId::mineral_field_1) &&
-          (unit->id != UnitId::mineral_field_2) &&
-          (unit->id != UnitId::mineral_field_3))
+      if (!(isMineral(unit)))
         return false;
 
       return true;
@@ -35,12 +66,15 @@ HarvestTargetFinder harvestTargetFinder;
 class ContainerTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
   const CUnit *mineral;
   public:
-    void setContainer(const CUnit *mineral) { this->mineral = mineral; }
+    void setMineral(const CUnit *mineral) { this->mineral = mineral; }
     bool match(const CUnit *unit) {
       if (!unit)
         return false;
 
-      if (mineral->getDistanceToTarget(unit) > 288) //Building distance
+      if (!(units_dat::BaseProperty[unit->id] & UnitProperty::ResourceDepot))
+        return false;
+
+      if(!(unit->status & UnitStatus::Completed))
         return false;
 
      if(scbw::getActiveTileAt(mineral->getX(), mineral->getY()).groundHeight
@@ -48,13 +82,6 @@ class ContainerTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
        return false;
 
       if(!(unit->hasPathToUnit(mineral)))
-        return false;
-
-      if ((unit->id != UnitId::command_center) &&
-          (unit->id != UnitId::nexus) &&
-          (unit->id != UnitId::hatchery) &&
-          (unit->id != UnitId::lair) &&
-          (unit->id != UnitId::hive))
         return false;
 
       return true;
@@ -82,6 +109,7 @@ bool nextFrame() {
 
       if (!(*GAME_TYPE == 10)) {
       //For non-custom games - start
+
         //KYSXD - Increase initial amount of workers - From GagMania
         u16 initialworkeramount = 12;
         for (CUnit* base = *firstVisibleUnit; base; base = base->link.next) {
@@ -123,76 +151,58 @@ bool nextFrame() {
     //Loop through all visible units in the game.
     for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
 
-      //KYSXD draws lines from the mineral field to nearest resource container
-      if (unit->id == UnitId::mineral_field_1
-        ||unit->id == UnitId::mineral_field_2
-        ||unit->id == UnitId::mineral_field_3) {        
-        containerTargetFinder.setContainer(unit);
-        unit->building.addon = scbw::UnitFinder::getNearestTarget(
-          unit->getX() - 288, unit->getY() - 288,
-          unit->getX() + 288, unit->getY() + 288,
-          unit,
-          containerTargetFinder);
-      }
-
-      if(unit->id == UnitId::command_center
-        ||unit->id == UnitId::nexus
-        ||unit->id == UnitId::hatchery
-        ||unit->id == UnitId::lair
-        ||unit->id == UnitId::hive) {
-        u32 nearmineral = 0;
+    //KYSXD unit worker count start  
+      //KYSXD if is resource depot
+      if(unit->playerId == *LOCAL_NATION_ID
+        && unit->status & UnitStatus::Completed
+        && units_dat::BaseProperty[unit->id] & UnitProperty::ResourceDepot) {
+        int nearmineral = 0;
+        //KYSXD count the neares minerals
         static scbw::UnitFinder mineralfinder;
-        mineralfinder.search(unit->getX()-300, unit->getY()-300, unit->getX()+300, unit->getY()+300);
+        mineralfinder.search(unit->getX()-256, unit->getY()-256, unit->getX()+256, unit->getY()+256);
         for(int k = 0; k < mineralfinder.getUnitCount(); ++k) {
-          if ((mineralfinder.getUnit(k)->id == UnitId::mineral_field_1
-            || mineralfinder.getUnit(k)->id == UnitId::mineral_field_2
-            || mineralfinder.getUnit(k)->id == UnitId::mineral_field_3)
-            && mineralfinder.getUnit(k)->building.addon == unit) {
+          CUnit *curMin = mineralfinder.getUnit(k);
+          if (isMineral(curMin)) {
+            if (curMin->building.addon ==  NULL
+              || (curMin->building.addon !=  NULL
+              && curMin->getDistanceToTarget(curMin->building.addon) < 288)) {
+              containerTargetFinder.setMineral(curMin);
+              curMin->building.addon = scbw::UnitFinder::getNearestTarget(
+              curMin->getX() - 300, curMin->getY() - 300,
+              curMin->getX() + 300, curMin->getY() + 300,
+              curMin,
+              containerTargetFinder);
+            }
+            if (curMin->building.addon != NULL
+              &&curMin->building.addon == unit) {
               nearmineral++;
+            }
           }
         }
-        u32 nearworkers = 0;
-        for(CUnit *thisunit = *firstVisibleUnit; thisunit; thisunit = thisunit->link.next){
-          if((units_dat::BaseProperty[thisunit->id] & UnitProperty::Worker)
-            && thisunit->worker.targetResource.unit != NULL
-            && thisunit->worker.targetResource.unit->building.addon != NULL
-            && thisunit->worker.targetResource.unit->building.addon == unit
-            &&(thisunit->mainOrderId == OrderId::Harvest1
-              || thisunit->mainOrderId == OrderId::Harvest2
-              || thisunit->mainOrderId == OrderId::Harvest3
-              || thisunit->mainOrderId == OrderId::Harvest4
-              || thisunit->mainOrderId == OrderId::Harvest5
-              || thisunit->mainOrderId == OrderId::HarvestGas1
-              || thisunit->mainOrderId == OrderId::HarvestGas2
-              || thisunit->mainOrderId == OrderId::HarvestGas3
-              || thisunit->mainOrderId == OrderId::ReturnGas
-              || thisunit->mainOrderId == OrderId::ReturnMinerals
-              || thisunit->mainOrderId == OrderId::HarvestMinerals2
-              || thisunit->mainOrderId == OrderId::MoveToMinerals
-              || thisunit->mainOrderId == OrderId::MiningMinerals)) {
-              nearworkers++;
+        int nearworkers = 0;
+        //KYSXD count the nearest workers
+        if (nearmineral > 0) {
+          for(CUnit *thisunit = *firstVisibleUnit; thisunit; thisunit = thisunit->link.next){
+            if(thisunit->playerId == *LOCAL_NATION_ID
+              && (units_dat::BaseProperty[thisunit->id] & UnitProperty::Worker)
+              && isInHarvestState(thisunit)
+              && thisunit->worker.targetResource.unit != NULL
+              && thisunit->worker.targetResource.unit->building.addon != NULL
+              && thisunit->worker.targetResource.unit->building.addon == unit) {
+                nearworkers++;
+            }
           }
+          char unitcount[64];
+          sprintf_s(unitcount, "Workers: %d / %d", nearworkers, nearmineral);
+          graphics::drawText(unit->getX() - 32, unit->getY() - 60, unitcount, graphics::FONT_MEDIUM, graphics::ON_MAP);
         }
-        char unitcount[64];
-        sprintf_s(unitcount, "Workers: %d / %d", nearworkers, nearmineral);
-        graphics::drawText(unit->getX()-32, unit->getY()-30, unitcount, graphics::FONT_MEDIUM, graphics::ON_MAP);
       }
+      //KYSXD unit worker count end
 
       //KYSXD worker no collision if harvesting - start
       if (units_dat::BaseProperty[unit->id] & UnitProperty::Worker) {
-        if (unit->mainOrderId == OrderId::Harvest1
-          || unit->mainOrderId == OrderId::Harvest2
-          || unit->mainOrderId == OrderId::Harvest3
-          || unit->mainOrderId == OrderId::Harvest4
-          || unit->mainOrderId == OrderId::Harvest5
-          || unit->mainOrderId == OrderId::HarvestGas1
-          || unit->mainOrderId == OrderId::HarvestGas2
-          || unit->mainOrderId == OrderId::HarvestGas3
-          || unit->mainOrderId == OrderId::ReturnGas
-          || unit->mainOrderId == OrderId::ReturnMinerals
-          || unit->mainOrderId == OrderId::HarvestMinerals2
-          || unit->mainOrderId == OrderId::MoveToMinerals
-          || unit->mainOrderId == OrderId::MiningMinerals) {
+        if (hasHarvestOrders(unit)) {
+            unit->unusedTimer = 2;
             unit->status |= UnitStatus::NoCollide;
         }
         else {
@@ -202,7 +212,7 @@ bool nextFrame() {
       //KYSXD worker no collision if harvesting - end
 
       //KYSXD Idle worker count
-      if (unit->playerId == *LOCAL_HUMAN_ID
+      if ((unit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())
           && units_dat::BaseProperty[unit->id] & UnitProperty::Worker
           && unit->mainOrderId == OrderId::PlayerGuard) {
         ++idleWorkerCount;
