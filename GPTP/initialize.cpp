@@ -39,10 +39,12 @@
 #include "hooks/unit_stats/weapon_range.h"
 #include "hooks/interface/weapon_armor_tooltip.h"
 
-#include "hooks/infestation.h"
-#include "hooks/siege_transform.h"
+#include "hooks/orders/infestation.h"
+#include "hooks/orders/siege_transform.h"
 #include "hooks/interface/buttonsets.h"
 #include "hooks/interface/selection.h"
+#include "hooks/orders/merge_units.h"
+#include "hooks/orders/larva_creep_spawn.h"
 
 #include "AI/spellcasting.h"
 
@@ -81,6 +83,8 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
   hooks::injectSiegeTransformHooks();
   hooks::injectButtonSetHooks();
   hooks::injectSelectMod();
+  hooks::injectMergeUnitsHooks();
+  hooks::injectLarvaCreepSpawnHooks();
 
   hooks::injectApplyUpgradeFlags();
   hooks::injectAttackPriorityHooks();

@@ -151,7 +151,7 @@ bool nextFrame() {
     //Loop through all visible units in the game.
     for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
 
-    //KYSXD unit worker count start  
+/*    //KYSXD unit worker count start  
       //KYSXD if is resource depot
       if(unit->playerId == *LOCAL_NATION_ID
         && unit->status & UnitStatus::Completed
@@ -197,7 +197,7 @@ bool nextFrame() {
           graphics::drawText(unit->getX() - 32, unit->getY() - 60, unitcount, graphics::FONT_MEDIUM, graphics::ON_MAP);
         }
       }
-      //KYSXD unit worker count end
+      //KYSXD unit worker count end */
 
       //KYSXD worker no collision if harvesting - start
       if (units_dat::BaseProperty[unit->id] & UnitProperty::Worker) {
