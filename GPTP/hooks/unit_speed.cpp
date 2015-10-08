@@ -17,6 +17,7 @@ u32 getModifiedUnitSpeedHook(const CUnit* unit, u32 baseSpeed) {
 	u32 speed = baseSpeed;
 	u32 upgrademodifier = 10;
 	u32 creepmodifier = 10;
+	ActiveTile actTile = scbw::getActiveTileAt(unit->getX(), unit->getY());
 	if (unit->status & UnitStatus::SpeedUpgrade) {
 		switch(unit->id) {
 			case UnitId::zergling:
@@ -29,7 +30,7 @@ u32 getModifiedUnitSpeedHook(const CUnit* unit, u32 baseSpeed) {
 			case UnitId::zealot:
 				upgrademodifier = 13;
 			case UnitId::hydralisk:
-				upgrademodifier = 16;
+				upgrademodifier = (actTile.hasCreep ? 10 : 16);
 			case UnitId::vulture:
 				upgrademodifier = 15;
 			case UnitId::hunter_killer:
@@ -38,13 +39,12 @@ u32 getModifiedUnitSpeedHook(const CUnit* unit, u32 baseSpeed) {
         }
 	}
 	//KYSXD zerg speed start
-	ActiveTile actTile = scbw::getActiveTileAt(unit->getX(), unit->getY());
 	if (unit->getRace() == RaceId::Zerg
 		&& !(unit->status & UnitStatus::InAir)
 		&& actTile.hasCreep) {
 		if (unit->id != UnitId::drone) {
 			if (unit->id == UnitId::hydralisk) {
-				creepmodifier = (unit->status & UnitStatus::SpeedUpgrade ? 10 : 16);
+				creepmodifier = 16;
 			}
 			else  {
 				creepmodifier = 13;
