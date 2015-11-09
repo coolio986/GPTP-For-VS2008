@@ -10,6 +10,38 @@
 
 #include <SCBW/UnitFinder.h>
 
+u32 warpOverlay(u32 thisUnitId){
+  switch(thisUnitId) {
+    case UnitId::ProtossZealot:
+      return ImageId::ZealotWarpFlash;
+    case UnitId::ProtossDragoon:
+      return ImageId::DragoonWarpFlash;
+    case UnitId::ProtossHighTemplar:
+      return ImageId::HighTemplarWarpFlash;
+    case UnitId::Hero_Raszagal:
+      return ImageId::DarkTemplar_Hero;
+    default: return ImageId::DarkTemplar_Hero;
+  }
+}
+
+u16 warpCooldown(u32 thisUnitId){
+  switch(thisUnitId) {
+    case UnitId::ProtossZealot:
+      return 1;
+      break;
+    case UnitId::ProtossDragoon:
+      return 2;
+      break;
+    case UnitId::ProtossHighTemplar:
+      return 3;
+      break;
+    case UnitId::Hero_Raszagal:
+      return 4;
+      break;
+    default: return 5; break;
+  }
+}
+
 bool isInHarvestState(const CUnit *worker) {
   if (worker->unusedTimer == 0) {
     return false;
@@ -17,27 +49,16 @@ bool isInHarvestState(const CUnit *worker) {
   else return true;
 }
 
-bool isMineral(const CUnit *resource) {
-  if (176 <= resource->id && resource->id <= 178) {
+bool thisIsMineral(const CUnit *resource) {
+  if (UnitId::ResourceMineralField <= resource->id && resource->id <= UnitId::ResourceMineralFieldType3) {
     return true;
   }
   else return false;
 }
 
 bool hasHarvestOrders(const CUnit *worker) {
-  if (worker->mainOrderId == OrderId::Harvest1
-      || worker->mainOrderId == OrderId::Harvest2
-      || worker->mainOrderId == OrderId::Harvest3
-      || worker->mainOrderId == OrderId::Harvest4
-      || worker->mainOrderId == OrderId::Harvest5
-      || worker->mainOrderId == OrderId::HarvestGas1
-      || worker->mainOrderId == OrderId::HarvestGas2
-      || worker->mainOrderId == OrderId::HarvestGas3
-      || worker->mainOrderId == OrderId::ReturnGas
-      || worker->mainOrderId == OrderId::ReturnMinerals
-      || worker->mainOrderId == OrderId::HarvestMinerals2
-      || worker->mainOrderId == OrderId::MoveToMinerals
-      || worker->mainOrderId == OrderId::MiningMinerals){
+  if (OrderId::Harvest1 <= worker->mainOrderId &&
+      worker->mainOrderId <= OrderId::Harvest5){
     return true;
   }
   else return false;
@@ -45,17 +66,17 @@ bool hasHarvestOrders(const CUnit *worker) {
 
 //KYSXD custom helper class
 class HarvestTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
-  const CUnit *worker;
+  const CUnit *mainHarvester;
   public:
-    void setWorker(const CUnit *worker) { this->worker = worker; }
+    void setmainHarvester(const CUnit *mainHarvester) { this->mainHarvester = mainHarvester; }
     bool match(const CUnit *unit) {
       if (!unit)
         return false;
 
-      if (worker->getDistanceToTarget(unit) > 512) //Harvest distance
+      if (mainHarvester->getDistanceToTarget(unit) > 512) //Harvest distance
         return false;
 
-      if (!(isMineral(unit)))
+      if (!(thisIsMineral(unit)))
         return false;
 
       return true;
@@ -102,15 +123,27 @@ bool nextFrame() {
 
     //KYSXD idle worker amount
     u32 idleWorkerCount = 0;
+
+    //KYSXD for use with WarpGate
+    u32 warpGateAvailable = 0;
+    u32 warpGateAmount = 0;
+    CUnit *lastWG[8];
+    bool warpGateUpdate[8];
+    u32 warpGateCall[8];
+    for (int i = 0; i < 8; i++) {
+      lastWG[i] = NULL;
+      warpGateUpdate[i] = false;
+      warpGateCall[i] = 0;
+    }
     
     //This block is executed once every game.
     if (*elapsedTimeFrames == 0) {
       scbw::printText(PLUGIN_NAME ": Test");
 
-      if (!(*GAME_TYPE == 10)) {
       //For non-custom games - start
+      if (!(*GAME_TYPE == 10)) {
 
-        //KYSXD - Increase initial amount of workers - From GagMania
+        //KYSXD - Increase initial amount of Workers - From GagMania
         u16 initialworkeramount = 12;
         for (CUnit* base = *firstVisibleUnit; base; base = base->link.next) {
           if (base->mainOrderId != OrderId::Die) {
@@ -130,74 +163,25 @@ bool nextFrame() {
           }
         }
 
-      //KYSXD Send all units to harvest on first run
-        for (CUnit *worker = *firstVisibleUnit; worker; worker = worker->link.next) {
-          if (units_dat::BaseProperty[worker->id] & UnitProperty::Worker) {
-            harvestTargetFinder.setWorker(worker);
+        //KYSXD Send all units to harvest on first run
+        for (CUnit *harvesterUnit = *firstVisibleUnit; harvesterUnit; harvesterUnit = harvesterUnit->link.next) {
+          if (units_dat::BaseProperty[harvesterUnit->id] & UnitProperty::Worker) {
+            harvestTargetFinder.setmainHarvester(harvesterUnit);
             const CUnit *harvestTarget = scbw::UnitFinder::getNearestTarget(
-              worker->getX() - 512, worker->getY() - 512,
-              worker->getX() + 512, worker->getY() + 512,
-              worker,
+              harvesterUnit->getX() - 512, harvesterUnit->getY() - 512,
+              harvesterUnit->getX() + 512, harvesterUnit->getY() + 512,
+              harvesterUnit,
               harvestTargetFinder);
             if (harvestTarget) {
-              worker->orderTo(OrderId::Harvest1, harvestTarget);
+              harvesterUnit->orderTo(OrderId::Harvest1, harvestTarget);
             }
           }
         }
-      //For non-custom games - end
-      }
+      } //For non-custom games - end
     }
 
     //Loop through all visible units in the game.
     for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
-
-/*    //KYSXD unit worker count start  
-      //KYSXD if is resource depot
-      if(unit->playerId == *LOCAL_NATION_ID
-        && unit->status & UnitStatus::Completed
-        && units_dat::BaseProperty[unit->id] & UnitProperty::ResourceDepot) {
-        int nearmineral = 0;
-        //KYSXD count the neares minerals
-        static scbw::UnitFinder mineralfinder;
-        mineralfinder.search(unit->getX()-256, unit->getY()-256, unit->getX()+256, unit->getY()+256);
-        for(int k = 0; k < mineralfinder.getUnitCount(); ++k) {
-          CUnit *curMin = mineralfinder.getUnit(k);
-          if (isMineral(curMin)) {
-            if (curMin->building.addon ==  NULL
-              || (curMin->building.addon !=  NULL
-              && curMin->getDistanceToTarget(curMin->building.addon) < 288)) {
-              containerTargetFinder.setMineral(curMin);
-              curMin->building.addon = scbw::UnitFinder::getNearestTarget(
-              curMin->getX() - 300, curMin->getY() - 300,
-              curMin->getX() + 300, curMin->getY() + 300,
-              curMin,
-              containerTargetFinder);
-            }
-            if (curMin->building.addon != NULL
-              &&curMin->building.addon == unit) {
-              nearmineral++;
-            }
-          }
-        }
-        int nearworkers = 0;
-        //KYSXD count the nearest workers
-        if (nearmineral > 0) {
-          for(CUnit *thisunit = *firstVisibleUnit; thisunit; thisunit = thisunit->link.next){
-            if(thisunit->playerId == *LOCAL_NATION_ID
-              && (units_dat::BaseProperty[thisunit->id] & UnitProperty::Worker)
-              && isInHarvestState(thisunit)
-              && thisunit->worker.targetResource.unit != NULL
-              && thisunit->worker.targetResource.unit->building.addon != NULL
-              && thisunit->worker.targetResource.unit->building.addon == unit) {
-                nearworkers++;
-            }
-          }
-          char unitcount[64];
-          sprintf_s(unitcount, "Workers: %d / %d", nearworkers, nearmineral);
-          graphics::drawText(unit->getX() - 32, unit->getY() - 60, unitcount, graphics::FONT_MEDIUM, graphics::ON_MAP);
-        }
-      }
-      //KYSXD unit worker count end */
 
       //KYSXD worker no collision if harvesting - start
       if (units_dat::BaseProperty[unit->id] & UnitProperty::Worker) {
@@ -208,8 +192,44 @@ bool nextFrame() {
         else {
           unit->status &= ~(UnitStatus::NoCollide);
         }
-      }
-      //KYSXD worker no collision if harvesting - end
+      } //KYSXD worker no collision if harvesting - end
+
+      //KYSXD WarpGate start
+      if (unit->id == UnitId::ProtossGateway
+        && unit->status & UnitStatus::Completed
+        && unit->playerId == *LOCAL_HUMAN_ID
+        && !(unit->isFrozen())) {
+        if (unit->playerId == *LOCAL_NATION_ID) {
+          ++warpGateAmount;
+        }
+        unit->currentButtonSet = UnitId::None;
+        if (unit->getMaxEnergy() == unit->energy) {
+          unit->previousUnitType = 0;
+          if (unit->playerId == *LOCAL_NATION_ID) {
+            ++warpGateAvailable;
+          }
+          if (lastWG[unit->playerId] == NULL) {
+            lastWG[unit->playerId] = unit;
+          }
+        }
+        if (unit->buildQueue[unit->buildQueueSlot] != UnitId::None) {
+          u32 thisUnitId = unit->buildQueue[unit->buildQueueSlot];
+          warpGateCall[unit->playerId] = thisUnitId;
+          u32 yPos = unit->orderTarget.pt.y;
+          u32 xPos = unit->orderTarget.pt.x;
+          CUnit *warpUnit = scbw::createUnitAtPos(thisUnitId, unit->playerId, xPos, yPos);
+          if(warpUnit){
+            warpUnit->sprite->createOverlay(warpOverlay(thisUnitId));
+          }
+          unit->mainOrderId = OrderId::Nothing2;
+          unit->buildQueue[unit->buildQueueSlot] = UnitId::None;
+          if (unit->playerId == *LOCAL_NATION_ID) {
+            --warpGateAvailable;
+          }
+          warpGateUpdate[unit->playerId] = true;
+        }
+      } //KYSXD WarpGate end
+
 
       //KYSXD Idle worker count
       if ((unit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())
@@ -220,9 +240,78 @@ bool nextFrame() {
 
     }
 
+    //KYSXD update last warpgate
+    for (int i = 0; i < 8; i++) {
+      if(warpGateUpdate[i] == true && lastWG[i] != NULL) {
+        lastWG[i]->previousUnitType = warpCooldown(warpGateCall[i]);
+      }      
+    }
+
     //KYSXD - For selected units - From SC Transition - start
     for (int i = 0; i < *clientSelectionCount; ++i) {
       CUnit *selUnit = clientSelectionGroup->unit[i];
+
+      //KYSXD update ButtonSet for WG
+      if(selUnit->id == UnitId::ProtossGateway) {
+        selUnit->currentButtonSet = (warpGateAvailable != 0 ? UnitId::ProtossGateway : UnitId::None);
+      }
+
+      /*/KYSXD unit worker count start  
+      if(selUnit->playerId == *LOCAL_NATION_ID
+        && selUnit->status & UnitStatus::Completed
+        && units_dat::BaseProperty[selUnit->id] & UnitProperty::ResourceDepot) {
+        int nearmineral = 0;
+        int nearworkers = 0;
+        CUnit *nearestContainer = NULL;
+        //KYSXD count the neares minerals
+        static scbw::UnitFinder mineralfinder;
+        mineralfinder.search(selUnit->getX()-256, selUnit->getY()-256, selUnit->getX()+256, selUnit->getY()+256);
+        for(int k = 0; k < mineralfinder.getUnitCount(); ++k) {
+          CUnit *curMin = mineralfinder.getUnit(k);
+          if (thisIsMineral(curMin)) {
+            containerTargetFinder.setMineral(curMin);
+            nearestContainer = scbw::UnitFinder::getNearestTarget(
+            curMin->getX() - 300, curMin->getY() - 300,
+            curMin->getX() + 300, curMin->getY() + 300,
+            curMin,
+            containerTargetFinder);
+            if (nearestContainer != NULL
+              && nearestContainer == selUnit) {
+              nearmineral++;
+            }
+          }
+          for(CUnit *thisunit = *firstVisibleUnit; thisunit; thisunit = thisunit->link.next){
+            if(thisunit->playerId == *LOCAL_NATION_ID
+              && (units_dat::BaseProperty[thisunit->id] & UnitProperty::Worker)
+              && isInHarvestState(thisunit)
+              && thisunit->worker.targetResource.unit != NULL
+              && thisunit->worker.targetResource.unit == curMin) {
+                nearworkers++;
+            }
+          }
+        }
+        //KYSXD count the nearest Workers
+        if (nearmineral > 0) {
+          char unitcount[64];
+          sprintf_s(unitcount, "Workers: %d / %d", nearworkers, nearmineral);
+          graphics::drawText(selUnit->getX() - 32, selUnit->getY() - 60, unitcount, graphics::FONT_MEDIUM, graphics::ON_MAP);
+        }
+      }*/
+      //KYSXD unit worker count end
+
+      //KYSXD Twilight Archon
+      if(selUnit->id == UnitId::ProtossDarkTemplar || selUnit->id == UnitId::ProtossHighTemplar) {
+        if(selUnit->mainOrderId == OrderId::ReaverStop) {
+          for (int j = i+1; j < *clientSelectionCount && selUnit->mainOrderId == OrderId::ReaverStop; ++j) {
+            CUnit *nextUnit = clientSelectionGroup->unit[j];
+            if(nextUnit->id == (UnitId::ProtossDarkTemplar + UnitId::ProtossHighTemplar) - selUnit->id
+              && nextUnit->mainOrderId == OrderId::ReaverStop) {
+              selUnit->orderTo(OrderId::WarpingDarkArchon, nextUnit);
+              nextUnit->orderTo(OrderId::WarpingDarkArchon, selUnit);
+            }
+          }
+        }
+      }
 
       //Draw attack radius circles for Siege Mode Tanks in current selection
       if (selUnit->id == UnitId::siege_tank_s) {
@@ -269,14 +358,21 @@ bool nextFrame() {
         }
       }
       //KYSXD - For selected units - From SC Transition - end
-
-      if (idleWorkerCount != 0) {
-        char idleworkers[64];
-        sprintf_s(idleworkers, "Idle Worker: %d", idleWorkerCount);
-        graphics::drawText(560, 30, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
-      }
-
     }
+
+    //KYSXD Print info on screen
+    if (idleWorkerCount != 0) {
+      char idleworkers[64];
+      sprintf_s(idleworkers, "Idle Workers: %d", idleWorkerCount);
+      graphics::drawText(30, 10, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+    }
+
+    if (warpGateAmount != 0) {
+      char WGates[64];
+      sprintf_s(WGates, "Available Warpgates: %d / %d", warpGateAvailable, warpGateAmount);
+      graphics::drawText(30, 20, WGates, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+    }
+
 
     scbw::setInGameLoopState(false);
   }

@@ -281,7 +281,11 @@ void orders_WarpingDarkArchon(CUnit* unit) {
 
 			//9479C:
 			mergeStatusIntoUnit_Sub493180(unit,targetUnit);
-			replaceUnitWithType(unit, UnitId::ProtossDarkArchon);
+			//KYSXD twilight merge start
+			u32 ArchonVariant = (unit->id == (UnitId::ProtossHighTemplar + UnitId::ProtossDarkTemplar) - targetUnit->id
+								? UnitId::Hero_TassadarZeratulArchon : UnitId::ProtossDarkArchon);
+			replaceUnitWithType(unit, ArchonVariant);
+			//KYSXD twilight merge end
 
 			//update stuff related to the beginning of merge process I think
 			function_0049B440(unit, SoundId::Terran_PHOENIX_TPhClo01_WAV);

@@ -57,18 +57,27 @@ void transferResourceToWorkerHook(CUnit *worker, CUnit *resource) {
   u32 chunkImageId;
   bool isMineral = false;
 
-  if (176 <= resource->id && resource->id <= 178) {  //Is a mineral patch
+  if (UnitId::ResourceMineralField <= resource->id && resource->id <= UnitId::ResourceMineralFieldType3) {  //Is a mineral patch
     chunkImageId = ImageId::MineralChunkType1;
     isMineral = true;
   }
-  else if (resource->id == UnitId::assimilator)
-    chunkImageId = ImageId::ProtossGasOrbType1;
-  else if (resource->id == UnitId::extractor)
-    chunkImageId = ImageId::ZergGasSacType1;
-  else if (resource->id == UnitId::refinery)
-    chunkImageId = ImageId::TerranGasTankType1;
-  else
-    return;
+
+  else {
+    switch(resource->id){
+      case UnitId::assimilator:
+        chunkImageId = ImageId::ProtossGasOrbType1;
+        break;
+      case UnitId::extractor:
+        chunkImageId = ImageId::ZergGasSacType1;
+        break;
+      case UnitId::refinery:
+        chunkImageId = ImageId::TerranGasTankType1;
+        break;
+      default:
+        return;
+        break; //KYSXD - Should never reach here
+    }
+  }
 
   u8 resourceAmount = harvestResourceFrom(resource, isMineral);
   if (resourceAmount < min_amount)

@@ -59,6 +59,17 @@ u16 getUnitMaxEnergyHook(const CUnit* const unit) {
       if (scbw::getUpgradeLevel(unit->playerId, UpgradeId::ArgusTalisman))
         return 64000; //250
       break;
+    //KYSXD for use with WarpGate
+    case UnitId::gateway:
+      switch(unit->previousUnitType) {
+        case 0: return 0; break;
+        case 1: return 256*12; break;
+        case 2: return 256*14; break;
+        case 3: return 256*16; break;
+        case 4: return 256*18; break;
+        default: return 256*10; break;
+      }
+      break;
   }
 
   return 51200; //200

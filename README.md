@@ -33,6 +33,8 @@ Other short-lived branches may pop-up from time to time as i stabilize new relea
 - Target lines.
 - Idle worker count.
 - Different larva amount (3 - Hatchery, 4 - Lair, 5 - Hive).
+- Dark/High Templar merge (Twilight archon inspired).
+- WarpGate plugin (SCII inspired).
 
 **To do:**
 
@@ -43,6 +45,7 @@ Other short-lived branches may pop-up from time to time as i stabilize new relea
 - Add 12/15 button box (from the 3x3 command box).
 - Rework the pathfinding, like SCII pathfinding, based on the [Daedalus Lib](https://www.youtube.com/watch?v=SDH1AZLMZkY).
 - Rework the game layer size in order to achieve [this HUD](http://www.moddb.com/members/kysxd/images/hud-20-wip1 ).
+- Add code to warp units on creep.
 
 **If you have any request...**
 
