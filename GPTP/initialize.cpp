@@ -45,6 +45,7 @@
 #include "hooks/interface/selection.h"
 #include "hooks/orders/merge_units.h"
 #include "hooks/orders/larva_creep_spawn.h"
+#include "hooks/orders/liftland.h"
 
 #include "AI/spellcasting.h"
 
@@ -85,6 +86,7 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
   hooks::injectSelectMod();
   hooks::injectMergeUnitsHooks();
   hooks::injectLarvaCreepSpawnHooks();
+  hooks::injectLiftLandHooks();
 
   hooks::injectApplyUpgradeFlags();
   hooks::injectAttackPriorityHooks();
