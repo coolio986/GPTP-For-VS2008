@@ -47,7 +47,7 @@ enum Enum {
 
 //Based on BWAPI; for use with units_dat::BaseProperty[]
 namespace UnitProperty {
-enum Enum {
+enum Enum : u32 {
   Building            = 0x00000001,
   Addon               = 0x00000002,
   Flyer               = 0x00000004,
@@ -85,7 +85,7 @@ enum Enum {
 
 //Based on BWAPI; For use with the CUnit::status member
 namespace UnitStatus {
-enum Enum {
+enum Enum : u32 {
   Completed             = 0x00000001,
   GroundedBuilding      = 0x00000002, // a building that is on the ground
   InAir                 = 0x00000004,
@@ -419,5 +419,18 @@ enum Enum {
 	ListBox				= 0x0000000C,
 	ComboBox			= 0x0000000D,
 	LightUpButton		= 0x0000000E
+};
+}
+
+//Use with units_dat::RightClickAction
+namespace RightClickActions {
+	enum Enum : u8 {
+		NoCommand_AutoAttack = 0,
+		NormalMove_NormalAttack = 1,
+		NormalMove_NoAttack = 2,
+		NoMove_NormalAttack = 3,
+		Harvest = 4,
+		HarvestAndRepair = 5,
+		Unknown = 6				//only by ComSat addon
 };
 }
