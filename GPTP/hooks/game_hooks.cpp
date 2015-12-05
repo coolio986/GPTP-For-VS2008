@@ -10,7 +10,7 @@
 
 #include <SCBW/UnitFinder.h>
 
-u32 warpOverlay(u32 thisUnitId){
+static u32 warpOverlay(u32 thisUnitId){
   switch(thisUnitId) {
     case UnitId::ProtossZealot:
       return ImageId::ZealotWarpFlash;
@@ -24,21 +24,32 @@ u32 warpOverlay(u32 thisUnitId){
   }
 }
 
-u16 warpCooldown(u32 thisUnitId){
+/* KYSXD Unit Cooldowns:
+  Zealot    = 28
+  Adept     = 28
+  Sentry    = 32
+  Dragoon   = 32
+  Stalker   = 32
+  HTemplat  = 45
+  DTemplar  = 45
+*/
+static u16 warpCooldown(u32 thisUnitId){
   switch(thisUnitId) {
     case UnitId::ProtossZealot:
-      return 1;
-      break;
+      return 1; break;
+    case UnitId::Hero_Raszagal: //Adept
+      return 1; break;
+/*    case UnitId::_unit_sentry_:
+      return 2; break; */
     case UnitId::ProtossDragoon:
-      return 2;
-      break;
+      return 2; break;
+    case UnitId::Hero_FenixDragoon: //Stalker
+      return 2; break;
     case UnitId::ProtossHighTemplar:
-      return 3;
-      break;
-    case UnitId::Hero_Raszagal:
-      return 4;
-      break;
-    default: return 5; break;
+      return 3; break;
+    case UnitId::ProtossDarkTemplar:
+      return 3; break;
+    default: return 4; break;
   }
 }
 
@@ -124,16 +135,20 @@ bool nextFrame() {
     //KYSXD idle worker amount
     u32 idleWorkerCount = 0;
 
-    //KYSXD for use with WarpGate
-    u32 warpGateAvailable = 0;
-    u32 warpGateAmount = 0;
+    //Number of text:
+    u32 titleLayer = 1;
+
+    //KYSXD for use with Warpgate
+    u32 warpgateAvailable = 0;
+    u32 warpgateAmount = 0;
+    u32 warpgateTime = 0;
     CUnit *lastWG[8];
-    bool warpGateUpdate[8];
-    u32 warpGateCall[8];
+    bool warpgateUpdate[8];
+    u32 warpgateCall[8];
     for (int i = 0; i < 8; i++) {
       lastWG[i] = NULL;
-      warpGateUpdate[i] = false;
-      warpGateCall[i] = 0;
+      warpgateUpdate[i] = false;
+      warpgateCall[i] = 0;
     }
     
     //This block is executed once every game.
@@ -194,27 +209,35 @@ bool nextFrame() {
         }
       } //KYSXD worker no collision if harvesting - end
 
-      //KYSXD WarpGate start
+      //KYSXD Warpgate start
       if (unit->id == UnitId::ProtossGateway
         && unit->status & UnitStatus::Completed
         && unit->playerId == *LOCAL_HUMAN_ID
         && !(unit->isFrozen())) {
         if (unit->playerId == *LOCAL_NATION_ID) {
-          ++warpGateAmount;
+          ++warpgateAmount;
         }
         unit->currentButtonSet = UnitId::None;
         if (unit->getMaxEnergy() == unit->energy) {
           unit->previousUnitType = 0;
           if (unit->playerId == *LOCAL_NATION_ID) {
-            ++warpGateAvailable;
+            ++warpgateAvailable;
           }
           if (lastWG[unit->playerId] == NULL) {
             lastWG[unit->playerId] = unit;
           }
         }
+        else {
+          u32 val = unit->getMaxEnergy() - unit->energy;
+          if (warpgateTime == 0) {
+            warpgateTime = val;
+          }
+          else
+            warpgateTime = (val < warpgateTime ? val : warpgateTime);
+        }
         if (unit->buildQueue[unit->buildQueueSlot] != UnitId::None) {
           u32 thisUnitId = unit->buildQueue[unit->buildQueueSlot];
-          warpGateCall[unit->playerId] = thisUnitId;
+          warpgateCall[unit->playerId] = thisUnitId;
           u32 yPos = unit->orderTarget.pt.y;
           u32 xPos = unit->orderTarget.pt.x;
           CUnit *warpUnit = scbw::createUnitAtPos(thisUnitId, unit->playerId, xPos, yPos);
@@ -223,12 +246,13 @@ bool nextFrame() {
           }
           unit->mainOrderId = OrderId::Nothing2;
           unit->buildQueue[unit->buildQueueSlot] = UnitId::None;
-          if (unit->playerId == *LOCAL_NATION_ID) {
-            --warpGateAvailable;
+          if (!scbw::isCheatEnabled(CheatFlags::OperationCwal)
+            && unit->playerId == *LOCAL_NATION_ID) {
+            --warpgateAvailable;
           }
-          warpGateUpdate[unit->playerId] = true;
+          warpgateUpdate[unit->playerId] = true;
         }
-      } //KYSXD WarpGate end
+      } //KYSXD Warpgate end
 
 
       //KYSXD Idle worker count
@@ -242,8 +266,10 @@ bool nextFrame() {
 
     //KYSXD update last warpgate
     for (int i = 0; i < 8; i++) {
-      if(warpGateUpdate[i] == true && lastWG[i] != NULL) {
-        lastWG[i]->previousUnitType = warpCooldown(warpGateCall[i]);
+      if(!scbw::isCheatEnabled(CheatFlags::OperationCwal)
+        && warpgateUpdate[i] == true
+        && lastWG[i] != NULL) {
+        lastWG[i]->previousUnitType = warpCooldown(warpgateCall[i]);
       }      
     }
 
@@ -252,8 +278,10 @@ bool nextFrame() {
       CUnit *selUnit = clientSelectionGroup->unit[i];
 
       //KYSXD update ButtonSet for WG
-      if(selUnit->id == UnitId::ProtossGateway) {
-        selUnit->currentButtonSet = (warpGateAvailable != 0 ? UnitId::ProtossGateway : UnitId::None);
+      if(selUnit->id == UnitId::ProtossGateway
+        && selUnit->status & UnitStatus::Completed) {
+        selUnit->currentButtonSet =
+          (warpgateAvailable != 0 || scbw::isCheatEnabled(CheatFlags::OperationCwal) ? UnitId::ProtossGateway : UnitId::None);
       }
 
       /*/KYSXD unit worker count start  
@@ -364,15 +392,22 @@ bool nextFrame() {
     if (idleWorkerCount != 0) {
       char idleworkers[64];
       sprintf_s(idleworkers, "Idle Workers: %d", idleWorkerCount);
-      graphics::drawText(30, 10, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+      graphics::drawText(10, 10*titleLayer, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+      ++titleLayer;
     }
 
-    if (warpGateAmount != 0) {
+    if (warpgateAmount != 0) {
       char WGates[64];
-      sprintf_s(WGates, "Available Warpgates: %d / %d", warpGateAvailable, warpGateAmount);
-      graphics::drawText(30, 20, WGates, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+      sprintf_s(WGates, "Online Warpgates: %d", warpgateAvailable);
+      graphics::drawText(10, 10*titleLayer, WGates, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+      ++titleLayer;
+      if (warpgateAvailable < warpgateAmount) {
+        char nextWGTime[64];
+        sprintf_s(nextWGTime, "(Next in: %d sec)", (warpgateTime+127)/128);
+        graphics::drawText(20, 10*titleLayer, nextWGTime, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+      }
     }
-
 
     scbw::setInGameLoopState(false);
   }

@@ -60,14 +60,18 @@ u16 getUnitMaxEnergyHook(const CUnit* const unit) {
         return 64000; //250
       break;
     //KYSXD for use with WarpGate
+      /* KYSXD Unit Cooldowns:
+        1 -> 28
+        2 -> 32
+        3 -> 45
+      */
     case UnitId::gateway:
       switch(unit->previousUnitType) {
         case 0: return 0; break;
-        case 1: return 256*12; break;
-        case 2: return 256*14; break;
-        case 3: return 256*16; break;
-        case 4: return 256*18; break;
-        default: return 256*10; break;
+        case 1: return 128*28; break;
+        case 2: return 128*32; break;
+        case 3: return 128*45; break;
+        default: return 128*60; break;
       }
       break;
   }
