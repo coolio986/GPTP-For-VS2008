@@ -35,17 +35,20 @@ Other short-lived branches may pop-up from time to time as i stabilize new relea
 - Different larva amount (3 - Hatchery, 4 - Lair, 5 - Hive).
 - Dark/High Templar merge (Twilight archon inspired).
 - WarpGate plugin (SCII inspired).
+- Increased regen to borrowed units (also, improved regen after upgrade).
+- Decrease shield for unpowered buildings.
 
 **To do:**
 
 - Add rally point for zerg-eggs.
-- Add code for borrowed movement.
+- Add code for burrowed movement.
 - Add worker count for CC, Nexus and Hatchery/Lair/Hive.
 - Add worker count for Refinery, Assimilator and Extractor.
 - Add 12/15 button box (from the 3x3 command box).
 - Rework the pathfinding, like SCII pathfinding, based on the [Daedalus Lib](https://www.youtube.com/watch?v=SDH1AZLMZkY).
 - Rework the game layer size in order to achieve [this HUD](http://www.moddb.com/members/kysxd/images/hud-20-wip1 ).
 - Add code to warp units on creep.
+- Add code to decrease zerg buildings hp without creep.
 
 **If you have any request...**
 

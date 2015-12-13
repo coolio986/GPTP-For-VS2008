@@ -89,7 +89,7 @@ void updateUnitStateHook(CUnit* unit) {
   if (units_dat::ShieldsEnabled[unit->id]) {
     s32 maxShields = (s32)(units_dat::MaxShieldPoints[unit->id]) << 8;
     if (unit->shields != maxShields) {
-      unit->shields += 36; //KYSXD shield regen
+      unit->shields += 36; //KYSXD - shield regen
       if (unit->shields > maxShields)
         unit->shields = maxShields;
       if (unit->sprite->flags & CSprite_Flags::Selected) {  //If the unit is currently selected, redraw its graphics
@@ -97,6 +97,14 @@ void updateUnitStateHook(CUnit* unit) {
           if (i->paletteType == PaletteType::RLE_HPFLOATDRAW)
             i->flags |= CImage_Flags::Redraw;
       }
+    }
+    //KYSXD - Unpowered building reduce shield (-3 shield per second)
+    if(units_dat::BaseProperty[unit->id] & UnitProperty::Building
+      && unit->isFrozen()) {
+      if(unit->shields >= 58) {
+        unit->shields -= 58;
+      }
+      else unit->shields = 0;
     }
   }
 
@@ -129,7 +137,26 @@ void updateUnitStateHook(CUnit* unit) {
         && unit->hitPoints > 0
         && unit->hitPoints != units_dat::MaxHitPoints[unit->id])
     {
-      unit->setHp(unit->hitPoints + 4);
+      //KYSXD zerg regen. Exact value = 4.6 (+0.27 hp per second)
+      //for burrowed Hydra & H.killer (future roach) = 85 (+5 hp per second)
+      if((unit->id == UnitId::ZergHydralisk || unit->id == UnitId::Hero_HunterKiller)
+        && (unit->status & UnitStatus::Burrowed)) {
+        if(scbw::getUpgradeLevel(unit->playerId, UpgradeId::MuscularAugments)) {
+          unit->setHp(unit->hitPoints + 170);
+        }
+        else unit->setHp(unit->hitPoints + 85);
+      }
+      else unit->setHp(unit->hitPoints + 4);
+    
+    }
+    //KYSXD - Reduce hp for buildings out of creep (-3 hp per second) - WIP, Not working
+    ActiveTile actTile = scbw::getActiveTileAt(unit->getX(), unit->getY());
+    if(units_dat::BaseProperty[unit->id] & UnitProperty::CreepBuilding
+      && actTile.creepReceeding) {
+      if(unit->hitPoints >= 51) {
+        unit->setHp(unit->hitPoints - 51);
+      }
+      else unit->setHp(0);;
     }
 
     //Update unit energy (energy regen/drain)
