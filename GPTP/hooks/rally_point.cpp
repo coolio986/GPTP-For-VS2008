@@ -47,6 +47,12 @@ void orderNewUnitToRally(CUnit* unit, CUnit* factory) {
       return;
   }
 
+  //Enter to bunkers/transports
+  if (factory->rally.unit && scbw::canBeEnteredBy(factory->rally.unit, unit)) {
+    unit->orderTo(OrderId::EnterTransport, factory->rally.unit);
+    return;
+  }
+
   //Following should be allowed only on friendly units
   if (factory->rally.unit && factory->rally.unit->playerId == unit->playerId)
     unit->orderTo(OrderId::Follow, factory->rally.unit);
