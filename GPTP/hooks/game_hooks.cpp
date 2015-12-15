@@ -12,14 +12,20 @@
 
 static u32 warpOverlay(u32 thisUnitId){
   switch(thisUnitId) {
-    case UnitId::ProtossZealot:
+    case UnitId::ProtossZealot: //Zealot
       return ImageId::ZealotWarpFlash;
-    case UnitId::ProtossDragoon:
-      return ImageId::DragoonWarpFlash;
-    case UnitId::ProtossHighTemplar:
-      return ImageId::HighTemplarWarpFlash;
-    case UnitId::Hero_Raszagal:
+    case UnitId::Hero_Raszagal: //Adept
       return ImageId::DarkTemplar_Hero;
+    case UnitId::Hero_FenixZealot: //Sentry
+      return ImageId::DarkTemplar_Hero;
+    case UnitId::ProtossDragoon: //Dragoon
+      return ImageId::DragoonWarpFlash;
+    case UnitId::Hero_FenixDragoon: //Stalker ------------
+      return ImageId::DragoonRemnants;
+    case UnitId::ProtossHighTemplar: //High Templar
+      return ImageId::HighTemplarWarpFlash;
+    case UnitId::ProtossDarkTemplar: //Dark Templar
+      return ImageId::DarkTemplar_Unit;
     default: return ImageId::DarkTemplar_Hero;
   }
 }
@@ -39,8 +45,8 @@ static u16 warpCooldown(u32 thisUnitId){
       return 1; break;
     case UnitId::Hero_Raszagal: //Adept
       return 1; break;
-/*    case UnitId::_unit_sentry_:
-      return 2; break; */
+    case UnitId::Hero_FenixZealot: //Sentry
+      return 2; break;
     case UnitId::ProtossDragoon:
       return 2; break;
     case UnitId::Hero_FenixDragoon: //Stalker
