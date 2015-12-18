@@ -20,8 +20,8 @@ static u32 warpOverlay(u32 thisUnitId){
       return ImageId::DarkTemplar_Hero;
     case UnitId::ProtossDragoon: //Dragoon
       return ImageId::DragoonWarpFlash;
-    case UnitId::Hero_FenixDragoon: //Stalker ------------
-      return ImageId::DragoonRemnants;
+    case UnitId::Hero_FenixDragoon: //Stalker
+      return ImageId::ValkyrieEngines2_Unused;
     case UnitId::ProtossHighTemplar: //High Templar
       return ImageId::HighTemplarWarpFlash;
     case UnitId::ProtossDarkTemplar: //Dark Templar
