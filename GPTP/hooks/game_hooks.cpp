@@ -10,6 +10,21 @@
 
 #include <SCBW/UnitFinder.h>
 
+bool chargeTargetInRange_gameHooks(const CUnit *zealot) {
+  if (!zealot->orderTarget.unit)
+    return false;
+  CUnit *chargeTarget = zealot->orderTarget.unit;
+  int maxChargeRange = 32 * 3;
+  int minChargeRange = 16;
+  int chargeRange = zealot->getDistanceToTarget(zealot->orderTarget.unit);
+  if (zealot->mainOrderId != OrderId::AttackUnit)
+    return false;
+  if (minChargeRange > chargeRange
+    || chargeRange > maxChargeRange)
+    return false;
+  return true;
+}
+
 static u32 warpOverlay(u32 thisUnitId){
   switch(thisUnitId) {
     case UnitId::ProtossZealot: //Zealot
@@ -112,14 +127,14 @@ class ContainerTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
       if (!(units_dat::BaseProperty[unit->id] & UnitProperty::ResourceDepot))
         return false;
 
-      if(!(unit->status & UnitStatus::Completed))
+      if (!(unit->status & UnitStatus::Completed))
         return false;
 
-     if(scbw::getActiveTileAt(mineral->getX(), mineral->getY()).groundHeight
-       != scbw::getActiveTileAt(unit->getX(), unit->getY()).groundHeight)
-       return false;
+      if (scbw::getActiveTileAt(mineral->getX(), mineral->getY()).groundHeight
+        != scbw::getActiveTileAt(unit->getX(), unit->getY()).groundHeight)
+        return false;
 
-      if(!(unit->hasPathToUnit(mineral)))
+      if (!(unit->hasPathToUnit(mineral)))
         return false;
 
       return true;
@@ -141,7 +156,7 @@ bool nextFrame() {
     //KYSXD idle worker amount
     u32 idleWorkerCount = 0;
 
-    //Number of text:
+    //Number of displayed lines:
     u32 titleLayer = 1;
 
     //KYSXD for use with Warpgate
@@ -198,7 +213,8 @@ bool nextFrame() {
             }
           }
         }
-      } //For non-custom games - end
+      }
+      //For non-custom games - end
     }
 
     //Loop through all visible units in the game.
@@ -215,7 +231,37 @@ bool nextFrame() {
         }
       } //KYSXD worker no collision if harvesting - end
 
+      //KYSXD zealot's charge start
+      //Check max_energy.cpp and unit_speed.cpp for more info
+      if (unit->id == UnitId::ProtossZealot
+        && unit->status & UnitStatus::SpeedUpgrade) {
+        //Unit isn't in charge state
+        if (!unit->stimTimer) {
+          if (chargeTargetInRange_gameHooks(unit)) {
+            //Must be: orderTo(CastStimPack)
+            if (unit->energy == unit->getMaxEnergy()) {
+              unit->stimTimer = 5;
+              unit->energy = 0;
+            }
+          }
+        }
+      } //KYSXD zealot's charge end
+
+      //KYSXD stalker's blink start
+      if (unit->id == UnitId::Hero_FenixDragoon) {
+        char optionalChar[64];
+        sprintf_s(optionalChar, "mainOrderId: %d", unit->mainOrderId);
+        graphics::drawText(unit->getX(), unit->getY() - 10, optionalChar, graphics::FONT_MEDIUM, graphics::ON_MAP);
+        if (unit->mainOrderId == OrderId::CarrierIgnore1) {
+          u16 thisX = unit->orderTarget.pt.x;
+          u16 thisY = unit->orderTarget.pt.y;
+          scbw::moveUnit(unit, thisX, thisY);
+          unit->mainOrderId = OrderId::Nothing2;
+        } //KYSXD stalker's blink end
+      }
+
       //KYSXD Warpgate start
+      //Check max_energy.cpp
       if (unit->id == UnitId::ProtossGateway
         && unit->status & UnitStatus::Completed
         && unit->playerId == *LOCAL_HUMAN_ID
@@ -235,11 +281,10 @@ bool nextFrame() {
         }
         else {
           u32 val = unit->getMaxEnergy() - unit->energy;
-          if (warpgateTime == 0) {
+          if (warpgateTime == 0
+            || val < warpgateTime) {
             warpgateTime = val;
           }
-          else
-            warpgateTime = (val < warpgateTime ? val : warpgateTime);
         }
         if (unit->buildQueue[unit->buildQueueSlot] != UnitId::None) {
           u32 thisUnitId = unit->buildQueue[unit->buildQueueSlot];
@@ -247,7 +292,7 @@ bool nextFrame() {
           u32 yPos = unit->orderTarget.pt.y;
           u32 xPos = unit->orderTarget.pt.x;
           CUnit *warpUnit = scbw::createUnitAtPos(thisUnitId, unit->playerId, xPos, yPos);
-          if(warpUnit){
+          if (warpUnit){
             warpUnit->sprite->createOverlay(warpOverlay(thisUnitId));
           }
           unit->mainOrderId = OrderId::Nothing2;
@@ -260,38 +305,35 @@ bool nextFrame() {
         }
       } //KYSXD Warpgate end
 
-
       //KYSXD Idle worker count
       if ((unit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())
           && units_dat::BaseProperty[unit->id] & UnitProperty::Worker
           && unit->mainOrderId == OrderId::PlayerGuard) {
         ++idleWorkerCount;
       }
-
     }
 
     //KYSXD update last warpgate
     for (int i = 0; i < 8; i++) {
-      if(!scbw::isCheatEnabled(CheatFlags::OperationCwal)
+      if (!scbw::isCheatEnabled(CheatFlags::OperationCwal)
         && warpgateUpdate[i] == true
         && lastWG[i] != NULL) {
         lastWG[i]->previousUnitType = warpCooldown(warpgateCall[i]);
       }      
     }
 
-    //KYSXD - For selected units - From SC Transition - start
     for (int i = 0; i < *clientSelectionCount; ++i) {
       CUnit *selUnit = clientSelectionGroup->unit[i];
 
       //KYSXD update ButtonSet for WG
-      if(selUnit->id == UnitId::ProtossGateway
+      if (selUnit->id == UnitId::ProtossGateway
         && selUnit->status & UnitStatus::Completed) {
         selUnit->currentButtonSet =
           (warpgateAvailable != 0 || scbw::isCheatEnabled(CheatFlags::OperationCwal) ? UnitId::ProtossGateway : UnitId::None);
       }
 
       /*/KYSXD unit worker count start  
-      if(selUnit->playerId == *LOCAL_NATION_ID
+      if (selUnit->playerId == *LOCAL_NATION_ID
         && selUnit->status & UnitStatus::Completed
         && units_dat::BaseProperty[selUnit->id] & UnitProperty::ResourceDepot) {
         int nearmineral = 0;
@@ -315,7 +357,7 @@ bool nextFrame() {
             }
           }
           for(CUnit *thisunit = *firstVisibleUnit; thisunit; thisunit = thisunit->link.next){
-            if(thisunit->playerId == *LOCAL_NATION_ID
+            if (thisunit->playerId == *LOCAL_NATION_ID
               && (units_dat::BaseProperty[thisunit->id] & UnitProperty::Worker)
               && isInHarvestState(thisunit)
               && thisunit->worker.targetResource.unit != NULL
@@ -334,11 +376,11 @@ bool nextFrame() {
       //KYSXD unit worker count end
 
       //KYSXD Twilight Archon
-      if(selUnit->id == UnitId::ProtossDarkTemplar || selUnit->id == UnitId::ProtossHighTemplar) {
-        if(selUnit->mainOrderId == OrderId::ReaverStop) {
+      if (selUnit->id == UnitId::ProtossDarkTemplar || selUnit->id == UnitId::ProtossHighTemplar) {
+        if (selUnit->mainOrderId == OrderId::ReaverStop) {
           for (int j = i+1; j < *clientSelectionCount && selUnit->mainOrderId == OrderId::ReaverStop; ++j) {
             CUnit *nextUnit = clientSelectionGroup->unit[j];
-            if(nextUnit->id == (UnitId::ProtossDarkTemplar + UnitId::ProtossHighTemplar) - selUnit->id
+            if (nextUnit->id == (UnitId::ProtossDarkTemplar + UnitId::ProtossHighTemplar) - selUnit->id
               && nextUnit->mainOrderId == OrderId::ReaverStop) {
               selUnit->orderTo(OrderId::WarpingDarkArchon, nextUnit);
               nextUnit->orderTo(OrderId::WarpingDarkArchon, selUnit);
@@ -347,8 +389,9 @@ bool nextFrame() {
         }
       }
 
+    //KYSXD - For selected units - From SC Transition - start
       //Draw attack radius circles for Siege Mode Tanks in current selection
-      if (selUnit->id == UnitId::siege_tank_s) {
+      if (selUnit->id == UnitId::TerranSiegeTankSiegeMode) {
         graphics::drawCircle(selUnit->getX(), selUnit->getY(),
         selUnit->getMaxWeaponRange(units_dat::GroundWeapon[selUnit->subunit->id]) + 30,
         graphics::TEAL, graphics::ON_MAP);

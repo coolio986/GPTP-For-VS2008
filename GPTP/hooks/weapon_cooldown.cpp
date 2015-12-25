@@ -4,27 +4,75 @@
 
 //V241 for VS2008
 
+//KYSXD helpers
+const u32 terranStimModifier_cooldown = 5;
+//acidSpore, ensnare, stim, upgrade modifiers.
+const u32 acidSporeModifier_weapon(const CUnit *unit, u8 weaponId) {
+	u32 acidSporeIncreaseModifier = 0;
+	if (unit->acidSporeCount) {
+		u32 cooldown = weapons_dat::Cooldown[weaponId];
+		acidSporeIncreaseModifier = (cooldown >> 3) * unit->acidSporeCount;
+	}
+	return acidSporeIncreaseModifier;
+}
+
+const u32 stimModifier_weapon(const CUnit *unit) {
+	u32 finalStimModifier = 10;
+	if(unit->stimTimer) {
+		switch(unit->id) {
+			//Normal stim for regular units (terran units):
+			//decrease cd by 50 per cent
+			case UnitId::TerranMarine:
+				finalStimModifier = terranStimModifier_cooldown;
+				break;
+			case UnitId::TerranFirebat:
+				finalStimModifier = terranStimModifier_cooldown;
+				break;
+			case UnitId::Hero_JimRaynorMarine:
+				finalStimModifier = terranStimModifier_cooldown;
+				break;
+			case UnitId::Hero_GuiMontag:
+				finalStimModifier = terranStimModifier_cooldown;
+				break;
+			default:
+				break;
+		}
+	}
+	return finalStimModifier;
+}
+
+const u32 upgradeModifier_weapon(const CUnit *unit) {
+	u32 finalUpgradeModifier = 10;
+	if(unit->status & UnitStatus::CooldownUpgrade) {
+		finalUpgradeModifier = 5; //by now, no units need special behavior
+	}
+	return finalUpgradeModifier;
+}
+
+const u32 ensnareModifier_weapon(const CUnit *unit){
+	u32 finalEnsnareModifier = 10;
+	if(unit->ensnareTimer) {
+		finalEnsnareModifier = 15;
+	}
+	return finalEnsnareModifier;
+}
+
 namespace hooks {
 
 /// Calculates the unit's weapon cooldown, factoring in upgrades and status effects.
 ///
 /// @return		The modified cooldown value.
 u32 getModifiedWeaponCooldownHook(const CUnit* unit, u8 weaponId) {
-	//Default StarCraft behavior
+	//KYSXD new behavior
 	u32 cooldown = weapons_dat::Cooldown[weaponId];
 
-	if (unit->acidSporeCount) {
-		u32 increaseAmt = cooldown >> 3;
-		if (increaseAmt < 3) increaseAmt = 3;
-		cooldown += increaseAmt * unit->acidSporeCount;
-	}
+	cooldown += acidSporeModifier_weapon(unit, weaponId);
 
-	int cooldownModifier = (unit->stimTimer ? 1 : 0) - (unit->ensnareTimer ? 1 : 0)
-		+ (unit->status & UnitStatus::CooldownUpgrade ? 1 : 0);
-	if (cooldownModifier > 0)
-		cooldown >>= 1;
-	else if (cooldownModifier < 0)
-		cooldown += cooldown >> 2;
+	cooldown *= upgradeModifier_weapon(unit);
+	cooldown *= stimModifier_weapon(unit);
+	cooldown *= ensnareModifier_weapon(unit);
+
+	cooldown = cooldown/1000;
 
 	if (cooldown > 250) cooldown = 250;
 	else if (cooldown < 5) cooldown = 5;

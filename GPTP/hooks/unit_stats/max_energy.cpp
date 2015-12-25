@@ -68,11 +68,17 @@ u16 getUnitMaxEnergyHook(const CUnit* const unit) {
     case UnitId::gateway:
       switch(unit->previousUnitType) {
         case 0: return 0; break;
-        case 1: return 128*28; break;
-        case 2: return 128*32; break;
-        case 3: return 128*45; break;
-        default: return 128*60; break;
+        case 1: return 28 << 7; break;
+        case 2: return 32 << 7; break;
+        case 3: return 45 << 7; break;
+        default: return 1 << 8; break;
       }
+      break;
+    //KYSXD for use with the zealot's charge plugin
+    case UnitId::zealot:
+      if (scbw::getUpgradeLevel(unit->playerId, UpgradeId::LegEnhancements))
+        return 10 << 7; //10
+      else return 0;
       break;
   }
 

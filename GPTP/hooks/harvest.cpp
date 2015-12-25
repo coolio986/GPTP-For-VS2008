@@ -5,10 +5,24 @@
 //Helper functions
 void updateMineralPatchImage(CUnit *mineralPatch);
 void setResourceAmountCarried(CUnit *worker, u8 amountCarried, u32 chunkImageId, bool isMineral);
-int min_amount = 5;
+
+//KYSXD helpers:
+int mineralAmount(CUnit *mineral) {
+  switch(mineral->id) {
+    case UnitId::ResourceMineralField:
+      return 5;
+      break;
+    case UnitId::ResourceMineralFieldType2:
+      return 2;
+      break;
+    case UnitId::ResourceMineralFieldType3:
+      return 7;
+      break;
+  }
+  return 1;
+}
+
 int gas_amount = 4;
-int rmin_amount = 7;
-int rgas_amount = 6;
 int dep_amount = 0;
 
 //-------- Actual hooks --------//
@@ -21,7 +35,7 @@ u8 harvestResourceFrom(CUnit *resource, bool isMineral) {
   int harvest_amount = 0;
   //Default StarCraft behavior
   if (isMineral) {
-    harvest_amount = min_amount;
+    harvest_amount = mineralAmount(resource);
   }
   else {harvest_amount = gas_amount;
   }
@@ -80,7 +94,7 @@ void transferResourceToWorkerHook(CUnit *worker, CUnit *resource) {
   }
 
   u8 resourceAmount = harvestResourceFrom(resource, isMineral);
-  if (resourceAmount < min_amount)
+  if (resourceAmount < mineralAmount(resource))
     chunkImageId += 1;  //Use depleted (smaller) chunk image
 
   if (resourceAmount > 0) {
