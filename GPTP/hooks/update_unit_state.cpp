@@ -88,8 +88,11 @@ void updateUnitStateHook(CUnit* unit) {
   //Shield regeneration
   if (units_dat::ShieldsEnabled[unit->id]) {
     s32 maxShields = (s32)(units_dat::MaxShieldPoints[unit->id]) << 8;
-    if (unit->shields != maxShields) {
-      unit->shields += 36; //KYSXD - shield regen
+    if (unit->shields != maxShields
+      //KYSXD - shield regen start
+      && !unit->unusedTimer) {
+      unit->shields += 36;
+      //KYSXD - shield regen end (check weapon_damage)
       if (unit->shields > maxShields)
         unit->shields = maxShields;
       if (unit->sprite->flags & CSprite_Flags::Selected) {  //If the unit is currently selected, redraw its graphics

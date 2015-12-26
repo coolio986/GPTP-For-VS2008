@@ -193,7 +193,7 @@ bool nextFrame() {
                 workerUnitId = UnitId::probe; break;
               default: break;
             }
-            for (int i=0; i<(initialworkeramount-4); i++) {
+            for (int i = 0; i < (initialworkeramount-4); i++) {
               scbw::createUnitAtPos(workerUnitId, base->playerId, base->getX(), base->getY());
             }
           }
@@ -250,15 +250,15 @@ bool nextFrame() {
       //KYSXD stalker's blink start
       if (unit->id == UnitId::Hero_FenixDragoon) {
         char optionalChar[64];
-        sprintf_s(optionalChar, "mainOrderId: %d", unit->mainOrderId);
+        sprintf_s(optionalChar, "timer: %d", unit->attackNotifyTimer);
         graphics::drawText(unit->getX(), unit->getY() - 10, optionalChar, graphics::FONT_MEDIUM, graphics::ON_MAP);
         if (unit->mainOrderId == OrderId::CarrierIgnore1) {
           u16 thisX = unit->orderTarget.pt.x;
           u16 thisY = unit->orderTarget.pt.y;
           scbw::moveUnit(unit, thisX, thisY);
           unit->mainOrderId = OrderId::Nothing2;
-        } //KYSXD stalker's blink end
-      }
+        }
+      } //KYSXD stalker's blink end
 
       //KYSXD Warpgate start
       //Check max_energy.cpp
@@ -293,7 +293,7 @@ bool nextFrame() {
           u32 xPos = unit->orderTarget.pt.x;
           CUnit *warpUnit = scbw::createUnitAtPos(thisUnitId, unit->playerId, xPos, yPos);
           if (warpUnit){
-            warpUnit->sprite->createOverlay(warpOverlay(thisUnitId));
+//            warpUnit->sprite->createOverlay(warpOverlay(thisUnitId));
           }
           unit->mainOrderId = OrderId::Nothing2;
           unit->buildQueue[unit->buildQueueSlot] = UnitId::None;

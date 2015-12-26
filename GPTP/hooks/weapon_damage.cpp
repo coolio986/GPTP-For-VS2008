@@ -65,16 +65,20 @@ void weaponDamageHook(s32     damage,
 
   //Reduce Plasma Shields...but not just yet
   s32 shieldReduceAmount = 0;
-  if (units_dat::ShieldsEnabled[target->id] && target->shields >= 256) {
-    if (damageType != DamageType::IgnoreArmor) {
-      s32 plasmaShieldUpg = scbw::getUpgradeLevel(target->playerId, UpgradeId::ProtossPlasmaShields) << 8;
-      if (damage > plasmaShieldUpg) //Weird logic, Blizzard dev must have been sleepy
-        damage -= plasmaShieldUpg;
-      else
-        damage = 128;
+  if (units_dat::ShieldsEnabled[target->id]) {
+    //KYSXD for new shield regen
+    target->unusedTimer = 20;
+    if(target->shields >= 256) {
+      if (damageType != DamageType::IgnoreArmor) {
+        s32 plasmaShieldUpg = scbw::getUpgradeLevel(target->playerId, UpgradeId::ProtossPlasmaShields) << 8;
+        if (damage > plasmaShieldUpg) //Weird logic, Blizzard dev must have been sleepy
+          damage -= plasmaShieldUpg;
+        else
+          damage = 128;
+      }
+      shieldReduceAmount = std::min(damage, target->shields);
+      damage -= shieldReduceAmount;
     }
-    shieldReduceAmount = std::min(damage, target->shields);
-    damage -= shieldReduceAmount;
   }
 
   //Apply armor
