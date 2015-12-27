@@ -37,6 +37,10 @@ Other short-lived branches may pop-up from time to time as i stabilize new relea
 - WarpGate plugin (SCII inspired).
 - Increased regen to borrowed units (also, improved regen after upgrade).
 - Decrease shield for unpowered buildings.
+- Zealot's charge (SCII inspired).
+- Different harvest rates for minerals (reb, blue and yellow minerals).
+- Improved shield regen (SCII inspired).
+- Chrono boost (SCII inpired).
 
 **To do:**
 

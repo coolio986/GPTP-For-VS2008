@@ -75,10 +75,14 @@ u16 getUnitMaxEnergyHook(const CUnit* const unit) {
       }
       break;
     //KYSXD for use with the zealot's charge plugin
-    case UnitId::zealot:
+    case UnitId::ProtossZealot:
       if (scbw::getUpgradeLevel(unit->playerId, UpgradeId::LegEnhancements))
         return 10 << 7; //10
       else return 0;
+      break;
+    //KYSXD for use with the nexus chrono boost
+    case UnitId::ProtossNexus:
+      return 50 << 8;
       break;
   }
 

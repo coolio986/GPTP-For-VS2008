@@ -231,6 +231,22 @@ bool nextFrame() {
         }
       } //KYSXD worker no collision if harvesting - end
 
+  //KYSXD - Protoss plugins:
+
+/*          char optionalChar[64];
+          sprintf_s(optionalChar, "Ok");
+          graphics::drawText(unit->getX(), unit->getY() - 10, optionalChar, graphics::FONT_MEDIUM, graphics::ON_MAP);*/
+
+      //KYSXD stalker's blink start
+      if (unit->id == UnitId::Hero_FenixDragoon) {
+        if (unit->mainOrderId == OrderId::CarrierIgnore1) {
+          u16 thisX = unit->orderTarget.pt.x;
+          u16 thisY = unit->orderTarget.pt.y;
+          scbw::moveUnit(unit, thisX, thisY);
+          unit->mainOrderId = OrderId::Nothing2;
+        }
+      } //KYSXD stalker's blink end
+
       //KYSXD zealot's charge start
       //Check max_energy.cpp and unit_speed.cpp for more info
       if (unit->id == UnitId::ProtossZealot
@@ -247,24 +263,69 @@ bool nextFrame() {
         }
       } //KYSXD zealot's charge end
 
-      //KYSXD stalker's blink start
-      if (unit->id == UnitId::Hero_FenixDragoon) {
-        char optionalChar[64];
-        sprintf_s(optionalChar, "timer: %d", unit->attackNotifyTimer);
-        graphics::drawText(unit->getX(), unit->getY() - 10, optionalChar, graphics::FONT_MEDIUM, graphics::ON_MAP);
-        if (unit->mainOrderId == OrderId::CarrierIgnore1) {
-          u16 thisX = unit->orderTarget.pt.x;
-          u16 thisY = unit->orderTarget.pt.y;
-          scbw::moveUnit(unit, thisX, thisY);
-          unit->mainOrderId = OrderId::Nothing2;
+      //KYSXD Chrono boost cast start
+      if (unit->id == UnitId::ProtossNexus
+        && unit->status & UnitStatus::Completed) {
+        if (unit->mainOrderId == OrderId::PlaceScanner) {
+          if (unit->orderTarget.unit
+            && scbw::isAlliedTo(unit->playerId, unit->orderTarget.unit->playerId)) {
+            unit->orderTarget.unit->stimTimer = 60; //~30 seconds
+            unit->mainOrderId = OrderId::Nothing2;
+            if (!scbw::isCheatEnabled(CheatFlags::TheGathering)) {
+              unit->energy -= 50 << 8;
+            }
+          }
+          else unit->mainOrderId = OrderId::Nothing2;
         }
-      } //KYSXD stalker's blink end
+      } //KYSXD Chrono boost cast end
+
+      //KYSXD Chrono boost behavior start
+      //Should be moved to update_unit_state
+      if (unit->status & UnitStatus::GroundedBuilding
+        && unit->status & UnitStatus::Completed
+        && unit->stimTimer
+        && !(unit->isFrozen())) {
+        //If the building is working
+        switch (unit->mainOrderId) {
+          case OrderId::Upgrade:
+            if (unit->building.upgradeResearchTime >= 4)//Still need to set the right value
+              unit->building.upgradeResearchTime -= 4;
+            else unit->building.upgradeResearchTime = 0;
+            break;
+          case OrderId::ResearchTech:
+            if (unit->building.upgradeResearchTime >= 4)//Still need to set the right value
+              unit->building.upgradeResearchTime -= 4;
+            else unit->building.upgradeResearchTime = 0;
+            break;
+          case OrderId::Train:
+            if (unit->currentBuildUnit) {
+              if (unit->currentBuildUnit->remainingBuildTime >= 4)//Still need to set the right value
+                unit->currentBuildUnit->remainingBuildTime -= 4;
+              else unit->currentBuildUnit->remainingBuildTime = 0;
+              break;
+            }
+          default: break;
+        }
+        //Case: Warpgate
+        if (unit->id == UnitId::ProtossGateway
+          && unit->previousUnitType != 0) {
+          u32 energyHolder = unit->energy + 4; //Still need to set the right value
+          if (energyHolder >= unit->getMaxEnergy())
+            unit->energy = unit->getMaxEnergy();
+          else unit->energy = energyHolder;
+        }
+        //Case: Larva spawn
+        if (unit->building.larvaTimer
+          && !unit->orderQueueTimer) { //Larva spawn it's an order
+          unit->building.larvaTimer--; //NOTE: -=1 it's too fast
+        }
+      } //KYSXD Chrono boost behavior end
 
       //KYSXD Warpgate start
       //Check max_energy.cpp
       if (unit->id == UnitId::ProtossGateway
         && unit->status & UnitStatus::Completed
-        && unit->playerId == *LOCAL_HUMAN_ID
+        && unit->playerId == *LOCAL_NATION_ID
         && !(unit->isFrozen())) {
         if (unit->playerId == *LOCAL_NATION_ID) {
           ++warpgateAmount;
