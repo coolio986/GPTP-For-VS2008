@@ -1,14 +1,44 @@
-GPTP/Debug/BuildLog.htm
-GPTP/Debug/vc90.idb
-GPTP/Debug/patch/GPTP.exp
-GPTP/Debug/mt.dep
-GPTP/Debug/GPTP.qdp.intermediate.manifest
-GPTP/Debug/GPTP.qdp.embed.manifest.res
-GPTP/Debug/GPTP.qdp.embed.manifest
-GPTP/Debug/patch/GPTP.qdp
-GPTP/Release/BuildLog.htm
-GPTP/Release/GPTP.qdp.intermediate.manifest
-GPTP/Release/mt.dep
-GPTP/Release/patch/GPTP.exp
-GPTP/Release/patch/GPTP.qdp
-GPTP/Release/vc90.idb
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Old ignores
+# GPTP/Debug/BuildLog.htm
+# GPTP/Debug/vc90.idb
+# GPTP/Debug/patch/GPTP.exp
+# GPTP/Debug/mt.dep
+# GPTP/Debug/GPTP.qdp.intermediate.manifest
+# GPTP/Debug/GPTP.qdp.embed.manifest.res
+# GPTP/Debug/GPTP.qdp.embed.manifest
+# GPTP/Debug/patch/GPTP.qdp
+# GPTP/Release/BuildLog.htm
+# GPTP/Release/GPTP.qdp.intermediate.manifest
+# GPTP/Release/mt.dep
+# GPTP/Release/patch/GPTP.exp
+# GPTP/Release/patch/GPTP.qdp
+# GPTP/Release/vc90.idb

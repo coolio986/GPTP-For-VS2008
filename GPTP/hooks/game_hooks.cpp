@@ -14,7 +14,7 @@ bool chargeTargetInRange_gameHooks(const CUnit *zealot) {
   if (!zealot->orderTarget.unit)
     return false;
   CUnit *chargeTarget = zealot->orderTarget.unit;
-  int maxChargeRange = 32 * 3;
+  int maxChargeRange = 3 << 5;
   int minChargeRange = 16;
   int chargeRange = zealot->getDistanceToTarget(zealot->orderTarget.unit);
   if (zealot->mainOrderId != OrderId::AttackUnit)
@@ -105,7 +105,7 @@ class HarvestTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
       if (!unit)
         return false;
 
-      if (mainHarvester->getDistanceToTarget(unit) > 512) //Harvest distance
+      if (mainHarvester->getDistanceToTarget(unit) > (16 << 5)) //Harvest distance
         return false;
 
       if (!(thisIsMineral(unit)))
@@ -232,10 +232,6 @@ bool nextFrame() {
       } //KYSXD worker no collision if harvesting - end
 
   //KYSXD - Protoss plugins:
-
-/*          char optionalChar[64];
-          sprintf_s(optionalChar, "Ok");
-          graphics::drawText(unit->getX(), unit->getY() - 10, optionalChar, graphics::FONT_MEDIUM, graphics::ON_MAP);*/
 
       //KYSXD stalker's blink start
       if (unit->id == UnitId::Hero_FenixDragoon) {
@@ -517,6 +513,26 @@ bool nextFrame() {
         graphics::drawText(20, 10*titleLayer, nextWGTime, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleLayer;
       }
+    }
+
+//For research:
+    if (*clientSelectionCount == 1) {
+      CUnit *thisUnit = clientSelectionGroup->unit[0];
+
+      char mainOrderTimer[64];
+      sprintf_s(mainOrderTimer, "mainOrderTimer: %d", thisUnit->mainOrderTimer);
+      graphics::drawText(10, 10*titleLayer, mainOrderTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+      ++titleLayer;
+
+      char orderQueueTimer[64];
+      sprintf_s(orderQueueTimer, "orderQueueTimer: %d", thisUnit->orderQueueTimer);
+      graphics::drawText(10, 10*titleLayer, orderQueueTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+      ++titleLayer;
+
+      char lastEventTimer[64];
+      sprintf_s(lastEventTimer, "lastEventTimer: %d", thisUnit->lastEventTimer);
+      graphics::drawText(10, 10*titleLayer, lastEventTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+      ++titleLayer;
     }
 
     scbw::setInGameLoopState(false);
