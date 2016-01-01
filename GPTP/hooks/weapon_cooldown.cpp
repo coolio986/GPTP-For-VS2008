@@ -5,9 +5,9 @@
 //V241 for VS2008
 
 //KYSXD helpers
-const u32 terranStimModifier_cooldown = 5;
+static const u32 terranStimModifier_cooldown = 5;
 //acidSpore, ensnare, stim, upgrade modifiers.
-const u32 acidSporeModifier_weapon(const CUnit *unit, u8 weaponId) {
+static const u32 acidSporeModifier_weapon(const CUnit *unit, u8 weaponId) {
 	u32 acidSporeIncreaseModifier = 0;
 	if (unit->acidSporeCount) {
 		u32 cooldown = weapons_dat::Cooldown[weaponId];

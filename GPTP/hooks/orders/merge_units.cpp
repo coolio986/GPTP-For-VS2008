@@ -40,7 +40,8 @@ CUnit* templarMergePartner(CUnit* unit, CUnit** units_list, u32 units_list_lengt
 
 	for(u32 i = 0; i < units_list_length; i++) {
 
-		if(units_list[i] != NULL) {
+		if(units_list[i] != NULL
+			&& units_list[i]->id == unit->id) {
 
 			u32 x_distance, y_distance;
 

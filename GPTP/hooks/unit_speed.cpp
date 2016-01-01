@@ -8,8 +8,8 @@
 //V241 for VS2008
 
 //KYSXD helpers:
-const u32 hydraliskModifier_speed = 16;
-const u32 terranStimModifier_speed = 15;
+static const u32 hydraliskModifier_speed = 16;
+static const u32 terranStimModifier_speed = 15;
 
 bool chargeTargetInRange(const CUnit *zealot) {
   if (!zealot->orderTarget.unit)
@@ -27,7 +27,7 @@ bool chargeTargetInRange(const CUnit *zealot) {
 }
 
 //upgrade, stim, creep and ensnare modifiers.
-const u32 upgradeModifier_speed(const CUnit *unit) {
+u32 upgradeModifier_speed(const CUnit *unit) {
 	u32 finalUpgradeModifier = 10;
 	if(unit->status & UnitStatus::SpeedUpgrade) {
 		ActiveTile actTile;
@@ -63,8 +63,7 @@ const u32 upgradeModifier_speed(const CUnit *unit) {
 	}
 	return finalUpgradeModifier;
 }
-
-const u32 stimModifier_speed(const CUnit *unit) {
+u32 stimModifier_speed(const CUnit *unit) {
 	u32 finalStimModifier = 10;
 	if(unit->stimTimer) {
 		switch(unit->id) {
@@ -93,8 +92,7 @@ const u32 stimModifier_speed(const CUnit *unit) {
 	}
 	return finalStimModifier;
 }
-
-const u32 creepModifier_speed(const CUnit *zergUnit) {
+u32 creepModifier_speed(const CUnit *zergUnit) {
 	u32 finalCreepModifier = 10;
 	if (zergUnit->getRace() == RaceId::Zerg
 		&& !(zergUnit->status & UnitStatus::InAir)) {
@@ -115,8 +113,7 @@ const u32 creepModifier_speed(const CUnit *zergUnit) {
 	}
 	return finalCreepModifier;
 }
-
-const u32 ensnareModifier_speed(const CUnit *unit) {
+u32 ensnareModifier_speed(const CUnit *unit) {
 	u32 finalEnsnareModifier = 10;
 	if(unit->ensnareTimer) {
 		finalEnsnareModifier = 5;
@@ -125,7 +122,7 @@ const u32 ensnareModifier_speed(const CUnit *unit) {
 }
 
 //KYSXD speed/acceleration/turnspeed modifier, must divide by 10000 in the getModified-hooks
-const u32 unitModifier_speed(const CUnit *unit) {
+u32 unitModifier_speed(const CUnit *unit) {
 	u32 finalmodifier = 1;
 
 	finalmodifier *= upgradeModifier_speed(unit);

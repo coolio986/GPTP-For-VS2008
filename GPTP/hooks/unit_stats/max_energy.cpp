@@ -60,24 +60,19 @@ u16 getUnitMaxEnergyHook(const CUnit* const unit) {
         return 64000; //250
       break;
     //KYSXD for use with WarpGate
-      /* KYSXD Unit Cooldowns:
-        1 -> 28
-        2 -> 32
-        3 -> 45
-      */
+      // KYSXD Unit Cooldowns = TimeCost[] - 5 seconds
     case UnitId::gateway:
       switch(unit->previousUnitType) {
-        case 0: return 0; break;
-        case 1: return 28 << 7; break;
-        case 2: return 32 << 7; break;
-        case 3: return 45 << 7; break;
-        default: return 1 << 8; break;
+        case UnitId::None: return 0; break;
+        default:
+        u16 cooldownVal = units_dat::TimeCost[unit->previousUnitType]/15; //cause 15 frames per second
+        return (cooldownVal - 5) << 8; break; //Energy per second
       }
       break;
     //KYSXD for use with the zealot's charge plugin
     case UnitId::ProtossZealot:
       if (scbw::getUpgradeLevel(unit->playerId, UpgradeId::LegEnhancements))
-        return 10 << 7; //10
+        return 10 << 8; //10
       else return 0;
       break;
     //KYSXD for use with the nexus chrono boost

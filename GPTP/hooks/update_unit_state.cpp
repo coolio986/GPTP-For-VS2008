@@ -20,7 +20,7 @@ void updateUnitEnergy(CUnit *unit) {
   //If the unit is not a spellcaster, don't regenerate energy
   if (!unit->isValidCaster())
     return;
-  
+
   //If the unit is not fully constructed, don't regenerate energy
   if (!(unit->status & UnitStatus::Completed))
     return;
@@ -58,8 +58,19 @@ void updateUnitEnergy(CUnit *unit) {
     else
       maxEnergy = unit->getMaxEnergy();
 
-    if (unit->energy != maxEnergy)
-      unit->energy = std::min(unit->energy + 8, maxEnergy);
+    if (unit->energy != maxEnergy) {
+      switch (unit->id) {
+        //KYSXD If the unit is using energy for active skill cooldowns
+        case UnitId::ProtossGateway:
+        case UnitId::ProtossZealot:
+          unit->energy = std::min(unit->energy + 17, maxEnergy); //+255 per frame (must be 256 but... well, is close isn't?)
+          break;
+        //Normal behavior (energy for spells)
+        default:
+          unit->energy = std::min(unit->energy + 8, maxEnergy);
+          break;
+      }
+    }
   }
 
   //If the unit is currently selected, redraw its graphics

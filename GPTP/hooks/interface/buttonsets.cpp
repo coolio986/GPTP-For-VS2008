@@ -1,5 +1,34 @@
 #include "buttonsets.h"
 
+bool onlyTemplarsSelection() {
+	u32 selAmount = *clientSelectionCount;
+	if (selAmount >= 2) {
+		for (u32 i = 0; i < selAmount; i++) {
+	      CUnit *selUnit = clientSelectionGroup->unit[i];
+	      switch (selUnit->id) {
+	      	case UnitId::ProtossHighTemplar:
+	      	case UnitId::ProtossDarkTemplar:
+	      	case UnitId::ProtossArchon:
+	      	case UnitId::ProtossDarkArchon:
+	      	case UnitId::Hero_TassadarZeratulArchon:
+	      	break;
+	      	default:
+	      		return false;
+	      		break;
+	      }
+		}
+		return true;
+	}
+	return false;
+}
+
+int getUnitAmountInSelection(int index) {
+	int unitAmount = 0;
+	for (u32 i = 0; i < *clientSelectionCount; i++)
+      if (clientSelectionGroup->unit[i]->id == index) unitAmount++;
+	return unitAmount;
+}
+
 namespace {
 
 	//Helper function
@@ -171,8 +200,10 @@ BUTTON_SET* getCustomButtonSet() {
 	static BUTTON_SET customButtonSet;
 	static BUTTON customButtonsArray[50]; //
 
+	u32 idToCopy = UnitId::TerranMarine;
+
 	//since it's a copy of the marine set, it would have the same amount of buttons
-	customButtonSet.buttonsInSet = buttonSetTable[UnitId::TerranMarine].buttonsInSet;
+	customButtonSet.buttonsInSet = buttonSetTable[idToCopy].buttonsInSet;
 
 	//connectedUnit should usually be init at 0xFFFF.Almost unused (maybe not fully implemented).
 	customButtonSet.connectedUnit = 0xFFFF;
@@ -183,17 +214,75 @@ BUTTON_SET* getCustomButtonSet() {
 	//For each button in the array until reaching the amount of buttonsInSet, copy the data for
 	//each member of the button structure from the marine to the custom set.
 	for(u32 i = 0; i < customButtonSet.buttonsInSet; i++) {
-		customButtonsArray[i].actFunc = buttonSetTable[UnitId::TerranMarine].firstButton[i].actFunc;
-		customButtonsArray[i].actStringID = buttonSetTable[UnitId::TerranMarine].firstButton[i].actStringID;
-		customButtonsArray[i].actVar = buttonSetTable[UnitId::TerranMarine].firstButton[i].actVar;
-		customButtonsArray[i].iconID = buttonSetTable[UnitId::TerranMarine].firstButton[i].iconID;
-		customButtonsArray[i].position = buttonSetTable[UnitId::TerranMarine].firstButton[i].position;
-		customButtonsArray[i].reqFunc = buttonSetTable[UnitId::TerranMarine].firstButton[i].reqFunc;
-		customButtonsArray[i].reqStringID = buttonSetTable[UnitId::TerranMarine].firstButton[i].reqStringID;
-		customButtonsArray[i].reqVar = buttonSetTable[UnitId::TerranMarine].firstButton[i].reqVar;
+		customButtonsArray[i].actFunc = buttonSetTable[idToCopy].firstButton[i].actFunc;
+		customButtonsArray[i].actStringID = buttonSetTable[idToCopy].firstButton[i].actStringID;
+		customButtonsArray[i].actVar = buttonSetTable[idToCopy].firstButton[i].actVar;
+		customButtonsArray[i].iconID = buttonSetTable[idToCopy].firstButton[i].iconID;
+		customButtonsArray[i].position = buttonSetTable[idToCopy].firstButton[i].position;
+		customButtonsArray[i].reqFunc = buttonSetTable[idToCopy].firstButton[i].reqFunc;
+		customButtonsArray[i].reqStringID = buttonSetTable[idToCopy].firstButton[i].reqStringID;
+		customButtonsArray[i].reqVar = buttonSetTable[idToCopy].firstButton[i].reqVar;
 	}
 
 	return &customButtonSet;
+}
+
+//KYSXD only templars button set (for twilight archon)
+BUTTON_SET* getTemplarsButtonSet() {
+
+	//Use static variables to avoid memory allocation trouble
+	static BUTTON_SET templarsCustomButtonSet;
+	static BUTTON templarCustomButtonsArray[50]; //
+
+	u32 idToCopy = UnitId::ProtossPylon;
+
+	u32 nButtons = 5;
+
+	u32 darkTemplars = getUnitAmountInSelection(UnitId::ProtossHighTemplar);
+	u32 highTemplars = getUnitAmountInSelection(UnitId::ProtossDarkTemplar);
+
+	bool canCreateHArchon = (darkTemplars > 1);
+	bool canCreateDArchon = (highTemplars > 1);
+	bool canCreateTArchon = (darkTemplars + highTemplars > 1);
+
+	if (canCreateHArchon)
+		nButtons++;
+	if (canCreateDArchon)
+		nButtons++;
+	if (canCreateTArchon)
+		nButtons++;
+
+	templarsCustomButtonSet.buttonsInSet = nButtons;
+
+	//connectedUnit should usually be init at 0xFFFF.Almost unused (maybe not fully implemented).
+	templarsCustomButtonSet.connectedUnit = 0xFFFF;
+
+	//this should always be like this since the array is static
+	templarsCustomButtonSet.firstButton = &templarCustomButtonsArray[0];
+
+	//For each button in the array until reaching the amount of buttonsInSet, copy the data for
+	//each member of the button structure from the marine to the custom set.
+
+	u32 currentButton = 0;
+
+	for(u32 i = 0; currentButton < templarsCustomButtonSet.buttonsInSet; i++) {
+		if ( i == 5 && !(canCreateHArchon) ) continue; //Do not copy high archon merge
+		else if ( i == 6 && !(canCreateDArchon) ) continue; //Do not copy dark archon merge
+		else if ( i == 7 && !(canCreateTArchon) ) continue; //Well... i know is not needed but could be useful later
+
+		templarCustomButtonsArray[currentButton].actFunc = buttonSetTable[idToCopy].firstButton[i].actFunc;
+		templarCustomButtonsArray[currentButton].actStringID = buttonSetTable[idToCopy].firstButton[i].actStringID;
+		templarCustomButtonsArray[currentButton].actVar = buttonSetTable[idToCopy].firstButton[i].actVar;
+		templarCustomButtonsArray[currentButton].iconID = buttonSetTable[idToCopy].firstButton[i].iconID;
+		templarCustomButtonsArray[currentButton].position = buttonSetTable[idToCopy].firstButton[i].position;
+		templarCustomButtonsArray[currentButton].reqFunc = buttonSetTable[idToCopy].firstButton[i].reqFunc;
+		templarCustomButtonsArray[currentButton].reqStringID = buttonSetTable[idToCopy].firstButton[i].reqStringID;
+		templarCustomButtonsArray[currentButton].reqVar = buttonSetTable[idToCopy].firstButton[i].reqVar;
+
+		currentButton++;
+	}
+
+	return &templarsCustomButtonSet;
 
 }
 
@@ -449,6 +538,9 @@ namespace hooks {
 	//you can disable the injection of this
 	//function in the _inject.cpp file.
 	BUTTON_SET* getButtonSet(int index) {
+		if (index == UnitId::Buttons_GroupMixed
+			&& onlyTemplarsSelection())
+			return getTemplarsButtonSet();
 		return &(buttonSetTable[index]);
 	}
 

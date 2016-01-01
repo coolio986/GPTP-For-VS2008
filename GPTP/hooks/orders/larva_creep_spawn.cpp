@@ -130,7 +130,15 @@ void secondaryOrd_SpawningLarva(CUnit* unit) {
 		if(*LARVA_COUNTER < maxLarva(unit)) {
 
 			if(unit->building.larvaTimer != 0)
-				unit->building.larvaTimer--;
+				//KYSXD - For chrono boost
+				if (unit->status & UnitStatus::GroundedBuilding
+			        && unit->stimTimer) {
+			        if (unit->building.larvaTimer >= 2)
+			        	unit->building.larvaTimer -= 2;
+			        else unit->building.larvaTimer = 0;
+				}
+				else
+					unit->building.larvaTimer--;
 			else {
 
 				Point32 coords_2;

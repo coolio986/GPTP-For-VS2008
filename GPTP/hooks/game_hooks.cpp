@@ -10,6 +10,48 @@
 
 #include <SCBW/UnitFinder.h>
 
+//KYSXD helpers
+CUnit *nearestTemplarMergePartner(CUnit *unit) {
+
+  CUnit *nearest_unit = NULL; //was ebp-04
+  u32 best_distance = MAXINT32;
+
+  for (u32 i = 0; i < *clientSelectionCount; ++i) {
+    CUnit *nextUnit = clientSelectionGroup->unit[i];
+
+    if(nextUnit != NULL
+      && nextUnit != unit
+      && unit->id == (UnitId::ProtossDarkTemplar + UnitId::ProtossHighTemplar) - nextUnit->id
+      && nextUnit->mainOrderId == OrderId::ReaverStop) {
+
+      u32 x_distance, y_distance;
+      x_distance = 
+        unit->getX() -
+        nextUnit->getX();
+
+      x_distance *= x_distance;
+
+      y_distance = 
+        unit->getY() -
+        nextUnit->getY();
+
+      y_distance *= y_distance;
+
+      if( (x_distance + y_distance) < best_distance ) {
+
+        CUnit *new_nearest_unit = nextUnit;
+        nextUnit = nearest_unit;
+        nearest_unit = new_nearest_unit;
+        best_distance = x_distance + y_distance;
+
+      }
+    }
+  }
+
+  return nearest_unit;
+}
+
+//Same as chargeTarget_ in unit_speed.cpp
 bool chargeTargetInRange_gameHooks(const CUnit *zealot) {
   if (!zealot->orderTarget.unit)
     return false;
@@ -25,7 +67,8 @@ bool chargeTargetInRange_gameHooks(const CUnit *zealot) {
   return true;
 }
 
-static u32 warpOverlay(u32 thisUnitId){
+//Returns the warp effect from images_dat
+const u32 warpOverlay(u32 thisUnitId) {
   switch(thisUnitId) {
     case UnitId::ProtossZealot: //Zealot
       return ImageId::ZealotWarpFlash;
@@ -45,35 +88,6 @@ static u32 warpOverlay(u32 thisUnitId){
   }
 }
 
-/* KYSXD Unit Cooldowns:
-  Zealot    = 28
-  Adept     = 28
-  Sentry    = 32
-  Dragoon   = 32
-  Stalker   = 32
-  HTemplat  = 45
-  DTemplar  = 45
-*/
-static u16 warpCooldown(u32 thisUnitId){
-  switch(thisUnitId) {
-    case UnitId::ProtossZealot:
-      return 1; break;
-    case UnitId::Hero_Raszagal: //Adept
-      return 1; break;
-    case UnitId::Hero_FenixZealot: //Sentry
-      return 2; break;
-    case UnitId::ProtossDragoon:
-      return 2; break;
-    case UnitId::Hero_FenixDragoon: //Stalker
-      return 2; break;
-    case UnitId::ProtossHighTemplar:
-      return 3; break;
-    case UnitId::ProtossDarkTemplar:
-      return 3; break;
-    default: return 4; break;
-  }
-}
-
 bool isInHarvestState(const CUnit *worker) {
   if (worker->unusedTimer == 0) {
     return false;
@@ -90,7 +104,7 @@ bool thisIsMineral(const CUnit *resource) {
 
 bool hasHarvestOrders(const CUnit *worker) {
   if (OrderId::Harvest1 <= worker->mainOrderId &&
-      worker->mainOrderId <= OrderId::Harvest5){
+      worker->mainOrderId <= OrderId::Harvest5) {
     return true;
   }
   else return false;
@@ -144,6 +158,12 @@ ContainerTargetFinder containerTargetFinder;
 
 namespace hooks {
 
+//KYSXD - display info on screen - Credits to GagMania
+static const int viewingStatus = 4;
+static int viewingCheck[8];
+  //0 = Normal info. Eventually to be removed
+  //1 = Basic info
+
 /// This hook is called every frame; most of your plugin's logic goes here.
 bool nextFrame() {
 
@@ -165,37 +185,58 @@ bool nextFrame() {
     u32 warpgateTime = 0;
     CUnit *lastWG[8];
     bool warpgateUpdate[8];
-    u32 warpgateCall[8];
+    u16 warpgateCall[8];
     for (int i = 0; i < 8; i++) {
       lastWG[i] = NULL;
       warpgateUpdate[i] = false;
-      warpgateCall[i] = 0;
+      warpgateCall[i] = UnitId::None;
     }
     
+    bool isOperationCwalEnabled = scbw::isCheatEnabled(CheatFlags::OperationCwal);
+
     //This block is executed once every game.
     if (*elapsedTimeFrames == 0) {
       scbw::printText(PLUGIN_NAME ": Test");
 
-      //For non-custom games - start
+      //start viewingCheck
+      for (int i = 0; i < 8; i++) {
+        viewingCheck[i] = 0;
+      }
+
+      //All nexi in 50
+      for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
+        switch (unit->id) {
+          case UnitId::ProtossNexus:
+            unit->energy = 50 << 8;
+            break;
+          case UnitId::ProtossGateway:
+            unit->previousUnitType = UnitId::None;
+            break;
+          default: break;
+        }
+      }
+
+      //KYSXD - For non-custom games - start
       if (!(*GAME_TYPE == 10)) {
 
         //KYSXD - Increase initial amount of Workers - From GagMania
         u16 initialworkeramount = 12;
-        for (CUnit* base = *firstVisibleUnit; base; base = base->link.next) {
+        for (CUnit *base = *firstVisibleUnit; base; base = base->link.next) {
           if (base->mainOrderId != OrderId::Die) {
             u16 workerUnitId = UnitId::None;
-            switch (base->id){
-              case UnitId::command_center:
-                workerUnitId = UnitId::scv; break;
-              case UnitId::hatchery:
-                workerUnitId = UnitId::drone; break;
-              case UnitId::nexus:
-                workerUnitId = UnitId::probe; break;
+            switch (base->id) {
+              case UnitId::TerranCommandCenter:
+                workerUnitId = UnitId::TerranSCV; break;
+              case UnitId::ZergHatchery:
+                workerUnitId = UnitId::ZergDrone; break;
+              case UnitId::ProtossNexus:
+                workerUnitId = UnitId::ProtossProbe; break;
               default: break;
             }
             for (int i = 0; i < (initialworkeramount-4); i++) {
               scbw::createUnitAtPos(workerUnitId, base->playerId, base->getX(), base->getY());
             }
+
           }
         }
 
@@ -217,7 +258,7 @@ bool nextFrame() {
       //For non-custom games - end
     }
 
-    //Loop through all visible units in the game.
+    //Loop through all visible units in the game - start
     for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
 
       //KYSXD worker no collision if harvesting - start
@@ -230,6 +271,13 @@ bool nextFrame() {
           unit->status &= ~(UnitStatus::NoCollide);
         }
       } //KYSXD worker no collision if harvesting - end
+
+      //KYSXD Idle worker count
+      if ((unit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())
+          && units_dat::BaseProperty[unit->id] & UnitProperty::Worker
+          && unit->mainOrderId == OrderId::PlayerGuard) {
+        ++idleWorkerCount;
+      }
 
   //KYSXD - Protoss plugins:
 
@@ -281,7 +329,7 @@ bool nextFrame() {
         && unit->status & UnitStatus::Completed
         && unit->stimTimer
         && !(unit->isFrozen())) {
-        //If the building is working
+        //If the building is working - start
         switch (unit->mainOrderId) {
           case OrderId::Upgrade:
             if (unit->building.upgradeResearchTime >= 4)//Still need to set the right value
@@ -293,28 +341,29 @@ bool nextFrame() {
               unit->building.upgradeResearchTime -= 4;
             else unit->building.upgradeResearchTime = 0;
             break;
+          default: break;
+        }
+        switch (unit->secondaryOrderId) {
           case OrderId::Train:
             if (unit->currentBuildUnit) {
-              if (unit->currentBuildUnit->remainingBuildTime >= 4)//Still need to set the right value
-                unit->currentBuildUnit->remainingBuildTime -= 4;
-              else unit->currentBuildUnit->remainingBuildTime = 0;
-              break;
+              CUnit *unitInQueue = unit->currentBuildUnit;
+              if (isOperationCwalEnabled)
+                unitInQueue->remainingBuildTime -= std::min<u16>(unitInQueue->remainingBuildTime, 16);
+              else
+                unitInQueue->remainingBuildTime--;
             }
           default: break;
         }
         //Case: Warpgate
         if (unit->id == UnitId::ProtossGateway
-          && unit->previousUnitType != 0) {
-          u32 energyHolder = unit->energy + 4; //Still need to set the right value
+          && unit->previousUnitType != UnitId::None) {
+          u32 energyHolder = unit->energy + 17; //Should be on update_unit_state.cpp?
           if (energyHolder >= unit->getMaxEnergy())
             unit->energy = unit->getMaxEnergy();
           else unit->energy = energyHolder;
         }
         //Case: Larva spawn
-        if (unit->building.larvaTimer
-          && !unit->orderQueueTimer) { //Larva spawn it's an order
-          unit->building.larvaTimer--; //NOTE: -=1 it's too fast
-        }
+          //Check larva_creep_spawn.cpp
       } //KYSXD Chrono boost behavior end
 
       //KYSXD Warpgate start
@@ -328,7 +377,7 @@ bool nextFrame() {
         }
         unit->currentButtonSet = UnitId::None;
         if (unit->getMaxEnergy() == unit->energy) {
-          unit->previousUnitType = 0;
+          unit->previousUnitType = UnitId::None;
           if (unit->playerId == *LOCAL_NATION_ID) {
             ++warpgateAvailable;
           }
@@ -344,17 +393,17 @@ bool nextFrame() {
           }
         }
         if (unit->buildQueue[unit->buildQueueSlot] != UnitId::None) {
-          u32 thisUnitId = unit->buildQueue[unit->buildQueueSlot];
+          u16 thisUnitId = unit->buildQueue[unit->buildQueueSlot];
           warpgateCall[unit->playerId] = thisUnitId;
           u32 yPos = unit->orderTarget.pt.y;
           u32 xPos = unit->orderTarget.pt.x;
           CUnit *warpUnit = scbw::createUnitAtPos(thisUnitId, unit->playerId, xPos, yPos);
-          if (warpUnit){
+          if (warpUnit) {
 //            warpUnit->sprite->createOverlay(warpOverlay(thisUnitId));
           }
           unit->mainOrderId = OrderId::Nothing2;
           unit->buildQueue[unit->buildQueueSlot] = UnitId::None;
-          if (!scbw::isCheatEnabled(CheatFlags::OperationCwal)
+          if (!isOperationCwalEnabled
             && unit->playerId == *LOCAL_NATION_ID) {
             --warpgateAvailable;
           }
@@ -362,22 +411,80 @@ bool nextFrame() {
         }
       } //KYSXD Warpgate end
 
-      //KYSXD Idle worker count
-      if ((unit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())
-          && units_dat::BaseProperty[unit->id] & UnitProperty::Worker
-          && unit->mainOrderId == OrderId::PlayerGuard) {
-        ++idleWorkerCount;
-      }
-    }
+  //KYSXD - Terran plugins
+      //KYSXD - Reactor add-on plugin start
+
+      //Check unit state
+      if ((unit->id == UnitId::TerranFactory
+        || unit->id == UnitId::TerranStarport)
+        && unit->status & UnitStatus::Completed
+        && unit->mainOrderId != OrderId::Die) {
+        //Check add-on
+        if (unit->building.addon != NULL) {
+          CUnit *reactor = unit->building.addon;
+          reactor->rally = unit->rally; //Update rally
+
+          //If the unit is trainning, do reactor behavior
+          if (unit->secondaryOrderId == OrderId::Train) {
+            u16 changeQueue = (unit->buildQueueSlot + 1)%5;
+            u16 tempId = unit->buildQueue[changeQueue];
+            //If the addon isn't trainning
+            if (tempId != UnitId::None
+              && reactor->buildQueue[reactor->buildQueueSlot] == UnitId::None) {
+              reactor->buildQueue[reactor->buildQueueSlot] = tempId;
+              reactor->setSecondaryOrder(OrderId::Train);
+
+              //Update remaining queue
+              u16 queueId[5];
+              for (int i = 0; i < 5; i++) {
+                if (i != 4) {
+                  queueId[i] = unit->buildQueue[(unit->buildQueueSlot+i+1)%5];
+                }
+                else queueId[i] = UnitId::None;
+              }
+              for (int i = 1; i < 5; i++) {
+                unit->buildQueue[(unit->buildQueueSlot+i)%5] = queueId[i];
+              }
+            }
+          }
+          /*
+          //If isn't trainning, disable reactor
+          else if (reactor->secondaryOrderId == OrderId::Train) {
+            unit->buildQueue[unit->buildQueueSlot] = reactor->buildQueue[reactor->buildQueueSlot];
+            unit->setSecondaryOrder(OrderId::Train);
+            if(unit->currentBuildUnit) {
+              unit->currentBuildUnit->remainingBuildTime =
+                reactor->currentBuildUnit->remainingBuildTime;              
+            }
+            reactor->setSecondaryOrder(OrderId::Nothing2);
+            //Update remaining queue
+            u16 queueId[5];
+            for (int i = 0; i < 5; i++) {
+              if (i != 4) {
+                queueId[i] = reactor->buildQueue[(reactor->buildQueueSlot+i+1)%5];
+              }
+              else queueId[i] = UnitId::None;
+            }
+            for (int i = 0; i < 5; i++) {
+              reactor->buildQueue[(reactor->buildQueueSlot+i)%5] = queueId[i];
+            }
+          }
+          */
+        }
+      } //KYSXD - Reactor add-on plugin end
+
+    } //Loop through all visible units in the game - end
 
     //KYSXD update last warpgate
     for (int i = 0; i < 8; i++) {
-      if (!scbw::isCheatEnabled(CheatFlags::OperationCwal)
+      if (!isOperationCwalEnabled
         && warpgateUpdate[i] == true
         && lastWG[i] != NULL) {
-        lastWG[i]->previousUnitType = warpCooldown(warpgateCall[i]);
-      }      
+        lastWG[i]->previousUnitType = warpgateCall[i];
+      }
     }
+
+  //KYSXD - Selection plugins
 
     for (int i = 0; i < *clientSelectionCount; ++i) {
       CUnit *selUnit = clientSelectionGroup->unit[i];
@@ -386,7 +493,7 @@ bool nextFrame() {
       if (selUnit->id == UnitId::ProtossGateway
         && selUnit->status & UnitStatus::Completed) {
         selUnit->currentButtonSet =
-          (warpgateAvailable != 0 || scbw::isCheatEnabled(CheatFlags::OperationCwal) ? UnitId::ProtossGateway : UnitId::None);
+          (warpgateAvailable != 0 || isOperationCwalEnabled ? UnitId::ProtossGateway : UnitId::None);
       }
 
       /*/KYSXD unit worker count start  
@@ -413,7 +520,7 @@ bool nextFrame() {
               nearmineral++;
             }
           }
-          for(CUnit *thisunit = *firstVisibleUnit; thisunit; thisunit = thisunit->link.next){
+          for(CUnit *thisunit = *firstVisibleUnit; thisunit; thisunit = thisunit->link.next) {
             if (thisunit->playerId == *LOCAL_NATION_ID
               && (units_dat::BaseProperty[thisunit->id] & UnitProperty::Worker)
               && isInHarvestState(thisunit)
@@ -435,14 +542,12 @@ bool nextFrame() {
       //KYSXD Twilight Archon
       if (selUnit->id == UnitId::ProtossDarkTemplar || selUnit->id == UnitId::ProtossHighTemplar) {
         if (selUnit->mainOrderId == OrderId::ReaverStop) {
-          for (int j = i+1; j < *clientSelectionCount && selUnit->mainOrderId == OrderId::ReaverStop; ++j) {
-            CUnit *nextUnit = clientSelectionGroup->unit[j];
-            if (nextUnit->id == (UnitId::ProtossDarkTemplar + UnitId::ProtossHighTemplar) - selUnit->id
-              && nextUnit->mainOrderId == OrderId::ReaverStop) {
-              selUnit->orderTo(OrderId::WarpingDarkArchon, nextUnit);
-              nextUnit->orderTo(OrderId::WarpingDarkArchon, selUnit);
-            }
+          CUnit *templarPartner = nearestTemplarMergePartner(selUnit);
+          if (templarPartner != NULL) {
+              selUnit->orderTo(OrderId::WarpingDarkArchon, templarPartner);
+              templarPartner->orderTo(OrderId::WarpingDarkArchon, selUnit);
           }
+          else selUnit->mainOrderId = OrderId::Stop;
         }
       }
 
@@ -494,45 +599,322 @@ bool nextFrame() {
       //KYSXD - For selected units - From SC Transition - end
     }
 
-    //KYSXD Print info on screen
-    if (idleWorkerCount != 0) {
-      char idleworkers[64];
-      sprintf_s(idleworkers, "Idle Workers: %d", idleWorkerCount);
-      graphics::drawText(10, 10*titleLayer, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
-      ++titleLayer;
-    }
-
-    if (warpgateAmount != 0) {
-      char WGates[64];
-      sprintf_s(WGates, "Online Warpgates: %d", warpgateAvailable);
-      graphics::drawText(10, 10*titleLayer, WGates, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
-      ++titleLayer;
-      if (warpgateAvailable < warpgateAmount) {
-        char nextWGTime[64];
-        sprintf_s(nextWGTime, "(Next in: %d sec)", (warpgateTime+127)/128);
-        graphics::drawText(20, 10*titleLayer, nextWGTime, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+  //KYSXD Print info on screen
+    if (viewingCheck[*LOCAL_HUMAN_ID] == 0) {
+      if (idleWorkerCount != 0) {
+        char idleworkers[64];
+        sprintf_s(idleworkers, "Idle Workers: %d", idleWorkerCount);
+        graphics::drawText(10, 10*titleLayer, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleLayer;
+      }
+
+      if (warpgateAmount != 0) {
+        char WGates[64];
+        if (isOperationCwalEnabled) {
+          warpgateAvailable = warpgateAmount;
+        }
+        sprintf_s(WGates, "Online Warpgates: %d", warpgateAvailable);
+        graphics::drawText(10, 10*titleLayer, WGates, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+        if (warpgateAvailable < warpgateAmount) {
+          char nextWGTime[64];
+          sprintf_s(nextWGTime, "(Next in: %d sec)", warpgateTime >> 8);
+          graphics::drawText(20, 10*titleLayer, nextWGTime, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+          ++titleLayer;
+        }
       }
     }
 
-//For research:
-    if (*clientSelectionCount == 1) {
-      CUnit *thisUnit = clientSelectionGroup->unit[0];
+  //For research:
+    if (viewingCheck[*LOCAL_HUMAN_ID] == 1) {
+      if (*clientSelectionCount == 1) {
+        CUnit *thisUnit = clientSelectionGroup->unit[0];
 
-      char mainOrderTimer[64];
-      sprintf_s(mainOrderTimer, "mainOrderTimer: %d", thisUnit->mainOrderTimer);
-      graphics::drawText(10, 10*titleLayer, mainOrderTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
-      ++titleLayer;
+        char hitPoints[64];
+        sprintf_s(hitPoints, "hitPoints: %d", thisUnit->hitPoints);
+        graphics::drawText(10, 10*titleLayer, hitPoints, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
 
-      char orderQueueTimer[64];
-      sprintf_s(orderQueueTimer, "orderQueueTimer: %d", thisUnit->orderQueueTimer);
-      graphics::drawText(10, 10*titleLayer, orderQueueTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
-      ++titleLayer;
+        char getCurrentHpInGame[64];
+        sprintf_s(getCurrentHpInGame, "getCurrentHpInGame(): %d", thisUnit->getCurrentHpInGame());
+        graphics::drawText(10, 10*titleLayer, getCurrentHpInGame, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
 
-      char lastEventTimer[64];
-      sprintf_s(lastEventTimer, "lastEventTimer: %d", thisUnit->lastEventTimer);
-      graphics::drawText(10, 10*titleLayer, lastEventTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
-      ++titleLayer;
+        char shields[64];
+        sprintf_s(shields, "shields: %d", thisUnit->shields);
+        graphics::drawText(10, 10*titleLayer, shields, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char getCurrentShieldsInGame[64];
+        sprintf_s(getCurrentShieldsInGame, "getCurrentShieldsInGame(): %d", thisUnit->getCurrentShieldsInGame());
+        graphics::drawText(10, 10*titleLayer, getCurrentShieldsInGame, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char getCurrentLifeInGame[64];
+        sprintf_s(getCurrentLifeInGame, "getCurrentLifeInGame(): %d", thisUnit->getCurrentLifeInGame());
+        graphics::drawText(10, 10*titleLayer, getCurrentLifeInGame, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char energy[64];
+        sprintf_s(energy, "energy: %d", thisUnit->energy);
+        graphics::drawText(10, 10*titleLayer, energy, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char getMaxEnergy[64];
+        sprintf_s(getMaxEnergy, "getMaxEnergy: %d", thisUnit->getMaxEnergy());
+        graphics::drawText(10, 10*titleLayer, getMaxEnergy, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char getArmor[64];
+        sprintf_s(getArmor, "getArmor: %d", thisUnit->getArmor());
+        graphics::drawText(10, 10*titleLayer, getArmor, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char getArmorBonus[64];
+        sprintf_s(getArmorBonus, "getArmorBonus: %d", thisUnit->getArmorBonus());
+        graphics::drawText(10, 10*titleLayer, getArmorBonus, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char MineralCost[64];
+        sprintf_s(MineralCost, "MineralCost: %d", units_dat::MineralCost[thisUnit->id]);
+        graphics::drawText(10, 10*titleLayer, MineralCost, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char GasCost[64];
+        sprintf_s(GasCost, "GasCost: %d", units_dat::GasCost[thisUnit->id]);
+        graphics::drawText(10, 10*titleLayer, GasCost, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char TimeCost[64];
+        sprintf_s(TimeCost, "TimeCost: %d", units_dat::TimeCost[thisUnit->id]);
+        graphics::drawText(10, 10*titleLayer, TimeCost, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char DisplayedTimeCost[64];
+        sprintf_s(DisplayedTimeCost, "DisplayedTimeCost: %d", units_dat::TimeCost[thisUnit->id]/15);
+        graphics::drawText(10, 10*titleLayer, DisplayedTimeCost, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char SupplyRequired[64];
+        sprintf_s(SupplyRequired, "SupplyRequired: %d", units_dat::SupplyRequired[thisUnit->id]);
+        graphics::drawText(10, 10*titleLayer, SupplyRequired, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char SupplyProvided[64];
+        sprintf_s(SupplyProvided, "SupplyProvided: %d", units_dat::SupplyProvided[thisUnit->id]);
+        graphics::drawText(10, 10*titleLayer, SupplyProvided, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char SpaceRequired[64];
+        sprintf_s(SpaceRequired, "SpaceRequired: %d", units_dat::SpaceRequired[thisUnit->id]);
+        graphics::drawText(10, 10*titleLayer, SpaceRequired, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char SpaceProvided[64];
+        sprintf_s(SpaceProvided, "SpaceProvided: %d", units_dat::SpaceProvided[thisUnit->id]);
+        graphics::drawText(10, 10*titleLayer, SpaceProvided, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char SizeType[64];
+        sprintf_s(SizeType, "SizeType: %d", units_dat::SizeType[thisUnit->id]);
+        graphics::drawText(10, 10*titleLayer, SizeType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char SeekRange[64];
+        sprintf_s(SeekRange, "SeekRange: %d", units_dat::SeekRange[thisUnit->id]);
+        graphics::drawText(10, 10*titleLayer, SeekRange, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char SightRange[64];
+        sprintf_s(SightRange, "SightRange: %d", units_dat::SightRange[thisUnit->id]);
+        graphics::drawText(10, 10*titleLayer, SightRange, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+      }
+    }
+
+  //For research:
+    if (viewingCheck[*LOCAL_HUMAN_ID] == 2) {
+      if (*clientSelectionCount == 1) {
+        CUnit *thisUnit = clientSelectionGroup->unit[0];
+
+        char _unknown_0x066[64];
+        sprintf_s(_unknown_0x066, "_unknown_0x066: %i", thisUnit->_unknown_0x066);
+        graphics::drawText(10, 10*titleLayer, _unknown_0x066, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char previousUnitType[64];
+        sprintf_s(previousUnitType, "previousUnitType: %i", thisUnit->previousUnitType);
+        graphics::drawText(10, 10*titleLayer, previousUnitType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char status[64];
+        sprintf_s(status, "status: %i", thisUnit->status);
+        graphics::drawText(10, 10*titleLayer, status, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char orderSignal[64];
+        sprintf_s(orderSignal, "orderSignal: %i", thisUnit->orderSignal);
+        graphics::drawText(10, 10*titleLayer, orderSignal, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char orderUnitType[64];
+        sprintf_s(orderUnitType, "orderUnitType: %i", thisUnit->orderUnitType);
+        graphics::drawText(10, 10*titleLayer, orderUnitType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char wireframeRandomizer[64];
+        sprintf_s(wireframeRandomizer, "wireframeRandomizer: %i", thisUnit->wireframeRandomizer);
+        graphics::drawText(10, 10*titleLayer, wireframeRandomizer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char mainOrderId[64];
+        sprintf_s(mainOrderId, "mainOrderId: 0x%02x", thisUnit->mainOrderId);
+        graphics::drawText(10, 10*titleLayer, mainOrderId, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char mainOrderTimer[64];
+        sprintf_s(mainOrderTimer, "mainOrderTimer: %d", thisUnit->mainOrderTimer);
+        graphics::drawText(10, 10*titleLayer, mainOrderTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char mainOrderState[64];
+        sprintf_s(mainOrderState, "mainOrderState: %d", thisUnit->mainOrderState);
+        graphics::drawText(10, 10*titleLayer, mainOrderState, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char secondaryOrderId[64];
+        sprintf_s(secondaryOrderId, "secondaryOrderId: 0x%02x", thisUnit->secondaryOrderId);
+        graphics::drawText(10, 10*titleLayer, secondaryOrderId, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char secondaryOrderTimer[64];
+        sprintf_s(secondaryOrderTimer, "secondaryOrderTimer: %d", thisUnit->secondaryOrderTimer);
+        graphics::drawText(10, 10*titleLayer, secondaryOrderTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char secondaryOrderState[64];
+        sprintf_s(secondaryOrderState, "secondaryOrderState: %d", thisUnit->secondaryOrderState);
+        graphics::drawText(10, 10*titleLayer, secondaryOrderState, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char orderQueueTimer[64];
+        sprintf_s(orderQueueTimer, "orderQueueTimer: %d", thisUnit->orderQueueTimer);
+        graphics::drawText(10, 10*titleLayer, orderQueueTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char remainingBuildTime[64];
+        sprintf_s(remainingBuildTime, "remainingBuildTime: %d", thisUnit->remainingBuildTime);
+        graphics::drawText(10, 10*titleLayer, remainingBuildTime, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char lastEventTimer[64];
+        sprintf_s(lastEventTimer, "lastEventTimer: %d", thisUnit->lastEventTimer);
+        graphics::drawText(10, 10*titleLayer, lastEventTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char recentOrderTimer[64];
+        sprintf_s(recentOrderTimer, "recentOrderTimer: %d", thisUnit->recentOrderTimer);
+        graphics::drawText(10, 10*titleLayer, recentOrderTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char cycleCounter[64];
+        sprintf_s(cycleCounter, "cycleCounter: %d", thisUnit->cycleCounter);
+        graphics::drawText(10, 10*titleLayer, cycleCounter, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char airStrength[64];
+        sprintf_s(airStrength, "airStrength: %d", thisUnit->airStrength);
+        graphics::drawText(10, 10*titleLayer, airStrength, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char groundStrength[64];
+        sprintf_s(groundStrength, "groundStrength: %d", thisUnit->groundStrength);
+        graphics::drawText(10, 10*titleLayer, groundStrength, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char buildQueueSlot[64];
+        sprintf_s(buildQueueSlot, "buildQueueSlot: %d", thisUnit->buildQueueSlot);
+        graphics::drawText(10, 10*titleLayer, buildQueueSlot, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        for (int i = 0; i < 5; i++) {
+          char buildQueue[64];
+          sprintf_s(buildQueue, "buildQueue[%d]: %d",
+            i,
+            thisUnit->buildQueue[i]);
+          graphics::drawText(10, 10*titleLayer, buildQueue, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+          ++titleLayer;          
+        }
+
+      }
+    }
+
+    if (viewingCheck[*LOCAL_HUMAN_ID] == 3) {
+      if (*clientSelectionCount == 1) {
+        CUnit *thisUnit = clientSelectionGroup->unit[0];
+
+        u8 hasAddon = (thisUnit->building.addon != NULL ? 1 : 0);
+
+        char AddOn[64];
+        sprintf_s(AddOn, "AddOn: %d", hasAddon);
+        graphics::drawText(10, 10*titleLayer, AddOn, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char addonBuildType[64];
+        sprintf_s(addonBuildType, "addonBuildType: %d", thisUnit->building.addonBuildType);
+        graphics::drawText(10, 10*titleLayer, addonBuildType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char upgradeResearchTime[64];
+        sprintf_s(upgradeResearchTime, "upgradeResearchTime: %d", thisUnit->building.upgradeResearchTime);
+        graphics::drawText(10, 10*titleLayer, upgradeResearchTime, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char techType[64];
+        sprintf_s(techType, "techType: 0x%x", thisUnit->building.techType);
+        graphics::drawText(10, 10*titleLayer, techType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char upgradeType[64];
+        sprintf_s(upgradeType, "upgradeType: 0x%x", thisUnit->building.upgradeType);
+        graphics::drawText(10, 10*titleLayer, upgradeType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char larvaTimer[64];
+        sprintf_s(larvaTimer, "larvaTimer: %d", thisUnit->building.larvaTimer);
+        graphics::drawText(10, 10*titleLayer, larvaTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char landingTimer[64];
+        sprintf_s(landingTimer, "landingTimer: %d", thisUnit->building.landingTimer);
+        graphics::drawText(10, 10*titleLayer, landingTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char creepTimer[64];
+        sprintf_s(creepTimer, "creepTimer: %d", thisUnit->building.creepTimer);
+        graphics::drawText(10, 10*titleLayer, creepTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char upgradeLevel[64];
+        sprintf_s(upgradeLevel, "upgradeLevel: %d", thisUnit->building.upgradeLevel);
+        graphics::drawText(10, 10*titleLayer, upgradeLevel, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+        char _padding_0E[64];
+        sprintf_s(_padding_0E, "_padding_0E: %d", thisUnit->building._padding_0E);
+        graphics::drawText(10, 10*titleLayer, _padding_0E, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleLayer;
+
+/*
+CUnit*  addon;
+*/  
+      }
+    }
+
+    int localPlayer = *LOCAL_HUMAN_ID;
+    if (GetAsyncKeyState(VK_F5) & 0x0001) {
+      viewingCheck[localPlayer] = (viewingCheck[localPlayer]+1)%viewingStatus;
     }
 
     scbw::setInGameLoopState(false);
