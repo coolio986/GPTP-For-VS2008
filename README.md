@@ -5,15 +5,13 @@ The General Plugin Template Project of Starcraft adapted to Visual Studio 2008
 Branches
 --------
 
-I publish in three rolling branches:
+I publish in two rolling branches:
 
 The **[release branch](https://github.com/KYSXD/GPTP-For-VS2008/tree/release)** is extensively tested. I work hard to make releases stable and reliable, and aim to publish new releases every few months.
 This branch tracks all the changes i made for *Starcraft V*.
 
 The **[update branch](https://github.com/KYSXD/GPTP-For-VS2008/tree/update)** tracks live changes by [BoomerangAide](https://github.com/BoomerangAide/GPTP-For-VS2008). 
 This is the cutting edge and may be buggy.
-
-The **[stable branch](https://github.com/KYSXD/GPTP-For-VS2008/tree/stable)** is updated every time a new update is released without bugs.
 
 *Note from [BoomerangAide](https://github.com/BoomerangAide)*
 
@@ -25,22 +23,25 @@ Other short-lived branches may pop-up from time to time as i stabilize new relea
 
 - Starting workers set to 12.
 - Workers will harvest at first run.
-- Re-worked collision for workers while harvesting (like SCII).
+- Re-worked collision for workers while harvesting (SCII inspired).
 - Window-mode (requires WMODE.dll and WMODE_FIX.dll).
 - Changed harvest rates (and could be controlled separately).
 - Changed unit-speed behavior and added speed modifier on creep.
+- Changed cooldown behavior and added stim variants (this would allow other units to use stim for other purposes).
 - Auto harvest on rally point.
+- Auto enter-transport on rally point.
 - Target lines.
 - Idle worker count.
 - Different larva amount (3 - Hatchery, 4 - Lair, 5 - Hive).
 - Dark/High Templar merge (Twilight archon inspired).
 - WarpGate plugin (SCII inspired).
-- Increased regen to borrowed units (also, improved regen after upgrade).
+- Increased regen to burrowed units (also, improved regen after upgrade).
 - Decrease shield for unpowered buildings.
 - Zealot's charge (SCII inspired).
-- Different harvest rates for minerals (reb, blue and yellow minerals).
+- Different harvest rates for minerals (red, blue and yellow minerals).
 - Improved shield regen (SCII inspired).
 - Chrono boost (SCII inpired).
+- Terran Reactor behavior (SCII inspired).
 
 **To do:**
 

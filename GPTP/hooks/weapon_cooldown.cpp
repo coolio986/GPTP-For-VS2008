@@ -23,14 +23,8 @@ const u32 stimModifier_weapon(const CUnit *unit) {
 			//Normal stim for regular units (terran units):
 			//decrease cd by 50 per cent
 			case UnitId::TerranMarine:
-				finalStimModifier = terranStimModifier_cooldown;
-				break;
 			case UnitId::TerranFirebat:
-				finalStimModifier = terranStimModifier_cooldown;
-				break;
 			case UnitId::Hero_JimRaynorMarine:
-				finalStimModifier = terranStimModifier_cooldown;
-				break;
 			case UnitId::Hero_GuiMontag:
 				finalStimModifier = terranStimModifier_cooldown;
 				break;

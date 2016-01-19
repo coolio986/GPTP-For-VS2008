@@ -15,7 +15,7 @@ bool chargeTargetInRange(const CUnit *zealot) {
   if (!zealot->orderTarget.unit)
     return false;
   CUnit *chargeTarget = zealot->orderTarget.unit;
-  int maxChargeRange = 32 * 3;
+  int maxChargeRange = 3 << 5;
   int minChargeRange = 16;
   int chargeRange = zealot->getDistanceToTarget(zealot->orderTarget.unit);
   if (zealot->mainOrderId != OrderId::AttackUnit)
@@ -30,28 +30,26 @@ bool chargeTargetInRange(const CUnit *zealot) {
 u32 upgradeModifier_speed(const CUnit *unit) {
 	u32 finalUpgradeModifier = 10;
 	if(unit->status & UnitStatus::SpeedUpgrade) {
-		ActiveTile actTile;
+		static ActiveTile actTile;
 		switch(unit->id) {
 			case UnitId::ZergZergling:
 				finalUpgradeModifier = 16;
 				break;
 			case UnitId::ZergOverlord:
-				finalUpgradeModifier = 17; //Was finalUpgradeModifier = 32
-				break;
-			case UnitId::ProtossZealot:
-				finalUpgradeModifier = 13; //was 13
+				finalUpgradeModifier = 35; //Was finalUpgradeModifier = 32
 				break;
 			case UnitId::ZergHydralisk:
-				actTile = scbw::getActiveTileAt(unit->getX(), unit->getY());
-				if (!actTile.hasCreep) {
-					finalUpgradeModifier = hydraliskModifier_speed;
-				}
-				break;
 			case UnitId::Hero_HunterKiller:
 				actTile = scbw::getActiveTileAt(unit->getX(), unit->getY());
 				if (!actTile.hasCreep) {
 					finalUpgradeModifier = hydraliskModifier_speed;
 				}
+				break;
+			case UnitId::ProtossZealot:
+				finalUpgradeModifier = 13;
+				break;
+			case UnitId::ProtossScout:
+				finalUpgradeModifier = 16;
 				break;
 			case UnitId::TerranVulture:
 				finalUpgradeModifier = 15;
@@ -59,7 +57,7 @@ u32 upgradeModifier_speed(const CUnit *unit) {
 	        default:
 	        	finalUpgradeModifier = 13;
 	        	break;
-		}		
+		}
 	}
 	return finalUpgradeModifier;
 }
@@ -69,15 +67,6 @@ u32 stimModifier_speed(const CUnit *unit) {
 		switch(unit->id) {
 			//Normal stim for regular units:
 			case UnitId::TerranMarine:
-				finalStimModifier = terranStimModifier_speed;
-				break;
-			case UnitId::TerranFirebat:
-				finalStimModifier = terranStimModifier_speed;
-				break;
-			case UnitId::Hero_JimRaynorMarine:
-				finalStimModifier = terranStimModifier_speed;
-				break;
-			case UnitId::Hero_GuiMontag:
 				finalStimModifier = terranStimModifier_speed;
 				break;
 			//New speed for some units;
@@ -100,8 +89,6 @@ u32 creepModifier_speed(const CUnit *zergUnit) {
 		if(actTile.hasCreep) {
 			switch(zergUnit->id) {
 				case UnitId::ZergHydralisk:
-					finalCreepModifier = hydraliskModifier_speed;
-					break;
 				case UnitId::Hero_HunterKiller:
 					finalCreepModifier = hydraliskModifier_speed;
 					break;
