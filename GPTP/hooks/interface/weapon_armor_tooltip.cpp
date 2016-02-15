@@ -2,20 +2,23 @@
 #include <SCBW/api.h>
 #include <SCBW/enumerations/WeaponId.h>
 #include <cstdio>
+#include <cstdlib>
 
+#include <SCBW/enumerations.h>
 
 char buffer[128];
 
 //Returns the special damage multiplier factor for units that don't use the
 //"Damage Factor" property in weapons.dat.
 u8 getDamageFactorForTooltip(u8 weaponId, const CUnit *unit) {
-  //Default StarCraft behavior
-  if (unit->id == UnitId::firebat || unit->id == UnitId::gui_montag
-      || unit->id == UnitId::zealot || unit->id == UnitId::fenix_zealot)
-    return 2;
+  u8 maxHits = 0;
+  if (units_dat::GroundWeapon[unit->id] == weaponId)
+    maxHits = units_dat::MaxGroundHits[unit->id];
+  else if (units_dat::AirWeapon[unit->id] == weaponId)
+    maxHits = units_dat::MaxAirHits[unit->id];
 
-  if (unit->id == UnitId::valkyrie)
-    return 1;
+  if (maxHits > 1)
+    return maxHits * weapons_dat::DamageFactor[weaponId];
 
   return weapons_dat::DamageFactor[weaponId];
 }
@@ -24,8 +27,6 @@ u8 getDamageFactorForTooltip(u8 weaponId, const CUnit *unit) {
 //This function is used for weapon icons and special icons.
 //Precondition: @p entryStrIndex is a stat_txt.tbl string index.
 const char* getDamageTooltipString(u8 weaponId, const CUnit *unit, u16 entryStrIndex) {
-  //Default StarCraft behavior
-
   const char *entryName = statTxtTbl->getString(entryStrIndex);
   const char *damageStr = statTxtTbl->getString(777);           //"Damage:"
 
@@ -34,23 +35,34 @@ const char* getDamageTooltipString(u8 weaponId, const CUnit *unit, u16 entryStrI
   const u16 baseDamage = weapons_dat::DamageAmount[weaponId] * damageFactor;
   const u16 bonusDamage = weapons_dat::DamageBonus[weaponId] * damageFactor * upgradeLevel;
 
-  if (weaponId == WeaponId::HaloRockets) {
-    const char *perRocketStr = statTxtTbl->getString(1301);   //"per rocket"
-    if (bonusDamage > 0)
-      sprintf_s(buffer, sizeof(buffer), "%s\n%s %d+%d %s",
-                entryName, damageStr, baseDamage, bonusDamage, perRocketStr);
-    else
-      sprintf_s(buffer, sizeof(buffer), "%s\n%s %d %s",
-                entryName, damageStr, baseDamage, perRocketStr);
+  //Set damage color
+  char damageTypeColor[5]; //Default
+  int damageColor;
+  switch (weapons_dat::DamageType[weaponId]) {
+    case DamageType::Independent:
+      damageColor = GameTextColor::White;
+      break;
+    case DamageType::Explosive:
+      damageColor = GameTextColor::Red;
+      break;
+    case DamageType::Concussive:
+      damageColor = GameTextColor::Blue;
+      break;
+    default: //Normal
+      damageColor = GameTextColor::Grey;
+      break;
+    case DamageType::IgnoreArmor:
+      damageColor = GameTextColor::Yellow;
+      break;
   }
-  else {
-    if (bonusDamage > 0)
-      sprintf_s(buffer, sizeof(buffer), "%s\n%s %d+%d",
-                entryName, damageStr, baseDamage, bonusDamage);
-    else
-      sprintf_s(buffer, sizeof(buffer), "%s\n%s %d",
-                entryName, damageStr, baseDamage);
-  }
+  sprintf_s(damageTypeColor, sizeof(damageTypeColor), "\x%02x", damageColor);
+
+  if (bonusDamage > 0)
+    sprintf_s(buffer, sizeof(buffer), "%c%s\x01\n%s %d+%d",
+              damageTypeColor, entryName, damageStr, baseDamage, bonusDamage);
+  else
+    sprintf_s(buffer, sizeof(buffer), "%c%s\x01\n%s %d",
+              damageTypeColor, entryName, damageStr, baseDamage);
 
   return buffer;
 }
@@ -58,8 +70,30 @@ const char* getDamageTooltipString(u8 weaponId, const CUnit *unit, u16 entryStrI
 namespace hooks {
 
 //Returns the C-string for the tooltip text of the unit's weapon icon.
+//Added: Range parameter
 const char* getWeaponTooltipString(u8 weaponId, const CUnit *unit) {
-  return getDamageTooltipString(weaponId, unit, weapons_dat::Label[weaponId]);
+  static char buffer2[200];
+
+  u32 baseRange = (weapons_dat::MaxRange[weaponId] + 16) / 32;
+  u32 modifiedRange = (unit->getMaxWeaponRange(weaponId) + 16) / 32;
+
+  //Display activation range when Spider Mines are selected
+  if (weaponId == WeaponId::SpiderMines) {
+    baseRange = units_dat::SeekRange[unit->id];
+    modifiedRange = unit->getSeekRange();
+  }
+
+  const char* baseTooltipStr = getDamageTooltipString(weaponId, unit, weapons_dat::Label[weaponId]);
+  if (baseRange == modifiedRange) {
+    sprintf_s(buffer2, sizeof(buffer2), "%s\nRange: %d",
+              baseTooltipStr, baseRange);
+  }
+  else {
+    sprintf_s(buffer2, sizeof(buffer2), "%s\nRange: %d+%d",
+              baseTooltipStr, baseRange, modifiedRange - baseRange);
+  }
+
+  return buffer2;
 }
 
 //Returns the C-string for the tooltip text of the unit's armor icon.
@@ -108,14 +142,30 @@ const char* getShieldTooltipString(const CUnit *unit) {
 //Scarab icon (Reavers), Nuclear Missile icon (Nuclear Silos), and Spider Mine
 //icon (Vultures).
 const char* getSpecialTooltipString(u16 iconUnitId, const CUnit *unit) {
-  //Default StarCraft behavior
+  static char buffer2[200];
 
-  if (iconUnitId == UnitId::interceptor) {
-    return getDamageTooltipString(WeaponId::PulseCannon, unit, 791);    //"Interceptors"
-  }
+  //Add range parameter for Carriers and Reavers
+  if (iconUnitId == UnitId::interceptor || iconUnitId == UnitId::scarab) {
+    const char *damageTooltipStr;
+    if (iconUnitId == UnitId::interceptor)
+      damageTooltipStr = getDamageTooltipString(WeaponId::PulseCannon, unit, 791);  //"Interceptors"
+    else
+      damageTooltipStr = getDamageTooltipString(WeaponId::Scarab, unit, 792);       //"Scarabs"
+    
+    //Carriers and Reavers use the Target Seek Range
+    const u32 baseRange = units_dat::SeekRange[unit->id];
+    const u32 modifiedRange = unit->getSeekRange();
 
-  if (iconUnitId == UnitId::scarab) {
-    return getDamageTooltipString(WeaponId::Scarab, unit, 792);         //"Scarabs"
+    if (baseRange == modifiedRange) {
+      sprintf_s(buffer2, sizeof(buffer2), "%s\nRange: %d",
+                damageTooltipStr, baseRange);
+    }
+    else {
+      sprintf_s(buffer2, sizeof(buffer2), "%s\nRange: %d+%d",
+                damageTooltipStr, baseRange, modifiedRange - baseRange);
+    }
+
+    return buffer2;
   }
 
   if (iconUnitId == UnitId::nuclear_missile) {
@@ -131,4 +181,3 @@ const char* getSpecialTooltipString(u16 iconUnitId, const CUnit *unit) {
 }
 
 } //hooks
-
