@@ -2,7 +2,6 @@
 #include <SCBW/api.h>
 #include <SCBW/enumerations/WeaponId.h>
 #include <cstdio>
-#include <cstdlib>
 
 #include <SCBW/enumerations.h>
 
@@ -36,8 +35,7 @@ const char* getDamageTooltipString(u8 weaponId, const CUnit *unit, u16 entryStrI
   const u16 bonusDamage = weapons_dat::DamageBonus[weaponId] * damageFactor * upgradeLevel;
 
   //Set damage color
-  char damageTypeColor[5]; //Default
-  int damageColor;
+  char damageColor;
   switch (weapons_dat::DamageType[weaponId]) {
     case DamageType::Independent:
       damageColor = GameTextColor::White;
@@ -46,23 +44,22 @@ const char* getDamageTooltipString(u8 weaponId, const CUnit *unit, u16 entryStrI
       damageColor = GameTextColor::Red;
       break;
     case DamageType::Concussive:
-      damageColor = GameTextColor::Blue;
+      damageColor = GameTextColor::Orange;
       break;
     default: //Normal
-      damageColor = GameTextColor::Grey;
+      damageColor = GameTextColor::Green;
       break;
     case DamageType::IgnoreArmor:
       damageColor = GameTextColor::Yellow;
       break;
   }
-  sprintf_s(damageTypeColor, sizeof(damageTypeColor), "\x%02x", damageColor);
 
   if (bonusDamage > 0)
     sprintf_s(buffer, sizeof(buffer), "%c%s\x01\n%s %d+%d",
-              damageTypeColor, entryName, damageStr, baseDamage, bonusDamage);
+              damageColor, entryName, damageStr, baseDamage, bonusDamage);
   else
     sprintf_s(buffer, sizeof(buffer), "%c%s\x01\n%s %d",
-              damageTypeColor, entryName, damageStr, baseDamage);
+              damageColor, entryName, damageStr, baseDamage);
 
   return buffer;
 }
@@ -85,8 +82,14 @@ const char* getWeaponTooltipString(u8 weaponId, const CUnit *unit) {
 
   const char* baseTooltipStr = getDamageTooltipString(weaponId, unit, weapons_dat::Label[weaponId]);
   if (baseRange == modifiedRange) {
-    sprintf_s(buffer2, sizeof(buffer2), "%s\nRange: %d",
-              baseTooltipStr, baseRange);
+    if (baseRange != 0) {
+      sprintf_s(buffer2, sizeof(buffer2), "%s\nRange: %d",
+                baseTooltipStr, baseRange);
+    }
+    else {
+      sprintf_s(buffer2, sizeof(buffer2), "%s\nRange: Melee",
+                baseTooltipStr);      
+    }
   }
   else {
     sprintf_s(buffer2, sizeof(buffer2), "%s\nRange: %d+%d",
