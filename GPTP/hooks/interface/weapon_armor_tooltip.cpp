@@ -44,13 +44,13 @@ const char* getDamageTooltipString(u8 weaponId, const CUnit *unit, u16 entryStrI
       damageColor = GameTextColor::Red;
       break;
     case DamageType::Concussive:
-      damageColor = GameTextColor::Orange;
+      damageColor = GameTextColor::Yellow;
       break;
     default: //Normal
-      damageColor = GameTextColor::Green;
+      damageColor = GameTextColor::RiverBlue;
       break;
     case DamageType::IgnoreArmor:
-      damageColor = GameTextColor::Yellow;
+      damageColor = GameTextColor::Orange;
       break;
   }
 
