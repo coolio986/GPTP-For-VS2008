@@ -42,6 +42,21 @@ void replaceSpriteImages(CSprite *sprite, u16 imageId, u8 imageDirection) {
   }
 }
 
+//copied from bunker_hooks.cpp
+const u32 Func_SetImageDirection = 0x004D5F80;
+void setImageDirection(CImage *image, s8 direction) {
+  u32 direction_ = direction;
+
+  __asm {
+    PUSHAD
+    PUSH direction_
+    MOV ESI, image
+    CALL Func_SetImageDirection
+    POPAD
+  }
+}
+
+
 //KYSXD helpers
 CUnit *nearestTemplarMergePartner(CUnit *unit) {
 
@@ -237,6 +252,65 @@ void manageWorkerCollision(CUnit *unit) {
   }
 }
 
+//KYSXD PsionicTransfer cast
+//Original from Eisetley, KYSXD modification
+void runAdeptPsionicTransfer_cast(CUnit *adept) {
+  if (adept->id == UnitId::Hero_Raszagal
+    && adept->mainOrderId == OrderId::CastOpticalFlare) {
+
+    adept->mainOrderId = OrderId::Nothing2;
+    CUnit*shade = scbw::createUnitAtPos(UnitId::aldaris, adept->playerId, adept->getX(), adept->getY());
+    if(shade) {
+      shade->connectedUnit = adept;
+      shade->unusedTimer = 2 * 7;
+
+      shade->status |= UnitStatus::NoCollide;
+      if (adept->orderTarget.unit) {
+       shade->orderTo(OrderId::Follow, adept->orderTarget.unit);
+      }
+      else
+        shade->orderTo(OrderId::Move, adept->orderTarget.pt.x, adept->orderTarget.pt.y);
+
+      if(!scbw::isCheatEnabled(CheatFlags::TheGathering)) {
+        adept->energy = 0;
+      }      
+    }
+  }
+}
+
+//KYSXD PsionicTransfer behavior
+//Original from Eisetley, KYSXD modification
+void runAdeptPsionicTransfer_behavior(CUnit *shade) {
+  if (shade->id == UnitId::aldaris) {
+    CUnit *adept = shade->connectedUnit;
+
+    if(!adept) {
+      shade->orderTo(OrderId::Die);
+    }
+    else {
+      if(adept->getCurrentHpInGame() <= 0) {
+        shade->orderTo(OrderId::Die);
+      }
+
+      if(!shade->unusedTimer) {
+//      createThingy(375, adept->getX(), adept->getY(), adept->playerId);
+        CImage *adeptSprite = adept->sprite->images.head;
+        setImageDirection(adeptSprite, shade->currentDirection1);
+
+        u16 thisX = shade->getX();
+        u16 thisY = shade->getY();
+        scbw::moveUnit(adept, thisX, thisY);
+/*
+        shade->userActionFlags |= 0x4;
+        shade->remove();
+        adept->sprite->createOverlay(557);
+        scbw::playSound(1140, adept);
+*/
+      }      
+    }
+  }
+}
+
 //KYSXD Chrono boost cast
 void runChronoBoost_cast(CUnit *unit) {
   if(unit->id == UnitId::ProtossNexus
@@ -298,11 +372,14 @@ void runChronoBoost_behavior(CUnit *unit) {
 //KYSXD stalker's blink
 void runStalkerBlink(CUnit *unit) {
   if(unit->id == UnitId::Hero_FenixDragoon) {
-    if(unit->mainOrderId == OrderId::CarrierIgnore1) {
+    if(unit->mainOrderId == OrderId::Ensnare) {
       u16 thisX = unit->orderTarget.pt.x;
       u16 thisY = unit->orderTarget.pt.y;
       scbw::moveUnit(unit, thisX, thisY);
       unit->mainOrderId = OrderId::Nothing2;
+      if(!scbw::isCheatEnabled(CheatFlags::TheGathering)) {
+        unit->energy = 0;
+      }
     }
   }
 }
@@ -394,6 +471,8 @@ bool nextFrame() {
       }
 
   //KYSXD - Protoss plugins:
+      runAdeptPsionicTransfer_cast(unit);
+      runAdeptPsionicTransfer_behavior(unit);
 
       runChronoBoost_cast(unit);
       runChronoBoost_behavior(unit);

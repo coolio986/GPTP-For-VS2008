@@ -42,6 +42,8 @@ Other short-lived branches may pop-up from time to time as i stabilize new relea
 - Improved shield regen (SCII inspired).
 - Chrono boost (SCII inpired).
 - Terran Reactor behavior (SCII inspired).
+- Stalker's blink (SCII inspired).
+- Adept's psionic transfer (SCII inspired).
 
 **To do:**
 
