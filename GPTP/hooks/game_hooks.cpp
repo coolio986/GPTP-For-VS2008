@@ -184,8 +184,8 @@ ContainerTargetFinder containerTargetFinder;
 
 void runFirstFrameBehaviour() {
   //All nexi in 50
-  for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
-    switch (unit->id) {
+  for(CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
+    switch(unit->id) {
       case UnitId::ProtossNexus:
         unit->energy = 50 << 8;
         break;
@@ -197,41 +197,40 @@ void runFirstFrameBehaviour() {
   }
   //KYSXD - For non-custom games - start
   if(!(*GAME_TYPE == 10)) {
-
+    CUnit *firstMineral[8];
     u16 initialworkeramount = 12;
-    for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
-      if(unit->mainOrderId != OrderId::Die) {
-        //KYSXD - Increase initial amount of Workers - From GagMania
-        if(units_dat::BaseProperty[unit->id] & UnitProperty::ResourceDepot) {
-          u16 workerUnitId = UnitId::None;
-          switch (unit->id) {
-            case UnitId::TerranCommandCenter:
-              workerUnitId = UnitId::TerranSCV; break;
-            case UnitId::ZergHatchery:
-            case UnitId::ZergLair:
-            case UnitId::ZergHive:
-              workerUnitId = UnitId::ZergDrone; break;
-            case UnitId::ProtossNexus:
-              workerUnitId = UnitId::ProtossProbe; break;
-            default: break;
-          }
-          if(workerUnitId != UnitId::None) {
-            for (u16 i = 0; i < (initialworkeramount-4); i++) {
-              scbw::createUnitAtPos(workerUnitId, unit->playerId, unit->getX(), unit->getY());
-            }
+    for(CUnit *base = *firstVisibleUnit; base; base = base->link.next) {
+      //KYSXD - Increase initial amount of Workers - From GagMania
+      if(units_dat::BaseProperty[base->id] & UnitProperty::ResourceDepot) {
+        u16 workerUnitId = UnitId::None;
+        switch(base->getRace()) {
+          case RaceId::Terran:
+            workerUnitId = UnitId::TerranSCV; break;
+          case RaceId::Zerg:
+            workerUnitId = UnitId::ZergDrone; break;
+          case RaceId::Protoss:
+            workerUnitId = UnitId::ProtossProbe; break;
+          default: break;
+        }
+        if(workerUnitId != UnitId::None) {
+          for(u16 i = 0; i < (initialworkeramount-4); i++) {
+            scbw::createUnitAtPos(workerUnitId, base->playerId, base->getX(), base->getY());
           }
         }
-        //KYSXD Send all units to harvest on first run
-        if(units_dat::BaseProperty[unit->id] & UnitProperty::Worker) {
-          harvestTargetFinder.setmainHarvester(unit);
-          const CUnit *harvestTarget = scbw::UnitFinder::getNearestTarget(
-            unit->getX() - 512, unit->getY() - 512,
-            unit->getX() + 512, unit->getY() + 512,
-            unit,
-            harvestTargetFinder);
-          if(harvestTarget) {
-            unit->orderTo(OrderId::Harvest1, harvestTarget);
-          }
+      //KYSXD - Find nearest mineral patch
+        harvestTargetFinder.setmainHarvester(base);
+        firstMineral[base->playerId] = scbw::UnitFinder::getNearestTarget(
+          base->getX() - 512, base->getY() - 512,
+          base->getX() + 512, base->getY() + 512,
+          base,
+          harvestTargetFinder);
+      }
+    }
+    for(CUnit *worker = *firstVisibleUnit; worker; worker = worker->link.next) {
+      //KYSXD Send all units to harvest on first run
+      if(units_dat::BaseProperty[worker->id] & UnitProperty::Worker) {
+        if(firstMineral[worker->playerId]) {
+          worker->orderTo(OrderId::Harvest1, firstMineral[worker->playerId]);
         }
       }
     }
