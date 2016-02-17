@@ -340,20 +340,34 @@ void runChronoBoost_behavior(CUnit *unit) {
     switch (unit->mainOrderId) {
       case OrderId::Upgrade:
       case OrderId::ResearchTech:
-        if(unit->building.upgradeResearchTime >= 4)//Still need to set the right value
-          unit->building.upgradeResearchTime -= 4;
-        else unit->building.upgradeResearchTime = 0;
+        if(unit->building.upgradeResearchTime) {
+          unit->building.upgradeResearchTime -= std::min<u16>(unit->building.upgradeResearchTime, 4);
+        }
         break;
       default: break;
     }
-    switch (unit->secondaryOrderId) {
+    switch(unit->secondaryOrderId) {
+      case OrderId::BuildAddon:
       case OrderId::Train:
         if(unit->currentBuildUnit) {
           CUnit *unitInQueue = unit->currentBuildUnit;
-          if(scbw::isCheatEnabled(CheatFlags::OperationCwal))
-            unitInQueue->remainingBuildTime -= std::min<u16>(unitInQueue->remainingBuildTime, 16);
-          else
-            unitInQueue->remainingBuildTime--;
+          if(unitInQueue->remainingBuildTime) {
+            static s32 hpHolder;
+            static s32 maxHp;
+            maxHp = units_dat::MaxHitPoints[unitInQueue->id];
+            if(scbw::isCheatEnabled(CheatFlags::OperationCwal)) {
+              unitInQueue->remainingBuildTime -= std::min<u16>(unitInQueue->remainingBuildTime, 16);
+
+              hpHolder = unitInQueue->hitPoints + (unitInQueue->buildRepairHpGain << 4);
+              unitInQueue->hitPoints = std::min<s32>(maxHp, hpHolder);              
+            }
+            else {
+              unitInQueue->remainingBuildTime--;
+              
+              hpHolder = unitInQueue->hitPoints + unitInQueue->buildRepairHpGain;
+              unitInQueue->hitPoints = std::min<s32>(maxHp, hpHolder);              
+            }
+          }
         }
         break;
       default: break;
@@ -364,9 +378,8 @@ void runChronoBoost_behavior(CUnit *unit) {
       u32 energyHolder = unit->energy + 17; //Should be on update_unit_state.cpp?
       unit->energy = std::min<u32>(unit->getMaxEnergy(), energyHolder);
     }
-    //Case: Larva spawn
-      //Check larva_creep_spawn.cpp
-  } //KYSXD Chrono boost behavior end
+    //Case: Larva spawn - Check larva_creep_spawn.cpp
+  }
 }
 
 //KYSXD stalker's blink
@@ -677,7 +690,7 @@ bool nextFrame() {
         }
         //KYSXD count the nearest Workers
         if(nearmineral > 0) {
-          char unitcount[64];
+          static char unitcount[64];
           sprintf_s(unitcount, "Workers: %d / %d", nearworkers, nearmineral);
           graphics::drawText(selUnit->getX() - 32, selUnit->getY() - 60, unitcount, graphics::FONT_MEDIUM, graphics::ON_MAP);
         }
@@ -747,7 +760,7 @@ bool nextFrame() {
   //KYSXD Print info on screen
     if(viewingCheck[*LOCAL_HUMAN_ID] == 0) {
       if(idleWorkerCount != 0) {
-        char idleworkers[64];
+        static char idleworkers[64];
         sprintf_s(idleworkers, "Idle Workers: %d", idleWorkerCount);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -758,7 +771,7 @@ bool nextFrame() {
       }
 
       if(warpgateAmount != 0) {
-        char WGates[64];
+        static char WGates[64];
         if(isOperationCwalEnabled) {
           warpgateAvailable = warpgateAmount;
         }
@@ -770,7 +783,7 @@ bool nextFrame() {
           titleCol++;
         }
         if(warpgateAvailable < warpgateAmount) {
-          char nextWGTime[64];
+          static char nextWGTime[64];
           sprintf_s(nextWGTime, "(Next in: %d sec)", warpgateTime >> 8);
           graphics::drawText(20, 10*titleRow, nextWGTime, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
           ++titleRow;
@@ -787,7 +800,7 @@ bool nextFrame() {
       if(*clientSelectionCount == 1) {
         CUnit *thisUnit = clientSelectionGroup->unit[0];
 
-        char hitPoints[64];
+        static char hitPoints[64];
         sprintf_s(hitPoints, "hitPoints: %d", thisUnit->hitPoints);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, hitPoints, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -796,7 +809,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char getCurrentHpInGame[64];
+        static char getCurrentHpInGame[64];
         sprintf_s(getCurrentHpInGame, "getCurrentHpInGame(): %d", thisUnit->getCurrentHpInGame());
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, getCurrentHpInGame, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -805,7 +818,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char shields[64];
+        static char shields[64];
         sprintf_s(shields, "shields: %d", thisUnit->shields);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, shields, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -814,7 +827,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char getCurrentShieldsInGame[64];
+        static char getCurrentShieldsInGame[64];
         sprintf_s(getCurrentShieldsInGame, "getCurrentShieldsInGame(): %d", thisUnit->getCurrentShieldsInGame());
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, getCurrentShieldsInGame, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -823,7 +836,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char getCurrentLifeInGame[64];
+        static char getCurrentLifeInGame[64];
         sprintf_s(getCurrentLifeInGame, "getCurrentLifeInGame(): %d", thisUnit->getCurrentLifeInGame());
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, getCurrentLifeInGame, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -832,7 +845,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char energy[64];
+        static char energy[64];
         sprintf_s(energy, "energy: %d", thisUnit->energy);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, energy, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -841,7 +854,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char getMaxEnergy[64];
+        static char getMaxEnergy[64];
         sprintf_s(getMaxEnergy, "getMaxEnergy: %d", thisUnit->getMaxEnergy());
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, getMaxEnergy, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -850,7 +863,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char getArmor[64];
+        static char getArmor[64];
         sprintf_s(getArmor, "getArmor: %d", thisUnit->getArmor());
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, getArmor, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -859,7 +872,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char getArmorBonus[64];
+        static char getArmorBonus[64];
         sprintf_s(getArmorBonus, "getArmorBonus: %d", thisUnit->getArmorBonus());
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, getArmorBonus, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -868,7 +881,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char MineralCost[64];
+        static char MineralCost[64];
         sprintf_s(MineralCost, "MineralCost: %d", units_dat::MineralCost[thisUnit->id]);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, MineralCost, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -877,7 +890,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char GasCost[64];
+        static char GasCost[64];
         sprintf_s(GasCost, "GasCost: %d", units_dat::GasCost[thisUnit->id]);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, GasCost, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -886,7 +899,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char TimeCost[64];
+        static char TimeCost[64];
         sprintf_s(TimeCost, "TimeCost: %d", units_dat::TimeCost[thisUnit->id]);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, TimeCost, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -895,7 +908,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char DisplayedTimeCost[64];
+        static char DisplayedTimeCost[64];
         sprintf_s(DisplayedTimeCost, "DisplayedTimeCost: %d", units_dat::TimeCost[thisUnit->id]/15);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, DisplayedTimeCost, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -904,7 +917,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char SupplyRequired[64];
+        static char SupplyRequired[64];
         sprintf_s(SupplyRequired, "SupplyRequired: %d", units_dat::SupplyRequired[thisUnit->id]);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, SupplyRequired, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -913,7 +926,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char SupplyProvided[64];
+        static char SupplyProvided[64];
         sprintf_s(SupplyProvided, "SupplyProvided: %d", units_dat::SupplyProvided[thisUnit->id]);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, SupplyProvided, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -922,7 +935,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char SpaceRequired[64];
+        static char SpaceRequired[64];
         sprintf_s(SpaceRequired, "SpaceRequired: %d", units_dat::SpaceRequired[thisUnit->id]);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, SpaceRequired, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -931,7 +944,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char SpaceProvided[64];
+        static char SpaceProvided[64];
         sprintf_s(SpaceProvided, "SpaceProvided: %d", units_dat::SpaceProvided[thisUnit->id]);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, SpaceProvided, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -940,7 +953,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char SizeType[64];
+        static char SizeType[64];
         sprintf_s(SizeType, "SizeType: %d", units_dat::SizeType[thisUnit->id]);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, SizeType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -949,7 +962,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char SeekRange[64];
+        static char SeekRange[64];
         sprintf_s(SeekRange, "SeekRange: %d", units_dat::SeekRange[thisUnit->id]);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, SeekRange, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -958,7 +971,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char SightRange[64];
+        static char SightRange[64];
         sprintf_s(SightRange, "SightRange: %d", units_dat::SightRange[thisUnit->id]);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, SightRange, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -975,7 +988,7 @@ bool nextFrame() {
       if(*clientSelectionCount == 1) {
         CUnit *thisUnit = clientSelectionGroup->unit[0];
 
-        char id[64];
+        static char id[64];
         sprintf_s(id, "id: %i", thisUnit->id);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, id, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -984,7 +997,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char currentButtonSet[64];
+        static char currentButtonSet[64];
         sprintf_s(currentButtonSet, "currentButtonSet: %i", thisUnit->currentButtonSet);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, currentButtonSet, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -993,7 +1006,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char index[64];
+        static char index[64];
         sprintf_s(index, "index: %i", thisUnit->getIndex());
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, index, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1002,7 +1015,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char currentBuildUnit_Index[64];
+        static char currentBuildUnit_Index[64];
         if(thisUnit->currentBuildUnit != NULL)
           sprintf_s(currentBuildUnit_Index, "currentBuildUnit_Index: %i", thisUnit->currentBuildUnit->getIndex());          
         else
@@ -1014,7 +1027,43 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char animation[64];
+        static char currentBuildUnit_Hp[64];
+        if(thisUnit->currentBuildUnit != NULL)
+          sprintf_s(currentBuildUnit_Hp, "currentBuildUnit_Hp: %d", thisUnit->currentBuildUnit->hitPoints);
+        else
+          sprintf_s(currentBuildUnit_Hp, "currentBuildUnit_Hp: NULL");
+        graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, currentBuildUnit_Hp, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleRow;
+        if(10*titleRow > 250) {
+          titleRow = 1;
+          titleCol++;
+        }
+
+        static char currentBuildUnit_getHp[64];
+        if(thisUnit->currentBuildUnit != NULL)
+          sprintf_s(currentBuildUnit_getHp, "currentBuildUnit_getHp: %d", thisUnit->currentBuildUnit->getCurrentHpInGame());
+        else
+          sprintf_s(currentBuildUnit_getHp, "currentBuildUnit_getHp: NULL");
+        graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, currentBuildUnit_getHp, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleRow;
+        if(10*titleRow > 250) {
+          titleRow = 1;
+          titleCol++;
+        }
+
+        static char currentBuildUnit_hpGain[64];
+        if(thisUnit->currentBuildUnit != NULL)
+          sprintf_s(currentBuildUnit_hpGain, "currentBuildUnit_hpGain: %d", thisUnit->currentBuildUnit->buildRepairHpGain);
+        else
+          sprintf_s(currentBuildUnit_hpGain, "currentBuildUnit_hpGain: NULL");
+        graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, currentBuildUnit_hpGain, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleRow;
+        if(10*titleRow > 250) {
+          titleRow = 1;
+          titleCol++;
+        }
+
+        static char animation[64];
         sprintf_s(animation, "animation: 0x%02x", thisUnit->sprite->mainGraphic->animation);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, animation, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1023,7 +1072,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char _unknown_0x066[64];
+        static char _unknown_0x066[64];
         sprintf_s(_unknown_0x066, "_unknown_0x066: %i", thisUnit->_unknown_0x066);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, _unknown_0x066, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1032,7 +1081,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char previousUnitType[64];
+        static char previousUnitType[64];
         sprintf_s(previousUnitType, "previousUnitType: %i", thisUnit->previousUnitType);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, previousUnitType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1041,7 +1090,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char orderSignal[64];
+        static char orderSignal[64];
         sprintf_s(orderSignal, "orderSignal: %i", thisUnit->orderSignal);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, orderSignal, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1050,7 +1099,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char orderUnitType[64];
+        static char orderUnitType[64];
         sprintf_s(orderUnitType, "orderUnitType: %i", thisUnit->orderUnitType);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, orderUnitType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1059,7 +1108,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char wireframeRandomizer[64];
+        static char wireframeRandomizer[64];
         sprintf_s(wireframeRandomizer, "wireframeRandomizer: %i", thisUnit->wireframeRandomizer);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, wireframeRandomizer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1068,7 +1117,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char mainOrderId[64];
+        static char mainOrderId[64];
         sprintf_s(mainOrderId, "mainOrderId: 0x%02x", thisUnit->mainOrderId);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, mainOrderId, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1077,7 +1126,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char mainOrderTimer[64];
+        static char mainOrderTimer[64];
         sprintf_s(mainOrderTimer, "mainOrderTimer: %d", thisUnit->mainOrderTimer);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, mainOrderTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1086,7 +1135,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char mainOrderState[64];
+        static char mainOrderState[64];
         sprintf_s(mainOrderState, "mainOrderState: %d", thisUnit->mainOrderState);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, mainOrderState, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1095,7 +1144,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char secondaryOrderId[64];
+        static char secondaryOrderId[64];
         sprintf_s(secondaryOrderId, "secondaryOrderId: 0x%02x", thisUnit->secondaryOrderId);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, secondaryOrderId, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1104,7 +1153,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char secondaryOrderTimer[64];
+        static char secondaryOrderTimer[64];
         sprintf_s(secondaryOrderTimer, "secondaryOrderTimer: %d", thisUnit->secondaryOrderTimer);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, secondaryOrderTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1113,7 +1162,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char secondaryOrderState[64];
+        static char secondaryOrderState[64];
         sprintf_s(secondaryOrderState, "secondaryOrderState: %d", thisUnit->secondaryOrderState);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, secondaryOrderState, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1122,7 +1171,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char orderQueueTimer[64];
+        static char orderQueueTimer[64];
         sprintf_s(orderQueueTimer, "orderQueueTimer: %d", thisUnit->orderQueueTimer);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, orderQueueTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1131,7 +1180,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char remainingBuildTime[64];
+        static char remainingBuildTime[64];
         sprintf_s(remainingBuildTime, "remainingBuildTime: %d", thisUnit->remainingBuildTime);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, remainingBuildTime, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1140,7 +1189,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char lastEventTimer[64];
+        static char lastEventTimer[64];
         sprintf_s(lastEventTimer, "lastEventTimer: %d", thisUnit->lastEventTimer);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, lastEventTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1149,7 +1198,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char recentOrderTimer[64];
+        static char recentOrderTimer[64];
         sprintf_s(recentOrderTimer, "recentOrderTimer: %d", thisUnit->recentOrderTimer);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, recentOrderTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1158,7 +1207,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char cycleCounter[64];
+        static char cycleCounter[64];
         sprintf_s(cycleCounter, "cycleCounter: %d", thisUnit->cycleCounter);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, cycleCounter, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1167,7 +1216,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char airStrength[64];
+        static char airStrength[64];
         sprintf_s(airStrength, "airStrength: %d", thisUnit->airStrength);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, airStrength, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1176,7 +1225,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char groundStrength[64];
+        static char groundStrength[64];
         sprintf_s(groundStrength, "groundStrength: %d", thisUnit->groundStrength);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, groundStrength, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1185,7 +1234,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char buildQueueSlot[64];
+        static char buildQueueSlot[64];
         sprintf_s(buildQueueSlot, "buildQueueSlot: %d", thisUnit->buildQueueSlot);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, buildQueueSlot, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1195,7 +1244,7 @@ bool nextFrame() {
         }
 
         for (int i = 0; i < 5; i++) {
-          char buildQueue[64];
+          static char buildQueue[64];
           sprintf_s(buildQueue, "buildQueue[%d]: %d",
             i,
             thisUnit->buildQueue[i]);
@@ -1216,7 +1265,7 @@ bool nextFrame() {
 
         u8 hasAddon = (thisUnit->building.addon != NULL ? 1 : 0);
 
-        char AddOn[64];
+        static char AddOn[64];
         sprintf_s(AddOn, "AddOn: %d", hasAddon);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, AddOn, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1225,7 +1274,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char addonBuildType[64];
+        static char addonBuildType[64];
         sprintf_s(addonBuildType, "addonBuildType: %d", thisUnit->building.addonBuildType);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, addonBuildType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1234,7 +1283,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char upgradeResearchTime[64];
+        static char upgradeResearchTime[64];
         sprintf_s(upgradeResearchTime, "upgradeResearchTime: %d", thisUnit->building.upgradeResearchTime);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, upgradeResearchTime, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1243,7 +1292,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char techType[64];
+        static char techType[64];
         sprintf_s(techType, "techType: 0x%x", thisUnit->building.techType);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, techType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1252,7 +1301,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char upgradeType[64];
+        static char upgradeType[64];
         sprintf_s(upgradeType, "upgradeType: 0x%x", thisUnit->building.upgradeType);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, upgradeType, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1261,7 +1310,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char larvaTimer[64];
+        static char larvaTimer[64];
         sprintf_s(larvaTimer, "larvaTimer: %d", thisUnit->building.larvaTimer);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, larvaTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1270,7 +1319,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char landingTimer[64];
+        static char landingTimer[64];
         sprintf_s(landingTimer, "landingTimer: %d", thisUnit->building.landingTimer);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, landingTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1279,7 +1328,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char creepTimer[64];
+        static char creepTimer[64];
         sprintf_s(creepTimer, "creepTimer: %d", thisUnit->building.creepTimer);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, creepTimer, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1288,7 +1337,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char upgradeLevel[64];
+        static char upgradeLevel[64];
         sprintf_s(upgradeLevel, "upgradeLevel: %d", thisUnit->building.upgradeLevel);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, upgradeLevel, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1297,7 +1346,7 @@ bool nextFrame() {
           titleCol++;
         }
 
-        char _padding_0E[64];
+        static char _padding_0E[64];
         sprintf_s(_padding_0E, "_padding_0E: %d", thisUnit->building._padding_0E);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, _padding_0E, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1313,7 +1362,7 @@ bool nextFrame() {
       if(*clientSelectionCount == 1) {
         CUnit *thisUnit = clientSelectionGroup->unit[0];
 
-        char status[64];
+        static char status[64];
         sprintf_s(status, "status: %08x", thisUnit->status);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, status, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1323,7 +1372,7 @@ bool nextFrame() {
         }
 
         u8 status_Completed = (thisUnit->status & UnitStatus::Completed ? 1: 0);
-        char Completed[64];
+        static char Completed[64];
         sprintf_s(Completed, "Completed: %d", status_Completed);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, Completed, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1333,7 +1382,7 @@ bool nextFrame() {
         }
 
         u8 status_GroundedBuilding = (thisUnit->status & UnitStatus::GroundedBuilding ? 1: 0);
-        char GroundedBuilding[64];
+        static char GroundedBuilding[64];
         sprintf_s(GroundedBuilding, "GroundedBuilding: %d", status_GroundedBuilding);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, GroundedBuilding, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1343,7 +1392,7 @@ bool nextFrame() {
         }
 
         u8 status_InAir = (thisUnit->status & UnitStatus::InAir ? 1: 0);
-        char InAir[64];
+        static char InAir[64];
         sprintf_s(InAir, "InAir: %d", status_InAir);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, InAir, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1353,7 +1402,7 @@ bool nextFrame() {
         }
 
         u8 status_Disabled = (thisUnit->status & UnitStatus::Disabled ? 1: 0);
-        char Disabled[64];
+        static char Disabled[64];
         sprintf_s(Disabled, "Disabled: %d", status_Disabled);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, Disabled, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1363,7 +1412,7 @@ bool nextFrame() {
         }
 
         u8 status_Burrowed = (thisUnit->status & UnitStatus::Burrowed ? 1: 0);
-        char Burrowed[64];
+        static char Burrowed[64];
         sprintf_s(Burrowed, "Burrowed: %d", status_Burrowed);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, Burrowed, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1373,7 +1422,7 @@ bool nextFrame() {
         }
 
         u8 status_InBuilding = (thisUnit->status & UnitStatus::InBuilding ? 1: 0);
-        char InBuilding[64];
+        static char InBuilding[64];
         sprintf_s(InBuilding, "InBuilding: %d", status_InBuilding);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, InBuilding, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1383,7 +1432,7 @@ bool nextFrame() {
         }
 
         u8 status_InTransport = (thisUnit->status & UnitStatus::InTransport ? 1: 0);
-        char InTransport[64];
+        static char InTransport[64];
         sprintf_s(InTransport, "InTransport: %d", status_InTransport);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, InTransport, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1393,7 +1442,7 @@ bool nextFrame() {
         }
 
         u8 status_CanBeChased = (thisUnit->status & UnitStatus::CanBeChased ? 1: 0);
-        char CanBeChased[64];
+        static char CanBeChased[64];
         sprintf_s(CanBeChased, "CanBeChased: %d", status_CanBeChased);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, CanBeChased, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1403,7 +1452,7 @@ bool nextFrame() {
         }
 
         u8 status_Cloaked = (thisUnit->status & UnitStatus::Cloaked ? 1: 0);
-        char Cloaked[64];
+        static char Cloaked[64];
         sprintf_s(Cloaked, "Cloaked: %d", status_Cloaked);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, Cloaked, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1413,7 +1462,7 @@ bool nextFrame() {
         }
 
         u8 status_DoodadStatesThing = (thisUnit->status & UnitStatus::DoodadStatesThing ? 1: 0);
-        char DoodadStatesThing[64];
+        static char DoodadStatesThing[64];
         sprintf_s(DoodadStatesThing, "DoodadStatesThing: %d", status_DoodadStatesThing);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, DoodadStatesThing, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1423,7 +1472,7 @@ bool nextFrame() {
         }
 
         u8 status_CloakingForFree = (thisUnit->status & UnitStatus::CloakingForFree ? 1: 0);
-        char CloakingForFree[64];
+        static char CloakingForFree[64];
         sprintf_s(CloakingForFree, "CloakingForFree: %d", status_CloakingForFree);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, CloakingForFree, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1433,7 +1482,7 @@ bool nextFrame() {
         }
 
         u8 status_CanNotReceiveOrders = (thisUnit->status & UnitStatus::CanNotReceiveOrders ? 1: 0);
-        char CanNotReceiveOrders[64];
+        static char CanNotReceiveOrders[64];
         sprintf_s(CanNotReceiveOrders, "CanNotReceiveOrders: %d", status_CanNotReceiveOrders);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, CanNotReceiveOrders, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1443,7 +1492,7 @@ bool nextFrame() {
         }
 
         u8 status_NoBrkCodeStart = (thisUnit->status & UnitStatus::NoBrkCodeStart ? 1: 0);
-        char NoBrkCodeStart[64];
+        static char NoBrkCodeStart[64];
         sprintf_s(NoBrkCodeStart, "NoBrkCodeStart: %d", status_NoBrkCodeStart);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, NoBrkCodeStart, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1453,7 +1502,7 @@ bool nextFrame() {
         }
 
         u8 status_UNKNOWN2 = (thisUnit->status & UnitStatus::UNKNOWN2 ? 1: 0);
-        char UNKNOWN2[64];
+        static char UNKNOWN2[64];
         sprintf_s(UNKNOWN2, "UNKNOWN2: %d", status_UNKNOWN2);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, UNKNOWN2, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1463,7 +1512,7 @@ bool nextFrame() {
         }
 
         u8 status_CanNotAttack = (thisUnit->status & UnitStatus::CanNotAttack ? 1: 0);
-        char CanNotAttack[64];
+        static char CanNotAttack[64];
         sprintf_s(CanNotAttack, "CanNotAttack: %d", status_CanNotAttack);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, CanNotAttack, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1473,7 +1522,7 @@ bool nextFrame() {
         }
 
         u8 status_CanTurnAroundToAttack = (thisUnit->status & UnitStatus::CanTurnAroundToAttack ? 1: 0);
-        char CanTurnAroundToAttack[64];
+        static char CanTurnAroundToAttack[64];
         sprintf_s(CanTurnAroundToAttack, "CanTurnAroundToAttack: %d", status_CanTurnAroundToAttack);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, CanTurnAroundToAttack, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1483,7 +1532,7 @@ bool nextFrame() {
         }
 
         u8 status_IsBuilding = (thisUnit->status & UnitStatus::IsBuilding ? 1: 0);
-        char IsBuilding[64];
+        static char IsBuilding[64];
         sprintf_s(IsBuilding, "IsBuilding: %d", status_IsBuilding);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, IsBuilding, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1493,7 +1542,7 @@ bool nextFrame() {
         }
 
         u8 status_IgnoreTileCollision = (thisUnit->status & UnitStatus::IgnoreTileCollision ? 1: 0);
-        char IgnoreTileCollision[64];
+        static char IgnoreTileCollision[64];
         sprintf_s(IgnoreTileCollision, "IgnoreTileCollision: %d", status_IgnoreTileCollision);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, IgnoreTileCollision, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1503,7 +1552,7 @@ bool nextFrame() {
         }
 
         u8 status_Unmovable = (thisUnit->status & UnitStatus::Unmovable ? 1: 0);
-        char Unmovable[64];
+        static char Unmovable[64];
         sprintf_s(Unmovable, "Unmovable: %d", status_Unmovable);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, Unmovable, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1513,7 +1562,7 @@ bool nextFrame() {
         }
 
         u8 status_IsNormal = (thisUnit->status & UnitStatus::IsNormal ? 1: 0);
-        char IsNormal[64];
+        static char IsNormal[64];
         sprintf_s(IsNormal, "IsNormal: %d", status_IsNormal);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, IsNormal, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1523,7 +1572,7 @@ bool nextFrame() {
         }
 
         u8 status_NoCollide = (thisUnit->status & UnitStatus::NoCollide ? 1: 0);
-        char NoCollide[64];
+        static char NoCollide[64];
         sprintf_s(NoCollide, "NoCollide: %d", status_NoCollide);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, NoCollide, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1533,7 +1582,7 @@ bool nextFrame() {
         }
 
         u8 status_UNKNOWN5 = (thisUnit->status & UnitStatus::UNKNOWN5 ? 1: 0);
-        char UNKNOWN5[64];
+        static char UNKNOWN5[64];
         sprintf_s(UNKNOWN5, "UNKNOWN5: %d", status_UNKNOWN5);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, UNKNOWN5, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1543,7 +1592,7 @@ bool nextFrame() {
         }
 
         u8 status_IsGathering = (thisUnit->status & UnitStatus::IsGathering ? 1: 0);
-        char IsGathering[64];
+        static char IsGathering[64];
         sprintf_s(IsGathering, "IsGathering: %d", status_IsGathering);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, IsGathering, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1553,7 +1602,7 @@ bool nextFrame() {
         }
 
         u8 status_UNKNOWN6 = (thisUnit->status & UnitStatus::UNKNOWN6 ? 1: 0);
-        char UNKNOWN6[64];
+        static char UNKNOWN6[64];
         sprintf_s(UNKNOWN6, "UNKNOWN6: %d", status_UNKNOWN6);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, UNKNOWN6, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1563,7 +1612,7 @@ bool nextFrame() {
         }
 
         u8 status_UNKNOWN7 = (thisUnit->status & UnitStatus::UNKNOWN7 ? 1: 0);
-        char UNKNOWN7[64];
+        static char UNKNOWN7[64];
         sprintf_s(UNKNOWN7, "UNKNOWN7: %d", status_UNKNOWN7);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, UNKNOWN7, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1573,7 +1622,7 @@ bool nextFrame() {
         }
 
         u8 status_Invincible = (thisUnit->status & UnitStatus::Invincible ? 1: 0);
-        char Invincible[64];
+        static char Invincible[64];
         sprintf_s(Invincible, "Invincible: %d", status_Invincible);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, Invincible, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1583,7 +1632,7 @@ bool nextFrame() {
         }
 
         u8 status_HoldingPosition = (thisUnit->status & UnitStatus::HoldingPosition ? 1: 0);
-        char HoldingPosition[64];
+        static char HoldingPosition[64];
         sprintf_s(HoldingPosition, "HoldingPosition: %d", status_HoldingPosition);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, HoldingPosition, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1593,7 +1642,7 @@ bool nextFrame() {
         }
 
         u8 status_SpeedUpgrade = (thisUnit->status & UnitStatus::SpeedUpgrade ? 1: 0);
-        char SpeedUpgrade[64];
+        static char SpeedUpgrade[64];
         sprintf_s(SpeedUpgrade, "SpeedUpgrade: %d", status_SpeedUpgrade);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, SpeedUpgrade, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1603,7 +1652,7 @@ bool nextFrame() {
         }
 
         u8 status_CooldownUpgrade = (thisUnit->status & UnitStatus::CooldownUpgrade ? 1: 0);
-        char CooldownUpgrade[64];
+        static char CooldownUpgrade[64];
         sprintf_s(CooldownUpgrade, "CooldownUpgrade: %d", status_CooldownUpgrade);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, CooldownUpgrade, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1613,7 +1662,7 @@ bool nextFrame() {
         }
 
         u8 status_IsHallucination = (thisUnit->status & UnitStatus::IsHallucination ? 1: 0);
-        char IsHallucination[64];
+        static char IsHallucination[64];
         sprintf_s(IsHallucination, "IsHallucination: %d", status_IsHallucination);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, IsHallucination, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
@@ -1623,7 +1672,7 @@ bool nextFrame() {
         }
 
         u8 status_IsSelfDestructing = (thisUnit->status & UnitStatus::IsSelfDestructing ? 1: 0);
-        char IsSelfDestructing[64];
+        static char IsSelfDestructing[64];
         sprintf_s(IsSelfDestructing, "IsSelfDestructing: %d", status_IsSelfDestructing);
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, IsSelfDestructing, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
