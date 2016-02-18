@@ -61,6 +61,7 @@ void updateUnitEnergy(CUnit *unit) {
     if (unit->energy != maxEnergy) {
       switch (unit->id) {
         //KYSXD If the unit is using energy for active skill cooldowns
+        case UnitId::Special_WarpGate:
         case UnitId::ProtossGateway:
         case UnitId::ProtossZealot:
           unit->energy = std::min(unit->energy + 17, maxEnergy); //+255 per frame (must be 256 but... well, is close isn't?)

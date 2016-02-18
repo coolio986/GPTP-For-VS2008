@@ -190,6 +190,7 @@ void runFirstFrameBehaviour() {
         unit->energy = 50 << 8;
         break;
       case UnitId::ProtossGateway:
+      case UnitId::Special_WarpGate:
         unit->previousUnitType = UnitId::None;
         break;
       default: break;
@@ -372,7 +373,7 @@ void runChronoBoost_behavior(CUnit *unit) {
       default: break;
     }
     //Case: Warpgate
-    if(unit->id == UnitId::ProtossGateway
+    if(unit->id == UnitId::Special_WarpGate
       && unit->previousUnitType != UnitId::None) {
       u32 energyHolder = unit->energy + 17; //Should be on update_unit_state.cpp?
       unit->energy = std::min<u32>(unit->getMaxEnergy(), energyHolder);
@@ -477,7 +478,8 @@ bool nextFrame() {
       }
 
       //KYSXD - reset warpgates when build
-      if(unit->id == UnitId::ProtossGateway
+      if((unit->id == UnitId::Special_WarpGate
+        || unit->id == UnitId::ProtossGateway)
         && unit->mainOrderId == OrderId::BuildSelf2) {
         unit->previousUnitType = UnitId::None;
       }
@@ -492,9 +494,27 @@ bool nextFrame() {
       runStalkerBlink(unit);
       runZealotCharge(unit);
 
+      //KYSXD Warpgate morph
+      if((unit->id == UnitId::ProtossGateway
+        || unit->id == UnitId::Special_WarpGate)
+        && unit->mainOrderId == OrderId::ReaverStop) {
+        unit->mainOrderId = OrderId::Nothing2;
+        if(unit->status & UnitStatus::Completed
+          && !(unit->isFrozen())) {
+          if(unit->previousUnitType == UnitId::None) {
+            u16 morphId = UnitId::ProtossGateway + UnitId::Special_WarpGate - unit->id;
+            replaceUnitWithType(unit, morphId);
+            unit->mainOrderId = OrderId::Nothing2;
+            unit->previousUnitType = UnitId::None;
+            unit->shields = units_dat::MaxShieldPoints[morphId] << 8;
+            unit->energy = 0;          
+          }
+        }
+      }
+
       //KYSXD Warpgate start
       //Check max_energy.cpp
-      if(unit->id == UnitId::ProtossGateway
+      if(unit->id == UnitId::Special_WarpGate
         && unit->status & UnitStatus::Completed
         && unit->playerId == *LOCAL_NATION_ID
         && !(unit->isFrozen())) {
@@ -647,10 +667,10 @@ bool nextFrame() {
       CUnit *selUnit = clientSelectionGroup->unit[i];
 
       //KYSXD update ButtonSet for WG
-      if(selUnit->id == UnitId::ProtossGateway
+      if(selUnit->id == UnitId::Special_WarpGate
         && selUnit->status & UnitStatus::Completed) {
         selUnit->currentButtonSet =
-          (warpgateAvailable != 0 || isOperationCwalEnabled ? UnitId::ProtossGateway : UnitId::None);
+          (warpgateAvailable != 0 || isOperationCwalEnabled ? UnitId::Special_WarpGate : UnitId::None);
       }
 
       /*/KYSXD unit worker count start  
