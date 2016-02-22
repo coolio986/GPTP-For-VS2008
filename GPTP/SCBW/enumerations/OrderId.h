@@ -282,7 +282,7 @@ enum Enum {
                   * Default Requirements: Unused. */
   TeleporttoLocation     = 0x8A, /**< Causes units to teleport when being recalled.
                   * Default Requirements: Unused. */
-  PlaceScanner           = 0x8B, /**< Place Scanner Sweep Unit at position.
+  PlaceScanner           = 0x8B, /**< Cast Spell: Place Scanner Sweep Unit at position.
                   * Default Requirements: Unused. */
   Scanner                = 0x8C, /**< Scanner Sweep Unit idle.
                   * Default Requirements: Unit must be Scanner Sweep. */

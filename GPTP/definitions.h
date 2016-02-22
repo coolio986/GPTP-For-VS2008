@@ -15,4 +15,5 @@ char ( &_ArraySizeHelper( T (&array)[N] ))[N];
 #define PLUGIN_ID 0x1B4D69B6
 
 //What is the plugin's name (and version)? KYSXD edit
-#define PLUGIN_NAME "Starcraft V - Version 0.1"
+#define AUTHOR_NAME "KYSXD"
+#define PLUGIN_NAME "Starcraft V - Version 0.1 (TEST)"

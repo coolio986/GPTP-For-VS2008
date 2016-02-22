@@ -183,6 +183,8 @@ class ContainerTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
 ContainerTargetFinder containerTargetFinder;
 
 void runFirstFrameBehaviour() {
+  scbw::printText("You're now playing:\n     "
+    PLUGIN_NAME "\n     By " AUTHOR_NAME);
   //All nexi in 50
   for(CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
     switch(unit->id) {
@@ -415,6 +417,26 @@ void runZealotCharge(CUnit *unit) {
   }
 }
 
+//KYSXD Warpgate morph
+void runWarpgateMorph(CUnit *unit) {
+  if((unit->id == UnitId::ProtossGateway
+    || unit->id == UnitId::Special_WarpGate)
+    && unit->mainOrderId == OrderId::ReaverStop) {
+    unit->mainOrderId = OrderId::Nothing2;
+    if(unit->status & UnitStatus::Completed
+      && !(unit->isFrozen())) {
+      if(unit->previousUnitType == UnitId::None) {
+        u16 morphId = UnitId::ProtossGateway + UnitId::Special_WarpGate - unit->id;
+        replaceUnitWithType(unit, morphId);
+        unit->mainOrderId = OrderId::Nothing2;
+        unit->previousUnitType = UnitId::None;
+        unit->shields = units_dat::MaxShieldPoints[morphId] << 8;
+        unit->energy = 0;          
+      }
+    }
+  }
+}
+
 //KYSXD - display info on screen - Credits to GagMania
 static const int viewingStatus = 5;
 static int viewingCheck[8];
@@ -456,7 +478,6 @@ bool nextFrame() {
 
     //This block is executed once every game.
     if(*elapsedTimeFrames == 0) {
-      scbw::printText(PLUGIN_NAME ": Test");
       runFirstFrameBehaviour();
 
       //start viewingCheck
@@ -494,23 +515,7 @@ bool nextFrame() {
       runStalkerBlink(unit);
       runZealotCharge(unit);
 
-      //KYSXD Warpgate morph
-      if((unit->id == UnitId::ProtossGateway
-        || unit->id == UnitId::Special_WarpGate)
-        && unit->mainOrderId == OrderId::ReaverStop) {
-        unit->mainOrderId = OrderId::Nothing2;
-        if(unit->status & UnitStatus::Completed
-          && !(unit->isFrozen())) {
-          if(unit->previousUnitType == UnitId::None) {
-            u16 morphId = UnitId::ProtossGateway + UnitId::Special_WarpGate - unit->id;
-            replaceUnitWithType(unit, morphId);
-            unit->mainOrderId = OrderId::Nothing2;
-            unit->previousUnitType = UnitId::None;
-            unit->shields = units_dat::MaxShieldPoints[morphId] << 8;
-            unit->energy = 0;          
-          }
-        }
-      }
+      runWarpgateMorph(unit);
 
       //KYSXD Warpgate start
       //Check max_energy.cpp
