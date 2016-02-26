@@ -64,6 +64,7 @@ void updateUnitEnergy(CUnit *unit) {
         case UnitId::Special_WarpGate:
         case UnitId::ProtossGateway:
         case UnitId::ProtossZealot:
+        case UnitId::Hero_FenixDragoon:
           unit->energy = std::min(unit->energy + 17, maxEnergy); //+255 per frame (must be 256 but... well, is close isn't?)
           break;
         //Normal behavior (energy for spells)

@@ -5,12 +5,15 @@
 #include <SCBW/api.h>
 #include <SCBW/scbwdata.h>
 #include <SCBW/ExtendSightLimit.h>
+
+bool firstBoot =  false;
+
 #include "psi_field.h"
 #include <cstdio>
 
 #include <SCBW/UnitFinder.h>
 
-namespace hooks {
+namespace {
 
 //KYSXD - Replace unit function, copied from siege_transform.cpp and merge_units.cpp
 //Useful for... i don't know, i was playing with it xD
@@ -257,8 +260,8 @@ void manageWorkerCollision(CUnit *unit) {
 //KYSXD PsionicTransfer cast
 //Original from Eisetley, KYSXD modification
 void runAdeptPsionicTransfer_cast(CUnit *adept) {
-  if (adept->id == UnitId::Hero_Raszagal
-    && adept->mainOrderId == OrderId::CastOpticalFlare) {
+  if(adept->id == UnitId::Hero_Raszagal
+    && adept->mainOrderId == OrderId::PlaceScanner) {
 
     adept->mainOrderId = OrderId::Nothing2;
     CUnit*shade = scbw::createUnitAtPos(UnitId::aldaris, adept->playerId, adept->getX(), adept->getY());
@@ -267,7 +270,8 @@ void runAdeptPsionicTransfer_cast(CUnit *adept) {
       shade->unusedTimer = 2 * 7;
 
       shade->status |= UnitStatus::NoCollide;
-      if (adept->orderTarget.unit) {
+      shade->status |= UnitStatus::IsGathering;
+      if(adept->orderTarget.unit) {
        shade->orderTo(OrderId::Follow, adept->orderTarget.unit);
       }
       else
@@ -283,7 +287,7 @@ void runAdeptPsionicTransfer_cast(CUnit *adept) {
 //KYSXD PsionicTransfer behavior
 //Original from Eisetley, KYSXD modification
 void runAdeptPsionicTransfer_behavior(CUnit *shade) {
-  if (shade->id == UnitId::aldaris) {
+  if(shade->id == UnitId::aldaris) {
     CUnit *adept = shade->connectedUnit;
 
     if(!adept) {
@@ -444,6 +448,9 @@ static int viewingCheck[8];
   //1 = Basic info
   //2 = Order related
   //3 = Addon related
+}
+
+namespace hooks {
 
 /// This hook is called every frame; most of your plugin's logic goes here.
 bool nextFrame() {
@@ -1719,6 +1726,10 @@ bool nextFrame() {
 }
 
 bool gameOn() {
+  if(firstBoot == false) {
+    setMaxSightRange<20>();
+    firstBoot = true;
+  }
   return true;
 }
 

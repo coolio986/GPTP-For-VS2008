@@ -11,7 +11,7 @@ bool onlyTemplarsSelection() {
 	      	case UnitId::ProtossArchon:
 	      	case UnitId::ProtossDarkArchon:
 	      	case UnitId::Hero_TassadarZeratulArchon:
-	      	break;
+		      	break;
 	      	default:
 	      		return false;
 	      		break;
