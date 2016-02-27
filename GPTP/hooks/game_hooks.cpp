@@ -391,7 +391,7 @@ void runChronoBoost_behavior(CUnit *unit) {
 //KYSXD stalker's blink
 void runStalkerBlink(CUnit *unit) {
   if(unit->id == UnitId::Hero_FenixDragoon) {
-    if(unit->mainOrderId == OrderId::Ensnare) {
+    if(unit->mainOrderId == OrderId::CastOpticalFlare) {
       u16 thisX = unit->orderTarget.pt.x;
       u16 thisY = unit->orderTarget.pt.y;
       scbw::moveUnit(unit, thisX, thisY);
