@@ -19,7 +19,7 @@ This is the cutting edge and may be buggy.
 
 Other short-lived branches may pop-up from time to time as i stabilize new releases or hotfixes.
 
-**Work done:**
+### Work done:
 
 - Starting workers set to 12.
 - Workers will harvest at first run.
@@ -56,6 +56,16 @@ Other short-lived branches may pop-up from time to time as i stabilize new relea
 - Rework the game layer size in order to achieve [this HUD](http://www.moddb.com/members/kysxd/images/hud-20-wip1 ).
 - Add code to warp units on creep.
 - Add code to decrease zerg buildings hp without creep.
+
+### Tutorials:
+
+_Now you can check the wiki to understand how every plugin was developed!_
+
+The available tutorials are:
+
+- [Increase the initial worker amount](https://github.com/KYSXD/GPTP-For-VS2008/wiki/%5BPlugin%5D-Increase-initial-amount-of-workers.).
+
+More tutorials will be writed soon.
 
 **If you have any request...**
 
