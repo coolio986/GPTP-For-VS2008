@@ -63,8 +63,8 @@ _Now you can check the wiki to understand how every plugin was developed!_:
 
 The available tutorials are:
 
-- [Increase the initial worker amount](https://github.com/KYSXD/GPTP-For-VS2008/wiki/%5BPlugin%5D-Increase-initial-amount-of-workers.).
-- [Smart rally](https://github.com/KYSXD/GPTP-For-VS2008/wiki/%5BPlugin%5D-Smart-rally.).
+- [Increase the initial worker amount](https://github.com/KYSXD/GPTP-For-VS2008/wiki/%5BPlugin%5D-Increase-initial-amount-of-workers).
+- [Smart rally](https://github.com/KYSXD/GPTP-For-VS2008/wiki/%5BPlugin%5D-Smart-rally).
 
 More tutorials will be writed soon.
 
