@@ -59,11 +59,12 @@ Other short-lived branches may pop-up from time to time as i stabilize new relea
 
 ### Tutorials:
 
-_Now you can check the wiki to understand how every plugin was developed!_
+_Now you can check the wiki to understand how every plugin was developed!_:
 
 The available tutorials are:
 
 - [Increase the initial worker amount](https://github.com/KYSXD/GPTP-For-VS2008/wiki/%5BPlugin%5D-Increase-initial-amount-of-workers.).
+- [Smart rally](https://github.com/KYSXD/GPTP-For-VS2008/wiki/%5BPlugin%5D-Smart-rally.).
 
 More tutorials will be writed soon.
 

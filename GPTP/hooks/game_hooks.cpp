@@ -202,7 +202,7 @@ void runFirstFrameBehaviour() {
     }
   }
   //KYSXD - For non-custom games - start
-  if(!(*GAME_TYPE == 10)) {
+  if(*GAME_TYPE != GameType::UseMapSettings) {
     CUnit *firstMineral[8];
     u16 initialworkeramount = 12;
     for(CUnit *base = *firstVisibleUnit; base; base = base->link.next) {
