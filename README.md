@@ -65,6 +65,7 @@ The available tutorials are:
 
 - [Increase the initial worker amount](https://github.com/KYSXD/GPTP-For-VS2008/wiki/%5BPlugin%5D-Increase-initial-amount-of-workers).
 - [Smart rally](https://github.com/KYSXD/GPTP-For-VS2008/wiki/%5BPlugin%5D-Smart-rally).
+- [Creep bonus speed](https://github.com/KYSXD/GPTP-For-VS2008/wiki/%5BPlugin%5D-Creep-speed).
 
 More tutorials will be writed soon.
 

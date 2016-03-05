@@ -26,6 +26,17 @@ bool canBeHarvestedBy(const CUnit* resource, u8 playerId) {
   return false;
 }
 
+//KYSD moves the unit to the original factory
+void manageReactorCreation(CUnit* unit, CUnit* addon) {
+  using units_dat::BaseProperty;
+  if(BaseProperty[addon->id] & UnitProperty::Addon
+    && addon->connectedUnit != NULL) {
+    CUnit *factory = addon->connectedUnit;
+    scbw::moveUnit(unit, factory->getX(), factory->getY() + 1);
+  }
+  return;
+}
+
 namespace hooks { //KYSXD - From SC_Transition mod
 
 /// Orders newly-produced units to rally, based upon the properties of the
@@ -36,6 +47,8 @@ namespace hooks { //KYSXD - From SC_Transition mod
 void orderNewUnitToRally(CUnit* unit, CUnit* factory) {
   using units_dat::BaseProperty;
   //Default StarCraft behavior
+
+  manageReactorCreation(unit, factory);
 
   //Do nothing if the rally target is the factory itself or the rally target position is 0
   if (factory->rally.unit == factory || !(factory->rally.pt.x)) return;
