@@ -23,8 +23,8 @@ Take a look for all the new experimental features!
 
 _Now you can check the wiki to understand how every plugin was developed!_:
 
-Check now the 
-- [Wiki](https://github.com/KYSXD/GPTP-For-VS2008/wiki)
+Check now the
+[Wiki](https://github.com/KYSXD/GPTP-For-VS2008/wiki)
 to find all the available tutorials.
 
 **If you have any request...**
