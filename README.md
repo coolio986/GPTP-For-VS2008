@@ -13,8 +13,7 @@ This branch tracks all the changes i made for *Starcraft V*.
 The **[update branch](https://github.com/KYSXD/GPTP-For-VS2008/tree/update)** tracks live changes by [BoomerangAide](https://github.com/BoomerangAide/GPTP-For-VS2008). 
 This is the cutting edge and may be buggy.
 
-*Note from [BoomerangAide](https://github.com/BoomerangAide)*
-
+**Important**: Note from [BoomerangAide](https://github.com/BoomerangAide)
 *-If there are several Update-X branches, the most stable is the one with the lowest value, the less tested (but probably with more experimental features) is the one with the highest value.*
 
 Other short-lived branches may pop-up from time to time as i stabilize new releases or hotfixes.
