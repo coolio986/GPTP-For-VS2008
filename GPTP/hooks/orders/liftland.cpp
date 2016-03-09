@@ -660,7 +660,7 @@ void removeOrderFromUnitQueue(CUnit *unit) {
 		PUSHAD
 		MOV ECX, unit
 		MOV EAX, orderQueueHead
-		CALL Func_RemoveOrderFromUnitQueue
+		CALL Func_removeOrderFromUnitQueue
 		POPAD
 	}
 

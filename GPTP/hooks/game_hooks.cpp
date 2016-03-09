@@ -57,8 +57,34 @@ void setImageDirection(CImage *image, s8 direction) {
     CALL Func_SetImageDirection
     POPAD
   }
+
+
 }
 
+//copied from place_building.cpp
+const u32 Func_unitHasPathToDestOnGround = 0x0042FA00;
+bool unitHasPathToDestOnGround(const CUnit *unit, int x, int y) {
+  static Bool32 bPreResult;
+
+  __asm {
+    PUSHAD
+    PUSH y
+    MOV EDX, x
+    MOV EAX, unit
+    CALL Func_unitHasPathToDestOnGround
+    MOV bPreResult, EAX
+    POPAD
+  }
+
+  return (bPreResult != 0);
+
+}
+
+bool unitHasPathToUnitOnGround(const CUnit *unit, CUnit *target) {
+  if(target != NULL)
+    return unitHasPathToDestOnGround(unit, target->getX(), target->getY());
+  return false;
+}
 
 //KYSXD helpers
 CUnit *nearestTemplarMergePartner(CUnit *unit) {
@@ -111,10 +137,12 @@ bool chargeTargetInRange(const CUnit *zealot) {
   int chargeRange = zealot->getDistanceToTarget(zealot->orderTarget.unit);
   if(zealot->mainOrderId != OrderId::AttackUnit)
     return false;
-  if(minChargeRange > chargeRange
+  else if(minChargeRange > chargeRange
     || chargeRange > maxChargeRange)
     return false;
-  return true;
+  else if(unitHasPathToUnitOnGround(zealot, chargeTarget))
+    return true;
+  return false;
 }
 
 bool isInHarvestState(const CUnit *worker) {
@@ -441,6 +469,70 @@ void runWarpgateMorph(CUnit *unit) {
   }
 }
 
+//KYSXD Reactor behaviour
+
+void runReactorBehaviour(CUnit *unit) {
+  //Check unit state
+  if((unit->id == UnitId::TerranBarracks
+    || unit->id == UnitId::TerranFactory
+    || unit->id == UnitId::TerranStarport)
+    && unit->status & UnitStatus::Completed
+    && unit->mainOrderId != OrderId::Die) {
+    //Check add-on
+    if(unit->building.addon != NULL) {
+      CUnit *reactor = unit->building.addon;
+      reactor->rally = unit->rally; //Update rally
+
+      //If the unit is trainning, do reactor behavior
+      if(unit->secondaryOrderId == OrderId::Train) {
+        u16 changeQueue = (unit->buildQueueSlot + 1)%5;
+        u16 tempId = unit->buildQueue[changeQueue];
+        //If the addon isn't trainning
+        if(tempId != UnitId::None
+          && reactor->buildQueue[reactor->buildQueueSlot] == UnitId::None) {
+          reactor->buildQueue[reactor->buildQueueSlot] = tempId;
+          reactor->setSecondaryOrder(OrderId::Train);
+
+          //Update remaining queue
+          u16 queueId[5];
+          for (int i = 0; i < 5; i++) {
+            if(i != 4) {
+              queueId[i] = unit->buildQueue[(unit->buildQueueSlot+i+1)%5];
+            }
+            else queueId[i] = UnitId::None;
+          }
+          for (int i = 1; i < 5; i++) {
+            unit->buildQueue[(unit->buildQueueSlot+i)%5] = queueId[i];
+          }
+        }
+      }
+      /*
+      //If isn't trainning, disable reactor
+      else if(reactor->secondaryOrderId == OrderId::Train) {
+        unit->buildQueue[unit->buildQueueSlot] = reactor->buildQueue[reactor->buildQueueSlot];
+        unit->setSecondaryOrder(OrderId::Train);
+        if(unit->currentBuildUnit) {
+          unit->currentBuildUnit->remainingBuildTime =
+            reactor->currentBuildUnit->remainingBuildTime;              
+        }
+        reactor->setSecondaryOrder(OrderId::Nothing2);
+        //Update remaining queue
+        u16 queueId[5];
+        for (int i = 0; i < 5; i++) {
+          if(i != 4) {
+            queueId[i] = reactor->buildQueue[(reactor->buildQueueSlot+i+1)%5];
+          }
+          else queueId[i] = UnitId::None;
+        }
+        for (int i = 0; i < 5; i++) {
+          reactor->buildQueue[(reactor->buildQueueSlot+i)%5] = queueId[i];
+        }
+      }
+      */
+    }
+  }
+}
+
 //KYSXD - display info on screen - Credits to GagMania
 static const int viewingStatus = 5;
 static int viewingCheck[8];
@@ -595,68 +687,25 @@ bool nextFrame() {
       } //KYSXD Warpgate end
 
   //KYSXD - Terran plugins
-      //KYSXD - Reactor add-on plugin start
-
-      //Check unit state
-      if((unit->id == UnitId::TerranFactory
-        || unit->id == UnitId::TerranStarport)
-        && unit->status & UnitStatus::Completed
-        && unit->mainOrderId != OrderId::Die) {
-        //Check add-on
-        if(unit->building.addon != NULL) {
-          CUnit *reactor = unit->building.addon;
-          reactor->rally = unit->rally; //Update rally
-
-          //If the unit is trainning, do reactor behavior
-          if(unit->secondaryOrderId == OrderId::Train) {
-            u16 changeQueue = (unit->buildQueueSlot + 1)%5;
-            u16 tempId = unit->buildQueue[changeQueue];
-            //If the addon isn't trainning
-            if(tempId != UnitId::None
-              && reactor->buildQueue[reactor->buildQueueSlot] == UnitId::None) {
-              reactor->buildQueue[reactor->buildQueueSlot] = tempId;
-              reactor->setSecondaryOrder(OrderId::Train);
-
-              //Update remaining queue
-              u16 queueId[5];
-              for (int i = 0; i < 5; i++) {
-                if(i != 4) {
-                  queueId[i] = unit->buildQueue[(unit->buildQueueSlot+i+1)%5];
-                }
-                else queueId[i] = UnitId::None;
-              }
-              for (int i = 1; i < 5; i++) {
-                unit->buildQueue[(unit->buildQueueSlot+i)%5] = queueId[i];
-              }
-            }
-          }
-          /*
-          //If isn't trainning, disable reactor
-          else if(reactor->secondaryOrderId == OrderId::Train) {
-            unit->buildQueue[unit->buildQueueSlot] = reactor->buildQueue[reactor->buildQueueSlot];
-            unit->setSecondaryOrder(OrderId::Train);
-            if(unit->currentBuildUnit) {
-              unit->currentBuildUnit->remainingBuildTime =
-                reactor->currentBuildUnit->remainingBuildTime;              
-            }
-            reactor->setSecondaryOrder(OrderId::Nothing2);
-            //Update remaining queue
-            u16 queueId[5];
-            for (int i = 0; i < 5; i++) {
-              if(i != 4) {
-                queueId[i] = reactor->buildQueue[(reactor->buildQueueSlot+i+1)%5];
-              }
-              else queueId[i] = UnitId::None;
-            }
-            for (int i = 0; i < 5; i++) {
-              reactor->buildQueue[(reactor->buildQueueSlot+i)%5] = queueId[i];
-            }
-          }
-          */
-        }
-      } //KYSXD - Reactor add-on plugin end
+      runReactorBehaviour(unit);
 
   //KYSXD - Zerg plugins
+      //KYSX - Nydus canal rally point
+      if(unit->mainOrderId == OrderId::Enternyduscanal
+        && unit->orderTarget.unit
+        && unit->orderTarget.unit->id == UnitId::ZergNydusCanal) {
+
+        CUnit *currentNydus = unit->orderTarget.unit;
+
+        COrder *current_order = unit->orderQueueHead;
+
+        COrder *moveToRally = current_order;
+
+        current_order->next = moveToRally;
+
+      }
+
+
       //KYSXD - Burrow movement start
       if(unit->id == UnitId::ZergZergling
         && unit->playerId == *LOCAL_HUMAN_ID) {
@@ -750,7 +799,8 @@ bool nextFrame() {
 
       //Display rally points for factories selected
       if(selUnit->status & UnitStatus::GroundedBuilding
-        && units_dat::GroupFlags[selUnit->id].isFactory
+        && (units_dat::GroupFlags[selUnit->id].isFactory
+          || selUnit->id == UnitId::ZergNydusCanal)
         && (selUnit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())) //Show only if unit is your own or the game is in replay mode
       {
         const CUnit *rallyUnit = selUnit->rally.unit;
