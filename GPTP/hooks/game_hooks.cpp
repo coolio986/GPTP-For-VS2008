@@ -470,7 +470,6 @@ void runWarpgateMorph(CUnit *unit) {
 }
 
 //KYSXD Reactor behaviour
-
 void runReactorBehaviour(CUnit *unit) {
   //Check unit state
   if((unit->id == UnitId::TerranBarracks
@@ -531,6 +530,72 @@ void runReactorBehaviour(CUnit *unit) {
       */
     }
   }
+}
+
+//KYSXD - Nydus canal rally point start
+void runNydusCanalRally(CUnit *unit) {
+  if(unit->mainOrderId == OrderId::Enternyduscanal) {
+    if(unit->orderTarget.unit
+      && unit->orderTarget.unit->id == UnitId::ZergNydusCanal) {
+      CUnit *nydusTarget = unit->orderTarget.unit;
+      CUnit *nydusExit = nydusTarget->building.nydusExit;
+
+      u8 rally_orderId = OrderId::None;
+      u16 rally_x = nydusExit->rally.pt.x;
+      u16 rally_y = nydusExit->rally.pt.y;
+      CUnit *rally_target = nydusExit->rally.unit;
+
+      if(rally_x && rally_y) {
+        rally_orderId = OrderId::Move;
+
+        if(rally_target
+          && rally_target != nydusExit) {
+
+          if(rally_target->playerId == unit->playerId)
+            rally_orderId = OrderId::Follow;
+
+          if (units_dat::BaseProperty[unit->id] & UnitProperty::Worker) {
+            if(thisIsMineral(rally_target)){
+              rally_orderId = OrderId::Harvest1;
+            }
+            else if(units_dat::BaseProperty[rally_target->id] & UnitProperty::ResourceDepot
+              && unit->worker.isCarryingSomething) {
+              rally_orderId = OrderId::ReturnMinerals;
+            }
+          }
+          
+          if (scbw::canBeEnteredBy(rally_target, unit)) {
+            rally_orderId = OrderId::EnterTransport;
+          }
+
+        }
+
+      }
+
+      if(rally_orderId != OrderId::None) {
+        if(unit->orderQueueHead != NULL
+          && unit->orderQueueHead->orderId != rally_orderId
+          && unit->orderQueueHead->target.unit != rally_target
+          && unit->orderQueueHead->target.pt.x != rally_x
+          && unit->orderQueueHead->target.pt.y != rally_y) {
+          unit->order(rally_orderId, rally_x, rally_y, rally_target, UnitId::None, false);
+
+          if(unit->orderQueueHead != unit->orderQueueTail) {
+            COrder *movingOrder = unit->orderQueueTail;
+            movingOrder->prev->next = NULL;
+            movingOrder->prev = unit->orderQueueHead->prev;
+            unit->orderQueueHead->prev = movingOrder;
+            movingOrder->next = unit->orderQueueHead;
+
+            unit->orderQueueHead = movingOrder;
+          }
+        }
+        else {
+          unit->order(rally_orderId, rally_x, rally_y, rally_target, UnitId::None, false);
+        }
+      }
+    }
+  }//KYSXD - Nydus canal rally point end
 }
 
 //KYSXD - display info on screen - Credits to GagMania
@@ -690,21 +755,7 @@ bool nextFrame() {
       runReactorBehaviour(unit);
 
   //KYSXD - Zerg plugins
-      //KYSX - Nydus canal rally point
-      if(unit->mainOrderId == OrderId::Enternyduscanal
-        && unit->orderTarget.unit
-        && unit->orderTarget.unit->id == UnitId::ZergNydusCanal) {
-
-        CUnit *currentNydus = unit->orderTarget.unit;
-
-        COrder *current_order = unit->orderQueueHead;
-
-        COrder *moveToRally = current_order;
-
-        current_order->next = moveToRally;
-
-      }
-
+      runNydusCanalRally(unit);
 
       //KYSXD - Burrow movement start
       if(unit->id == UnitId::ZergZergling
@@ -798,9 +849,12 @@ bool nextFrame() {
       }
 
       //Display rally points for factories selected
-      if(selUnit->status & UnitStatus::GroundedBuilding
+      if(
+        (
+        (selUnit->status & UnitStatus::GroundedBuilding
         && (units_dat::GroupFlags[selUnit->id].isFactory
-          || selUnit->id == UnitId::ZergNydusCanal)
+          || selUnit->id == UnitId::ZergNydusCanal))
+        || selUnit->id == UnitId::ZergEgg)
         && (selUnit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())) //Show only if unit is your own or the game is in replay mode
       {
         const CUnit *rallyUnit = selUnit->rally.unit;

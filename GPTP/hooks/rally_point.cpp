@@ -27,7 +27,7 @@ bool canBeHarvestedBy(const CUnit* resource, u8 playerId) {
 }
 
 //KYSD moves the unit to the original factory
-void manageReactorCreation(CUnit* unit, CUnit* addon) {
+void moveReactorCreation(CUnit* unit, CUnit* addon) {
   using units_dat::BaseProperty;
   if(BaseProperty[addon->id] & UnitProperty::Addon
     && addon->connectedUnit != NULL) {
@@ -48,7 +48,7 @@ void orderNewUnitToRally(CUnit* unit, CUnit* factory) {
   using units_dat::BaseProperty;
   //Default StarCraft behavior
 
-  manageReactorCreation(unit, factory);
+  moveReactorCreation(unit, factory);
 
   //Do nothing if the rally target is the factory itself or the rally target position is 0
   if (factory->rally.unit == factory || !(factory->rally.pt.x)) return;
