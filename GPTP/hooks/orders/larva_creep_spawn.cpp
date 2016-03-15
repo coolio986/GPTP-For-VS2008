@@ -207,7 +207,12 @@ void secondaryOrd_SpreadCreepSpawningLarva(CUnit* unit) {
 		//look for a place to spawn creep on
 		//I'm not sure how the return value is
 		//calculated 
-		//(number of creep tiles/distance/other?)		
+		//(number of creep tiles/distance/other?)
+		//KYSXD:
+		//This funtions tries to spread creep on nearby tiles, returns:
+		//0 - if creep spread is completed (all surronding tiles are covered by creep)
+		//1 - if the unit can continue with creep spread
+		//2 - if the creep spread is blocked (has a building, is unpassable terrain)
 		result_00414680 = function_00414680(UnitId::ZergHive,unit->sprite->position.x,unit->sprite->position.y);
 
 		if(result_00414680 == 0) {
