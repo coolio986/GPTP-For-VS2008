@@ -547,6 +547,60 @@ void runReactorBehaviour(CUnit *unit) {
   }
 } //KYSXD Reactor behaviour end
 
+//KYSXD - Burrow movement start
+void runBurrowedMovement(CUnit *unit) {
+  if(unit->id == UnitId::ZergZergling
+    && unit->playerId == *LOCAL_HUMAN_ID) {
+    if(unit->mainOrderId == OrderId::Burrow) {
+      unit->_unused_0x106 = (u8)true;
+    }
+
+    if(unit->_unused_0x106
+      && unit->status & UnitStatus::Burrowed
+      && unit->status & UnitStatus::CanNotReceiveOrders) {
+
+      unit->status &= ~UnitStatus::Burrowed;
+      unit->status &= ~UnitStatus::CanNotReceiveOrders;
+      unit->status |= UnitStatus::IsGathering;
+
+      unit->flingyMovementType = 0;
+      unit->flingyTopSpeed = 1280;
+      unit->flingyAcceleration = 128;
+      unit->flingyTurnSpeed = 40;
+    }
+
+    if(unit->_unused_0x106
+      && unit->mainOrderId != OrderId::Unburrow
+      && unit->sprite->mainGraphic->animation != IscriptAnimation::Burrow) {
+      unit->playIscriptAnim(IscriptAnimation::Burrow);
+    }
+
+    if(unit->_unused_0x106
+      && OrderId::Attack1 <= unit->mainOrderId
+      && unit->mainOrderId <= OrderId::AttackMove) {
+      if(unit->orderTarget.unit) {
+        unit->orderTo(OrderId::Move, unit->orderTarget.unit);
+      }
+      else if(unit->orderTarget.pt.x
+        && unit->orderTarget.pt.y) {
+        unit->orderTo(OrderId::Move, unit->orderTarget.pt.x, unit->orderTarget.pt.y);
+      }
+      else unit->orderTo(OrderId::Nothing2);
+    }
+
+    if(unit->mainOrderId == OrderId::ReaverStop
+      && unit->_unused_0x106) {
+      unit->_unused_0x106 = (u8)false;
+
+      unit->status &= ~UnitStatus::IsGathering;
+      unit->status |= UnitStatus::Burrowed;
+      unit->flingyMovementType = 2;
+
+      unit->orderTo(OrderId::Unburrow);
+    }
+  }
+} //KYSXD - Burrow movement end
+
 //KYSXD - Nydus canal rally point start
 void runNydusCanalRally(CUnit *unit) {
   if(unit->mainOrderId == OrderId::Enternyduscanal) {
@@ -603,60 +657,6 @@ void runNydusCanalRally(CUnit *unit) {
     }
   }
 } //KYSXD - Nydus canal rally point end
-
-//KYSXD - Burrow movement start
-void runBurrowedMovement(CUnit *unit) {
-  if(unit->id == UnitId::ZergZergling
-    && unit->playerId == *LOCAL_HUMAN_ID) {
-    if(unit->mainOrderId == OrderId::Burrow) {
-      unit->_unused_0x106 = (u8)true;
-    }
-
-    if(unit->_unused_0x106
-      && unit->status & UnitStatus::Burrowed
-      && unit->status & UnitStatus::CanNotReceiveOrders) {
-
-      unit->status &= ~UnitStatus::Burrowed;
-      unit->status &= ~UnitStatus::CanNotReceiveOrders;
-      unit->status |= UnitStatus::IsGathering;
-
-      unit->flingyMovementType = 0;
-      unit->flingyTopSpeed = 1280;
-      unit->flingyAcceleration = 128;
-      unit->flingyTurnSpeed = 40;
-    }
-
-    if(unit->_unused_0x106
-      && unit->mainOrderId != OrderId::Unburrow
-      && unit->sprite->mainGraphic->animation != IscriptAnimation::Burrow) {
-      unit->playIscriptAnim(IscriptAnimation::Burrow);
-    }
-
-    if(unit->_unused_0x106
-      && OrderId::Attack1 <= unit->mainOrderId
-      && unit->mainOrderId <= OrderId::AttackMove) {
-      if(unit->orderTarget.unit) {
-        unit->orderTo(OrderId::Move, unit->orderTarget.unit);
-      }
-      else if(unit->orderTarget.pt.x
-        && unit->orderTarget.pt.y) {
-        unit->orderTo(OrderId::Move, unit->orderTarget.pt.x, unit->orderTarget.pt.y);
-      }
-      else unit->orderTo(OrderId::Nothing2);
-    }
-
-    if(unit->mainOrderId == OrderId::ReaverStop
-      && unit->_unused_0x106) {
-      unit->_unused_0x106 = (u8)false;
-
-      unit->status &= ~UnitStatus::IsGathering;
-      unit->status |= UnitStatus::Burrowed;
-      unit->flingyMovementType = 2;
-
-      unit->orderTo(OrderId::Unburrow);
-    }
-  }
-} //KYSXD - Burrow movement end
 
 //KYSXD - display info on screen - Credits to GagMania
 const int viewingStatus = 5;
@@ -985,7 +985,12 @@ bool nextFrame() {
       }
     }
 
-  //For research:
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+///////For research start/////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+/*///
     if(viewingCheck[*LOCAL_HUMAN_ID] == 1) {
       if(*clientSelectionCount == 1) {
         CUnit *thisUnit = clientSelectionGroup->unit[0];
@@ -1199,6 +1204,15 @@ bool nextFrame() {
         char index[64];
         sprintf_s(index, "index: %i", thisUnit->getIndex());
         graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, index, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
+        ++titleRow;
+        if(10*titleRow > 250) {
+          titleRow = 1;
+          titleCol++;
+        }
+
+        char userActionFlags[64];
+        sprintf_s(userActionFlags, "userActionFlags: %i", thisUnit->userActionFlags);
+        graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, userActionFlags, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
         ++titleRow;
         if(10*titleRow > 250) {
           titleRow = 1;
@@ -1918,6 +1932,12 @@ bool nextFrame() {
 
       }
     }
+/*///
+//////////////////////////////////////////////
+//////////////////////////////////////////////
+///////For research end///////////////////////
+//////////////////////////////////////////////
+//////////////////////////////////////////////
 
     int localPlayer = *LOCAL_HUMAN_ID;
     if(GetAsyncKeyState(VK_F5) & 0x0001) {

@@ -49,6 +49,8 @@ to find all the available tutorials.
 - Terran Reactor behavior (SCII inspired).
 - Stalker's blink (SCII inspired).
 - Adept's psionic transfer (SCII inspired).
+- Nydus canal rally point.
+- Zerg burrowed movement.
 
 **To do:**
 
