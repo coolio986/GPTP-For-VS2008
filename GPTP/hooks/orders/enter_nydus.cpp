@@ -9,6 +9,56 @@ namespace {
 	void orderComputer_cl(CUnit* unit, u8 orderId); 		//0x00475310
 	bool orderToMoveToTarget(CUnit *unit, CUnit *target);	//0x004EB980
 
+	///   Checks whether the @p resource unit can be harvested by \p playerId.
+	bool canBeHarvestedBy(const CUnit* resource, u8 playerId) {
+	  using units_dat::BaseProperty;
+
+	  if (resource != NULL
+	      && BaseProperty[resource->id] & UnitProperty::ResourceContainer) {
+
+	    //Mineral fields can be harvested by anyone
+	    if (UnitId::ResourceMineralField <= resource->id
+	        && resource->id <= UnitId::ResourceMineralFieldType3)
+	      return true;
+
+	    //Gas buildings can only be harvested if it is owned by the current player
+	    if (resource->status & UnitStatus::Completed
+	        && resource->playerId == playerId)
+	      return true;
+	  }
+
+	  return false;
+	}
+
+	//KYSXD herlper
+	void manageRally(CUnit *unit, CUnit *factory) {
+	  using units_dat::BaseProperty;
+	  //Do nothing if the rally target is the factory itself or the rally target position is 0
+	  if (factory->rally.unit == factory || !(factory->rally.pt.x)) return;
+
+	  //If unit is a worker and the factory has a worker rally set, use it.
+	  if (BaseProperty[unit->id] & UnitProperty::Worker
+	      && canBeHarvestedBy(factory->moveTarget.unit, unit->playerId)){
+	      unit->orderTo(OrderId::Harvest1, factory->moveTarget.unit);
+	      return;
+	  }
+
+	  //Enter to bunkers/transports
+	  if (factory->rally.unit && scbw::canBeEnteredBy(factory->rally.unit, unit)) {
+	    unit->orderTo(OrderId::EnterTransport, factory->rally.unit);
+	    return;
+	  }
+
+	  //Following should be allowed only on friendly units
+	  if (factory->rally.unit && factory->rally.unit->playerId == unit->playerId)
+	    unit->orderTo(OrderId::Follow, factory->rally.unit);
+	  else
+	    unit->orderTo(OrderId::Move, factory->rally.pt.x, factory->rally.pt.y);
+
+	  return; 
+	}
+
+
 } //unnamed namespace
 
 namespace hooks {
@@ -75,6 +125,7 @@ namespace hooks {
 
 			}
 
+			manageRally(unit, nydusCanal->building.nydusExit);
 		}
 		else {	//collision detected, restore old position
 			scbw::setUnitPosition(unit,oldPos.x,oldPos.y);

@@ -601,63 +601,6 @@ void runBurrowedMovement(CUnit *unit) {
   }
 } //KYSXD - Burrow movement end
 
-//KYSXD - Nydus canal rally point start
-void runNydusCanalRally(CUnit *unit) {
-  if(unit->mainOrderId == OrderId::Enternyduscanal) {
-    if(unit->orderTarget.unit
-      && unit->orderTarget.unit->id == UnitId::ZergNydusCanal) {
-      CUnit *nydusTarget = unit->orderTarget.unit;
-      CUnit *nydusExit = nydusTarget->building.nydusExit;
-
-      u8 rally_orderId = OrderId::None;
-      u16 rally_x = nydusExit->rally.pt.x;
-      u16 rally_y = nydusExit->rally.pt.y;
-      CUnit *rally_target = nydusExit->rally.unit;
-
-      if(rally_x && rally_y) {
-        rally_orderId = OrderId::Move;
-
-        if(rally_target
-          && rally_target != nydusExit) {
-
-          if(rally_target->playerId == unit->playerId)
-            rally_orderId = OrderId::Follow;
-
-          if(units_dat::BaseProperty[unit->id] & UnitProperty::Worker) {
-            if(thisIsMineral(rally_target)){
-              rally_orderId = OrderId::Harvest1;
-            }
-            else if(units_dat::BaseProperty[rally_target->id] & UnitProperty::ResourceDepot
-              && unit->worker.isCarryingSomething) {
-              rally_orderId = OrderId::ReturnMinerals;
-            }
-          }
-          
-          if(scbw::canBeEnteredBy(rally_target, unit)) {
-            rally_orderId = OrderId::EnterTransport;
-          }
-
-        }
-
-      }
-
-      if(rally_orderId != OrderId::None) {
-        if(unit->orderQueueHead != NULL
-          && (unit->orderQueueHead->orderId != rally_orderId
-          || unit->orderQueueHead->target.unit != rally_target
-          || unit->orderQueueHead->target.pt.x != rally_x
-          || unit->orderQueueHead->target.pt.y != rally_y)) {
-          removeOrderFromUnitQueue(unit);
-          unit->order(rally_orderId, rally_x, rally_y, rally_target, UnitId::None, false);
-        }
-        else {
-          unit->order(rally_orderId, rally_x, rally_y, rally_target, UnitId::None, false);
-        }
-      }
-    }
-  }
-} //KYSXD - Nydus canal rally point end
-
 //KYSXD - display info on screen - Credits to GagMania
 const int viewingStatus = 5;
 int viewingCheck[8];
@@ -816,7 +759,6 @@ bool nextFrame() {
 
   //KYSXD - Zerg plugins
       runBurrowedMovement(unit);
-      runNydusCanalRally(unit);
     } //Loop through all visible units in the game - end
 
     //KYSXD update last warpgate

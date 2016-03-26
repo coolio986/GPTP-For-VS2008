@@ -5,36 +5,65 @@
 #include "../SCBW/enumerations.h"
 #include "../SCBW/api.h"
 
-///   Checks whether the @p resource unit can be harvested by \p playerId.
-bool canBeHarvestedBy(const CUnit* resource, u8 playerId) {
-  using units_dat::BaseProperty;
+namespace {
+  ///   Checks whether the @p resource unit can be harvested by \p playerId.
+  bool canBeHarvestedBy(const CUnit* resource, u8 playerId) {
+    using units_dat::BaseProperty;
 
-  if (resource != NULL
-      && BaseProperty[resource->id] & UnitProperty::ResourceContainer) {
+    if (resource != NULL
+        && BaseProperty[resource->id] & UnitProperty::ResourceContainer) {
 
-    //Mineral fields can be harvested by anyone
-    if (UnitId::ResourceMineralField <= resource->id
-        && resource->id <= UnitId::ResourceMineralFieldType3)
-      return true;
+      //Mineral fields can be harvested by anyone
+      if (UnitId::ResourceMineralField <= resource->id
+          && resource->id <= UnitId::ResourceMineralFieldType3)
+        return true;
 
-    //Gas buildings can only be harvested if it is owned by the current player
-    if (resource->status & UnitStatus::Completed
-        && resource->playerId == playerId)
-      return true;
+      //Gas buildings can only be harvested if it is owned by the current player
+      if (resource->status & UnitStatus::Completed
+          && resource->playerId == playerId)
+        return true;
+    }
+
+    return false;
   }
 
-  return false;
-}
-
-//KYSD moves the unit to the original factory
-void moveReactorCreation(CUnit* unit, CUnit* addon) {
-  using units_dat::BaseProperty;
-  if(BaseProperty[addon->id] & UnitProperty::Addon
-    && addon->connectedUnit != NULL) {
-    CUnit *factory = addon->connectedUnit;
-    scbw::moveUnit(unit, factory->getX(), factory->getY() + 1);
+  //KYSD moves the unit to the original factory
+  void moveReactorCreation(CUnit* unit, CUnit* addon) {
+    using units_dat::BaseProperty;
+    if(BaseProperty[addon->id] & UnitProperty::Addon
+      && addon->connectedUnit != NULL) {
+      CUnit *factory = addon->connectedUnit;
+      scbw::moveUnit(unit, factory->getX(), factory->getY() + 1);
+    }
+    return;
   }
-  return;
+
+  void manageRally(CUnit *unit, CUnit *factory) {
+    using units_dat::BaseProperty;
+    //Do nothing if the rally target is the factory itself or the rally target position is 0
+    if (factory->rally.unit == factory || !(factory->rally.pt.x)) return;
+
+    //If unit is a worker and the factory has a worker rally set, use it.
+    if (BaseProperty[unit->id] & UnitProperty::Worker
+        && canBeHarvestedBy(factory->moveTarget.unit, unit->playerId)){
+        unit->orderTo(OrderId::Harvest1, factory->moveTarget.unit);
+        return;
+    }
+
+    //Enter to bunkers/transports
+    if (factory->rally.unit && scbw::canBeEnteredBy(factory->rally.unit, unit)) {
+      unit->orderTo(OrderId::EnterTransport, factory->rally.unit);
+      return;
+    }
+
+    //Following should be allowed only on friendly units
+    if (factory->rally.unit && factory->rally.unit->playerId == unit->playerId)
+      unit->orderTo(OrderId::Follow, factory->rally.unit);
+    else
+      unit->orderTo(OrderId::Move, factory->rally.pt.x, factory->rally.pt.y);
+
+    return; 
+  }
 }
 
 namespace hooks { //KYSXD - From SC_Transition mod
@@ -49,28 +78,7 @@ void orderNewUnitToRally(CUnit* unit, CUnit* factory) {
   //Default StarCraft behavior
 
   moveReactorCreation(unit, factory);
-
-  //Do nothing if the rally target is the factory itself or the rally target position is 0
-  if (factory->rally.unit == factory || !(factory->rally.pt.x)) return;
-
-  //If unit is a worker and the factory has a worker rally set, use it.
-  if (BaseProperty[unit->id] & UnitProperty::Worker
-      && canBeHarvestedBy(factory->moveTarget.unit, unit->playerId)){
-      unit->orderTo(OrderId::Harvest1, factory->moveTarget.unit);
-      return;
-  }
-
-  //Enter to bunkers/transports
-  if (factory->rally.unit && scbw::canBeEnteredBy(factory->rally.unit, unit)) {
-    unit->orderTo(OrderId::EnterTransport, factory->rally.unit);
-    return;
-  }
-
-  //Following should be allowed only on friendly units
-  if (factory->rally.unit && factory->rally.unit->playerId == unit->playerId)
-    unit->orderTo(OrderId::Follow, factory->rally.unit);
-  else
-    unit->orderTo(OrderId::Move, factory->rally.pt.x, factory->rally.pt.y);
+  manageRally(unit, factory);
 }
 
 /// Called when the player sets the rally point on the ground.
