@@ -651,7 +651,7 @@ u32 function_00473FB0(CUnit* unit, u8 playerId, int x, int y, u16 unitId, u8 unk
 
 ;
 
-const u32 Func_removeOrderFromUnitQueue = 0x004742D0;
+const u32 Func_RemoveOrderFromUnitQueue = 0x004742D0;
 void removeOrderFromUnitQueue(CUnit *unit) {
 	
 	static COrder* orderQueueHead = unit->orderQueueHead;
