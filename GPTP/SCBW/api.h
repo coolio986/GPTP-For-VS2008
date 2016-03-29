@@ -235,6 +235,12 @@ u16 random();
 /// and status bar). not completely understood.
 void refreshConsole();
 
+// Moves the camera/screen to the unit
+void MoveScreenToUnit(CUnit *unit);
+
+// Creates a minimap ping at x,y (relative pos)
+void __stdcall minimapPing(u32 x, u32 y, s32 color);
+
 // Functionally identical to the [playfram] opcode in iscript.bin.
 inline void playFrame(CImage* image, u16 frameset) {
   if (image->frameSet != frameset) {

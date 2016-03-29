@@ -76,6 +76,9 @@ struct UnitsSel { CUnit* unit[SELECTION_ARRAY_LENGTH]; };
 SCBW_DATA(const UnitsSel*, clientSelectionGroup, 0x00597208);
 SCBW_DATA(const u8*,    clientSelectionCount,   0x0059723D);
 
+// Contains the position of the last event that occured (spacebar).
+SCBW_DATA(const Point32*,    LastEventPosition,   0x0057FD34);
+
 /// Screen position relative to the map
 SCBW_DATA(s32*,         screenX,                0x00628448);
 SCBW_DATA(s32*,         screenY,                0x00628470);
@@ -139,7 +142,7 @@ SCBW_DATA(const DatLoad*, unitsDat, 0x00513C30);
 
 SCBW_DATA(u8*,		Graphic,				unitsDat[0].address);	//006644F8
 SCBW_DATA(u16*,		SubUnit,				unitsDat[1].address);	//006607C0
-//SCBW_DATA(u16*,	???,					unitsDat[2].address);	//00660C38
+//SCBW_DATA(u16*,	SubUnit2,				unitsDat[2].address);	//00660C38
 SCBW_DATA(u16*,		InfestedUnitPartial,	unitsDat[3].address);	//00664980, (Id - UnitId::TerranCommandCenter) for it to work, last valid id is UnitId::Special_OvermindCocoon
 SCBW_DATA(u32*,		ConstructionGraphic,	unitsDat[4].address);	//006610B0
 SCBW_DATA(u8*,		SpecialAngle,			unitsDat[5].address);	//006605F0  (used by Siege Mode ON/OFF and maybe doodad traps)
@@ -158,7 +161,7 @@ SCBW_DATA(u8*,		GroundWeapon,			unitsDat[17].address);	//006636B8
 SCBW_DATA(u8*,		MaxGroundHits,			unitsDat[18].address);	//006645E0
 SCBW_DATA(u8*,		AirWeapon,				unitsDat[19].address);	//006616E0
 SCBW_DATA(u8*,		MaxAirHits,				unitsDat[20].address);	//0065FC18
-//SCBW_DATA(u8*,	???,					unitsDat[21].address);	//00660178
+//SCBW_DATA(u8*,	ComputerAIUnitType,		unitsDat[21].address);	//00660178 AKA AI Internal in DatEdit
 SCBW_DATA(u32*,		BaseProperty,			unitsDat[22].address);  //00664080 AKA SpecialAbilityFlags, UnitProperty, etc. Use with UnitProperty::Enum.
 SCBW_DATA(u8*,		SeekRange,				unitsDat[23].address);  //00662DB8 AKA Target Acquisition Range, Acquire Target Range, etc.
 SCBW_DATA(u8*,		SightRange,				unitsDat[24].address);	//00663238
@@ -174,9 +177,9 @@ SCBW_DATA(u16*,		SoundAnnoyedLast,		unitsDat[33].address);	//00661EE8
 SCBW_DATA(u16*,		SoundYesFirst,			unitsDat[34].address);	//00663C10
 SCBW_DATA(u16*,		SoundYesLast,			unitsDat[35].address);	//00661440
 SCBW_DATA(Point16*,	BuildingDimensions,		unitsDat[36].address);	//00662860
-//SCBW_DATA(u16*,	???,					unitsDat[37].address);	//006626E0
+//SCBW_DATA(Point16*,	AddonPlacement,			unitsDat[37].address);	//006626E0 Only exists for buildings (First entry is 106 Command Center)
 SCBW_DATA(Box16*,	UnitBounds,				unitsDat[38].address);	//006617C8
-//SCBW_DATA(u16*,	???,					unitsDat[39].address);	//00662F88
+//SCBW_DATA(u16*,	Portrait,				unitsDat[39].address);	//00662F88 0xFFFF = No Portrait
 SCBW_DATA(u16*,		MineralCost,			unitsDat[40].address);	//00663888
 SCBW_DATA(u16*,		GasCost,				unitsDat[41].address);	//0065FD00
 SCBW_DATA(u16*,		TimeCost,				unitsDat[42].address);	//00660428
@@ -189,8 +192,8 @@ SCBW_DATA(u8*,		SpaceProvided,			unitsDat[48].address);	//00660988
 SCBW_DATA(u16*,		BuildScore,				unitsDat[49].address);	//00663408
 SCBW_DATA(u16*,		DestroyScore,			unitsDat[50].address);	//00663EB8
 SCBW_DATA(u16*,		MapStringId,			unitsDat[51].address);	//00660260
-SCBW_DATA(u8*,		BroodwarOnly,			unitsDat[52].address);	//006606D8
-//SCBW_DATA(u16*, ???,						unitsDat[53].address);	//00661518
+SCBW_DATA(u8*,		BroodwarFlag,			unitsDat[52].address);	//006606D8
+//SCBW_DATA(u16*,	AvailabilityFlags,		unitsDat[53].address);	//00661518
 } //units_dat (last entry at 0x00513EAC)
 
 namespace flingy_dat {

@@ -434,3 +434,19 @@ namespace RightClickActions {
 		Unknown = 6				//only by ComSat addon
 };
 }
+
+//Use with units_dat::AvailabilityFlags
+namespace StareditAvailabilityFlags {
+  enum Enum {
+    Non_Neutral =             0x0001,
+    Unit_Listing_Palette =    0x0002,
+    Mission_Briefing =        0x0004,
+    Player_Settings =         0x0008,
+    All_Races =               0x0010,
+    Set_Doodad_State =        0x0020,
+    Non_Location_Triggers =   0x0040,
+    Unit_Hero_Settings =      0x0080,
+    Location_Triggers =       0x0100,
+    BroodWar_Only =           0x0200
+    };
+}
