@@ -5,17 +5,20 @@ bool onlyTemplarsSelection() {
 	if (selAmount >= 2) {
 		for (u32 i = 0; i < selAmount; i++) {
 	      CUnit *selUnit = clientSelectionGroup->unit[i];
-	      switch (selUnit->id) {
-	      	case UnitId::ProtossHighTemplar:
-	      	case UnitId::ProtossDarkTemplar:
-	      	case UnitId::ProtossArchon:
-	      	case UnitId::ProtossDarkArchon:
-	      	case UnitId::Hero_TassadarZeratulArchon:
-		      	break;
-	      	default:
-	      		return false;
-	      		break;
+	      if(selUnit->status & UnitStatus::Completed) {
+		      switch (selUnit->id) {
+		      	case UnitId::ProtossHighTemplar:
+		      	case UnitId::ProtossDarkTemplar:
+		      	case UnitId::ProtossArchon:
+		      	case UnitId::ProtossDarkArchon:
+		      	case UnitId::Hero_TassadarZeratulArchon:
+			      	break;
+		      	default:
+		      		return false;
+		      		break;
+		      }	      	
 	      }
+	      else return false;
 		}
 		return true;
 	}
@@ -25,7 +28,10 @@ bool onlyTemplarsSelection() {
 int getUnitAmountInSelection(int index) {
 	int unitAmount = 0;
 	for (u32 i = 0; i < *clientSelectionCount; i++)
-      if (clientSelectionGroup->unit[i]->id == index) unitAmount++;
+      if (clientSelectionGroup->unit[i]->id == index
+      	&& clientSelectionGroup->unit[i]->status & UnitStatus::Completed
+      	&& !clientSelectionGroup->unit[i]->isFrozen())
+      	unitAmount++;
 	return unitAmount;
 }
 
@@ -243,7 +249,7 @@ BUTTON_SET* getTemplarsButtonSet() {
 
 	bool canCreateHArchon = (darkTemplars > 1);
 	bool canCreateDArchon = (highTemplars > 1);
-	bool canCreateTArchon = (darkTemplars + highTemplars > 1);
+	bool canCreateTArchon = (darkTemplars && highTemplars);
 
 	if (canCreateHArchon)
 		nButtons++;

@@ -6,6 +6,9 @@
 #include <SCBW/scbwdata.h>
 #include <SCBW/ExtendSightLimit.h>
 
+#include <logger.h>
+#define WRITE_TO_LOG(x) GPTP::logger<<x<<std::endl
+
 bool firstBoot =  false;
 
 #include "psi_field.h"
@@ -287,15 +290,22 @@ void runFirstFrameBehaviour() {
   //For non-custom games - end  
 }
 
+inline void manageUnitStatusFlags(CUnit *unit, u32 flag, bool status) {
+  if(status) {
+    unit->status |= flag;
+  }
+  else unit->status &= ~(flag);
+}
+
 //KYSXD worker no collision if harvesting - start
 void manageWorkerCollision(CUnit *unit) {
   if(units_dat::BaseProperty[unit->id] & UnitProperty::Worker) {
     if(hasHarvestOrders(unit)) {
-        unit->unusedTimer = 2;
-        unit->status |= UnitStatus::NoCollide;
+      unit->unusedTimer = 2;
+      manageUnitStatusFlags(unit, UnitStatus::NoCollide, true);
     }
     else {
-      unit->status &= ~(UnitStatus::NoCollide);
+      manageUnitStatusFlags(unit, UnitStatus::NoCollide, false);
     }
   }
 }
@@ -446,6 +456,76 @@ void runStalkerBlink(CUnit *unit) {
   }
 }
 
+//KYSXD Warpgate morph
+void runWarpgateMorph(CUnit *unit) {
+  if((unit->id == UnitId::ProtossGateway
+    || unit->id == UnitId::Special_WarpGate)
+    && unit->mainOrderId == OrderId::ReaverStop) {
+    unit->mainOrderId = OrderId::Nothing2;
+    if(unit->status & UnitStatus::Completed
+      && !(unit->isFrozen())) {
+      u16 morphId = UnitId::ProtossGateway + UnitId::Special_WarpGate - unit->id;
+      replaceUnitWithType(unit, morphId);
+      unit->mainOrderId = OrderId::Nothing2;
+      unit->previousUnitType = UnitId::None;
+      unit->shields = units_dat::MaxShieldPoints[morphId] << 8;
+      unit->energy = 0;          
+    }
+  }
+}
+
+//KYSXD Warpgate morph
+//OrderId::PlaceAddon
+void runWarpgateBehaviour(CUnit *unit) {
+  if(unit->id == UnitId::Special_WarpGate
+    && unit->status & UnitStatus::Completed) {
+
+    if(unit->mainOrderId == OrderId::PlaceAddon
+      && unit->buildQueue[unit->buildQueueSlot] != UnitId::None) {
+
+      u16 thisUnitId = unit->buildQueue[unit->buildQueueSlot];
+      unit->previousUnitType = thisUnitId;
+
+      u32 yPos = unit->orderTarget.pt.y;
+      u32 xPos = unit->orderTarget.pt.x;
+      CUnit *warpUnit = scbw::createUnitAtPos(thisUnitId, unit->playerId, xPos, yPos);
+
+      if(warpUnit) {
+
+        u16 warpSeconds = 5;
+        u16 warpTime = warpSeconds * 15;
+
+        s32 maxShield = (s32)(units_dat::MaxShieldPoints[thisUnitId]) << 8;
+        s32 maxHp = units_dat::MaxHitPoints[thisUnitId];
+
+        s32 hpRegen = maxHp / warpTime;
+        s32 shieldRegen = maxShield / warpTime;
+
+        //Set unit
+        warpUnit->buildRepairHpGain = hpRegen;
+        warpUnit->shieldGain = shieldRegen;
+        warpUnit->remainingBuildTime = warpTime;
+
+        warpUnit->hitPoints = 1;
+        warpUnit->shields = 1;
+
+        replaceSpriteImages(warpUnit->sprite,
+          ImageId::WarpAnchor, warpUnit->currentDirection1);
+        warpUnit->status &= ~UnitStatus::Completed;
+        warpUnit->orderTo(OrderId::BuildSelf2);
+        warpUnit->currentButtonSet = UnitId::Buildings;
+      }
+
+      //Clean building
+      unit->buildQueue[unit->buildQueueSlot] = UnitId::None;
+      unit->mainOrderId = OrderId::Nothing2;
+      unit->secondaryOrderId = OrderId::Nothing2;
+
+      unit->building.addon = unit;
+    }
+  }
+}
+
 //KYSXD zealot's charge
 void runZealotCharge(CUnit *unit) {
   //Check max_energy.cpp and unit_speed.cpp for more info
@@ -459,26 +539,6 @@ void runZealotCharge(CUnit *unit) {
           unit->stimTimer = 5;
           unit->energy = 0;
         }
-      }
-    }
-  }
-}
-
-//KYSXD Warpgate morph
-void runWarpgateMorph(CUnit *unit) {
-  if((unit->id == UnitId::ProtossGateway
-    || unit->id == UnitId::Special_WarpGate)
-    && unit->mainOrderId == OrderId::ReaverStop) {
-    unit->mainOrderId = OrderId::Nothing2;
-    if(unit->status & UnitStatus::Completed
-      && !(unit->isFrozen())) {
-      if(unit->previousUnitType == UnitId::None) {
-        u16 morphId = UnitId::ProtossGateway + UnitId::Special_WarpGate - unit->id;
-        replaceUnitWithType(unit, morphId);
-        unit->mainOrderId = OrderId::Nothing2;
-        unit->previousUnitType = UnitId::None;
-        unit->shields = units_dat::MaxShieldPoints[morphId] << 8;
-        unit->energy = 0;          
       }
     }
   }
@@ -610,6 +670,23 @@ int viewingCheck[8];
   //3 = Addon related
 }
 
+namespace smartCasting {
+  COrder *getCurrentOrder(CUnit *unit); 
+  COrder *getLastOrder(CUnit *unit);
+  COrder *createOrder(u16 orderId, u8 unitId, CUnit *target, u16 posX, u16 posY);
+  void saveAsLastOrder(CUnit *unit, COrder *lastOrder);
+  void saveAsMainOrder(CUnit *unit, COrder *mainOrder);
+  void setOrderInUnit(CUnit *unit, COrder *newOrder);
+  bool isCasterValidForSmartCast(CUnit *unit, u8 orderId, bool allowOverrun);
+  bool isCouplesOrder(u8 orderId);
+  bool isPartnerInOrder(CUnit *unit1, CUnit *unit2, u8 orderId);
+  CUnit *getBestCaster(u8 orderId, u8 playerId, bool allowOverrun);
+  void tryLastOrder(CUnit *unit);
+  void smartCastOrder(u8 orderId);
+  void prepareUnitsForNextFrame();
+  void runSmarCast();
+}
+
 namespace hooks {
 
 /// This hook is called every frame; most of your plugin's logic goes here.
@@ -621,6 +698,7 @@ bool nextFrame() {
     graphics::resetAllGraphics();
     hooks::updatePsiFieldProviders();
 
+    smartCasting::runSmarCast();
     //KYSXD idle worker amount
     u32 idleWorkerCount = 0;
 
@@ -628,19 +706,6 @@ bool nextFrame() {
     u32 titleRow = 1;
     u32 titleCol = 1;
 
-    //KYSXD for use with Warpgate
-    u32 warpgateAvailable = 0;
-    u32 warpgateAmount = 0;
-    u32 warpgateTime = 0;
-    CUnit *lastWG[8];
-    bool warpgateUpdate[8];
-    u16 warpgateCall[8];
-    for (int i = 0; i < 8; i++) {
-      lastWG[i] = NULL;
-      warpgateUpdate[i] = false;
-      warpgateCall[i] = UnitId::None;
-    }
-    
     bool isOperationCwalEnabled = scbw::isCheatEnabled(CheatFlags::OperationCwal);
 
     //This block is executed once every game.
@@ -683,76 +748,7 @@ bool nextFrame() {
       runZealotCharge(unit);
 
       runWarpgateMorph(unit);
-
-      //KYSXD Warpgate start
-      //Check max_energy.cpp
-      if(unit->id == UnitId::Special_WarpGate
-        && unit->status & UnitStatus::Completed
-        && unit->playerId == *LOCAL_NATION_ID
-        && !(unit->isFrozen())) {
-        if(unit->playerId == *LOCAL_NATION_ID) {
-          ++warpgateAmount;
-        }
-        unit->currentButtonSet = UnitId::None;
-        if(unit->getMaxEnergy() == unit->energy) {
-          unit->previousUnitType = UnitId::None;
-          if(unit->playerId == *LOCAL_NATION_ID) {
-            ++warpgateAvailable;
-          }
-          if(lastWG[unit->playerId] == NULL) {
-            lastWG[unit->playerId] = unit;
-          }
-        }
-        else {
-          u32 val = unit->getMaxEnergy() - unit->energy;
-          if(warpgateTime == 0
-            || val < warpgateTime) {
-            warpgateTime = val;
-          }
-        }
-        if(unit->buildQueue[unit->buildQueueSlot] != UnitId::None) {
-          u16 thisUnitId = unit->buildQueue[unit->buildQueueSlot];
-          warpgateCall[unit->playerId] = thisUnitId;
-          u32 yPos = unit->orderTarget.pt.y;
-          u32 xPos = unit->orderTarget.pt.x;
-          CUnit *warpUnit = scbw::createUnitAtPos(thisUnitId, unit->playerId, xPos, yPos);
-          if(warpUnit) {
-            //Clean building
-            unit->buildQueue[unit->buildQueueSlot] = UnitId::None;
-            unit->mainOrderId = OrderId::Nothing2;
-            unit->secondaryOrderId = OrderId::Nothing2;
-
-
-            u16 warpSeconds = 5;
-            u16 warpTime = warpSeconds * 15;
-
-            s32 maxShield = (s32)(units_dat::MaxShieldPoints[thisUnitId]) << 8;
-            s32 maxHp = units_dat::MaxHitPoints[thisUnitId];
-
-            s32 hpRegen = maxHp / warpTime;
-            s32 shieldRegen = maxShield / warpTime;
-
-            //Set unit
-            warpUnit->buildRepairHpGain = hpRegen;
-            warpUnit->shieldGain = shieldRegen;
-            warpUnit->remainingBuildTime = warpTime;
-
-            warpUnit->hitPoints = 1;
-            warpUnit->shields = 1;
-
-            replaceSpriteImages(warpUnit->sprite,
-              ImageId::WarpAnchor, warpUnit->currentDirection1);
-            warpUnit->status &= ~UnitStatus::Completed;
-            warpUnit->orderTo(OrderId::BuildSelf2);
-            warpUnit->currentButtonSet = UnitId::Buildings;
-          }
-          if(!isOperationCwalEnabled
-            && unit->playerId == *LOCAL_NATION_ID) {
-            --warpgateAvailable;
-          }
-          warpgateUpdate[unit->playerId] = true;
-        }
-      } //KYSXD Warpgate end
+      runWarpgateBehaviour(unit);
 
   //KYSXD - Terran plugins
       runReactorBehaviour(unit);
@@ -761,26 +757,10 @@ bool nextFrame() {
       runBurrowedMovement(unit);
     } //Loop through all visible units in the game - end
 
-    //KYSXD update last warpgate
-    for (int i = 0; i < 8; i++) {
-      if(!isOperationCwalEnabled
-        && warpgateUpdate[i] == true
-        && lastWG[i] != NULL) {
-        lastWG[i]->previousUnitType = warpgateCall[i];
-      }
-    }
-
   //KYSXD - Selection plugins
 
     for (int i = 0; i < *clientSelectionCount; ++i) {
       CUnit *selUnit = clientSelectionGroup->unit[i];
-
-      //KYSXD update ButtonSet for WG
-      if(selUnit->id == UnitId::Special_WarpGate
-        && selUnit->status & UnitStatus::Completed) {
-        selUnit->currentButtonSet =
-          (warpgateAvailable != 0 || isOperationCwalEnabled ? UnitId::Special_WarpGate : UnitId::None);
-      }
 
       /*/KYSXD unit worker count start  
       if(selUnit->playerId == *LOCAL_NATION_ID
@@ -899,30 +879,6 @@ bool nextFrame() {
         if(10*titleRow > 250) {
           titleRow = 1;
           titleCol++;
-        }
-      }
-
-      if(warpgateAmount != 0) {
-        char WGates[64];
-        if(isOperationCwalEnabled) {
-          warpgateAvailable = warpgateAmount;
-        }
-        sprintf_s(WGates, "Online Warpgates: %d", warpgateAvailable);
-        graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, WGates, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
-        ++titleRow;
-        if(10*titleRow > 250) {
-          titleRow = 1;
-          titleCol++;
-        }
-        if(warpgateAvailable < warpgateAmount) {
-          char nextWGTime[64];
-          sprintf_s(nextWGTime, "(Next in: %d sec)", warpgateTime >> 8);
-          graphics::drawText(20, 10*titleRow, nextWGTime, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
-          ++titleRow;
-          if(10*titleRow > 250) {
-            titleRow = 1;
-            titleCol++;
-          }
         }
       }
     }
@@ -1904,3 +1860,254 @@ bool gameEnd() {
 }
 
 } //hooks
+
+namespace smartCasting {
+  //Get a COrder pointer with the current order
+  COrder *getCurrentOrder(CUnit *unit) {
+    static COrder main;
+    main.prev = NULL;
+    main.next = NULL;
+    main.orderId = (u16)unit->mainOrderId;
+    main.unitId = unit->buildQueue[unit->buildQueueSlot];
+    main.target.unit = CUnit::getFromIndex(unit->orderTarget.unit->getIndex());
+    main.target.pt.x = unit->orderTarget.pt.x;
+    main.target.pt.y = unit->orderTarget.pt.y;
+
+    return &main;
+  }
+
+  //Get a COrder pointer with the last order
+  COrder *getLastOrder(CUnit *unit) {
+    static COrder last;
+    last.prev = NULL;
+    last.next = NULL;
+    last.orderId = (u16)unit->_unknown_0x086;
+    last.unitId = unit->_unknown_0x066;
+    last.target.unit = CUnit::getFromIndex(unit->_unknown_0x052);
+    last.target.pt.x = unit->secondaryOrderPos.x;
+    last.target.pt.y = unit->secondaryOrderPos.y;
+
+    return &last;
+  };
+
+  //Get a COrder pointer with a custom order
+  COrder *createOrder(u16 orderId = OrderId::Nothing2, u8 unitId = 0, CUnit *target = NULL, u16 posX = 0, u16 posY = 0){
+    static COrder thisOrder;
+    thisOrder.prev = NULL;
+    thisOrder.next = NULL;
+    thisOrder.orderId = orderId;
+    thisOrder.unitId = unitId;
+    thisOrder.target.unit = target;
+    thisOrder.target.pt.x = posX;
+    thisOrder.target.pt.y = posY;
+
+    return &thisOrder;
+  }
+
+  //Stores all variables of COrder in the unit using unused members of CUnit
+  void saveAsLastOrder(CUnit *unit, COrder *lastOrder = NULL) {
+    if(lastOrder) {
+      unit->_unknown_0x086 = (u8)lastOrder->orderId;
+      unit->_unknown_0x066 = lastOrder->unitId;
+      unit->_unknown_0x052 = lastOrder->target.unit->getIndex();
+      unit->secondaryOrderPos.x = lastOrder->target.pt.x;
+      unit->secondaryOrderPos.y = lastOrder->target.pt.y;
+    }
+    else {
+      COrder *order = createOrder();
+      saveAsLastOrder(unit, getCurrentOrder(unit));
+    }
+  }
+
+  //Stores all variables of COrder in the variables of the current order
+  void saveAsMainOrder(CUnit *unit, COrder *mainOrder) {
+    if(mainOrder) {
+      unit->mainOrderId = (u8)mainOrder->orderId;
+      unit->buildQueue[unit->buildQueueSlot] = mainOrder->unitId;
+      unit->orderTarget.unit = mainOrder->target.unit;
+      unit->orderTarget.pt.x = mainOrder->target.pt.x;
+      unit->orderTarget.pt.y = mainOrder->target.pt.y;
+    }
+  }
+
+  //This function does three things:
+  //1) resets the variables of the current order
+  //2) issues the COrder newOrder
+  //3) stores the newOrder's variables in the unit's last order variables
+  void setOrderInUnit(CUnit *unit, COrder *newOrder = NULL) {
+    COrder *nothingOrder = createOrder();
+    if(newOrder) {
+      saveAsMainOrder(unit, nothingOrder);
+      unit->order((u8)newOrder->orderId, newOrder->target.pt.x, newOrder->target.pt.y, newOrder->target.unit, newOrder->unitId, true);
+      saveAsLastOrder(unit, newOrder);
+    }
+    else {
+      setOrderInUnit(unit, nothingOrder);
+    }
+  }
+
+  //This function checks three things:
+  //1) If the user has interacted with the unit
+  //2) if the unit's mainOrderId is the same as the asked orderId
+  //3) If the last order is different from the asked orderId or is allowed to overrun orders
+  bool isCasterValidForSmartCast(CUnit *unit, u8 orderId, bool allowOverrun = false) {
+    if(unit
+      && unit->userActionFlags == 2
+      && unit->mainOrderId == orderId) {
+      COrder *last = getLastOrder(unit);
+      if(last->orderId != orderId
+        || allowOverrun) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  //Checks of the orderId requires two units (warp archon)
+  bool isCouplesOrder(u8 orderId) {
+    switch(orderId) {
+      case OrderId::WarpingArchon:
+      case OrderId::WarpingDarkArchon:
+        return true;
+        break;
+      default:
+        return false;
+        break;
+    }
+  }
+
+  //Checks if two units are partners in a 2-units order
+  bool isPartnerInOrder(CUnit *unit1, CUnit *unit2, u8 orderId) {
+    if(unit1 && unit2 && isCouplesOrder(orderId)
+      && unit1->orderTarget.unit == unit2
+      && unit2->orderTarget.unit == unit1) {
+      return true;
+    }
+    else return false;
+  }
+
+  //Returns the best caster running orderId for player playerId
+  CUnit *getBestCaster(u8 orderId, u8 playerId, bool allowOverrun = false) {
+    CUnit *bestCaster = NULL;
+    for(CUnit *otherCaster = *firstVisibleUnit; otherCaster; otherCaster = otherCaster->link.next) {
+      if(otherCaster->playerId == playerId
+        && isCasterValidForSmartCast(otherCaster, orderId, allowOverrun)) {
+        if(bestCaster) {
+          //Evaluate "scores"
+          //In this case, score = energy
+          if(bestCaster->energy < otherCaster->energy) {
+            bestCaster = otherCaster;
+          }
+        }
+        else bestCaster = otherCaster;
+      }
+    }
+    if(bestCaster || allowOverrun)
+      return bestCaster;
+    else return getBestCaster(orderId, playerId, true);
+  }
+
+  //Issued the last order to unit
+  //If the last order was completed, orders to idle
+  void tryLastOrder(CUnit *unit) {
+    COrder *last = getLastOrder(unit);
+    if(unit->orderSignal) {
+      setOrderInUnit(unit);
+      unit->orderSignal = 0;
+    }
+    else
+      setOrderInUnit(unit, last);
+  }
+
+  //Smartcast behaviour
+  void smartCastOrder(u8 orderId) {
+    CUnit *bestCaster[8];
+    long int target_x[8];
+    long int target_y[8];
+    u16 totalCasters[8];
+
+    for(int i = 0; i < 8; i++){
+      bestCaster[i] = getBestCaster(orderId, i);
+      if(bestCaster[i]) {
+        bestCaster[i]->userActionFlags = 0;
+      }
+      target_x[i] = 0;
+      target_y[i] = 0;
+      totalCasters[i] = 0;
+    }
+ 
+    //Find the best caster
+    //Order other units to continue with the lasts orders
+    for(CUnit *caster = *firstVisibleUnit; caster; caster = caster->link.next) {
+      if(caster->userActionFlags == 2
+        && caster->mainOrderId == orderId) {
+
+        target_x[caster->playerId] += caster->orderTarget.pt.x;
+        target_y[caster->playerId] += caster->orderTarget.pt.y;
+        totalCasters[caster->playerId]++;
+
+        if(bestCaster[caster->playerId]
+          && caster != bestCaster[caster->playerId]
+          && !isPartnerInOrder(bestCaster[caster->playerId], caster, orderId)) {
+          tryLastOrder(caster);
+          caster->userActionFlags = 0;
+        }
+      }
+    }
+
+    //If the order is requires a point target, set the correct point
+    for(int i = 0; i < 8; i++) {
+      if(bestCaster[i]
+        && !bestCaster[i]->orderTarget.unit
+        && totalCasters[i]) {
+        target_x[i] /= totalCasters[i];
+        target_y[i] /= totalCasters[i];
+
+        bestCaster[i]->orderTarget.pt.x = (u16)target_x[i];
+        bestCaster[i]->orderTarget.pt.y = (u16)target_y[i];
+      }
+    }
+
+  }
+
+  //Sets flags and saves last order
+  void prepareUnitsForNextFrame() {
+    for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
+      //Stores the last order for smartCast
+      saveAsLastOrder(unit);
+    }
+  }
+
+  //Runs smartcast for each order and prepares for next frame
+  //Archon's orders doesn't work now:
+  //Archon Merge and Dark Archon Meld buttons doesn't set userActionFlags on the unit
+  void runSmarCast() {
+    smartCastOrder(OrderId::WarpingArchon);
+    smartCastOrder(OrderId::FireYamatoGun1);
+    smartCastOrder(OrderId::MagnaPulse);
+    smartCastOrder(OrderId::DarkSwarm);
+    smartCastOrder(OrderId::CastParasite);
+    smartCastOrder(OrderId::SummonBroodlings);
+    smartCastOrder(OrderId::EmpShockwave);
+    smartCastOrder(OrderId::NukePaint);
+    smartCastOrder(OrderId::PlaceMine);
+    smartCastOrder(OrderId::PlaceScanner);
+    smartCastOrder(OrderId::DefensiveMatrix);
+    smartCastOrder(OrderId::PsiStorm);
+    smartCastOrder(OrderId::Irradiate);
+    smartCastOrder(OrderId::Plague);
+    smartCastOrder(OrderId::Consume);
+    smartCastOrder(OrderId::Ensnare);
+    smartCastOrder(OrderId::StasisField);
+    smartCastOrder(OrderId::Hallucianation1);
+    smartCastOrder(OrderId::Restoration);
+    smartCastOrder(OrderId::CastDisruptionWeb);
+    smartCastOrder(OrderId::CastMindControl);
+    smartCastOrder(OrderId::WarpingDarkArchon);
+    smartCastOrder(OrderId::CastFeedback);
+    smartCastOrder(OrderId::CastOpticalFlare);
+    smartCastOrder(OrderId::CastMaelstrom);
+
+    prepareUnitsForNextFrame();
+  }
+}

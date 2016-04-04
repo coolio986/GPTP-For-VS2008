@@ -53,6 +53,8 @@
 
 #include "AI/spellcasting.h"
 
+#include <cstdio>
+
 /// This function is called when the plugin is loaded into StarCraft.
 /// You can enable/disable each group of hooks by commenting them.
 /// You can also add custom modifications to StarCraft.exe by using:
@@ -60,7 +62,10 @@
 
 BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
   //KYSXD W-Mode start
-  int msgboxID = MessageBox(NULL, "You are starting StarCraft:V\nDo you want to play in W-Mode?", PLUGIN_NAME , MB_YESNOCANCEL);
+  char exeChar[81];
+  sprintf_s(exeChar, "Initializing %s", PLUGIN_NAME);
+  sprintf_s(exeChar, "%s\nInclude W-Mode?", exeChar);
+  int msgboxID = MessageBox(NULL, exeChar, PLUGIN_NAME , MB_YESNOCANCEL);
   switch (msgboxID) {
     case IDYES:
       HINSTANCE hDll;
@@ -69,6 +74,8 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
       break;
     case IDCANCEL:
       exit(0);
+      break;
+    default: break;
   }//KYSXD W-Mode end
 
   //StarCraft.exe version check
