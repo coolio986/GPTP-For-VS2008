@@ -474,58 +474,6 @@ void runWarpgateMorph(CUnit *unit) {
   }
 }
 
-//KYSXD Warpgate morph
-//OrderId::PlaceAddon
-void runWarpgateBehaviour(CUnit *unit) {
-  if(unit->id == UnitId::Special_WarpGate
-    && unit->status & UnitStatus::Completed) {
-
-    if(unit->mainOrderId == OrderId::PlaceAddon
-      && unit->buildQueue[unit->buildQueueSlot] != UnitId::None) {
-
-      u16 thisUnitId = unit->buildQueue[unit->buildQueueSlot];
-      unit->previousUnitType = thisUnitId;
-
-      u32 yPos = unit->orderTarget.pt.y;
-      u32 xPos = unit->orderTarget.pt.x;
-      CUnit *warpUnit = scbw::createUnitAtPos(thisUnitId, unit->playerId, xPos, yPos);
-
-      if(warpUnit) {
-
-        u16 warpSeconds = 5;
-        u16 warpTime = warpSeconds * 15;
-
-        s32 maxShield = (s32)(units_dat::MaxShieldPoints[thisUnitId]) << 8;
-        s32 maxHp = units_dat::MaxHitPoints[thisUnitId];
-
-        s32 hpRegen = maxHp / warpTime;
-        s32 shieldRegen = maxShield / warpTime;
-
-        //Set unit
-        warpUnit->buildRepairHpGain = hpRegen;
-        warpUnit->shieldGain = shieldRegen;
-        warpUnit->remainingBuildTime = warpTime;
-
-        warpUnit->hitPoints = 1;
-        warpUnit->shields = 1;
-
-        replaceSpriteImages(warpUnit->sprite,
-          ImageId::WarpAnchor, warpUnit->currentDirection1);
-        warpUnit->status &= ~UnitStatus::Completed;
-        warpUnit->orderTo(OrderId::BuildSelf2);
-        warpUnit->currentButtonSet = UnitId::Buildings;
-      }
-
-      //Clean building
-      unit->buildQueue[unit->buildQueueSlot] = UnitId::None;
-      unit->mainOrderId = OrderId::Nothing2;
-      unit->secondaryOrderId = OrderId::Nothing2;
-
-      unit->building.addon = unit;
-    }
-  }
-}
-
 //KYSXD zealot's charge
 void runZealotCharge(CUnit *unit) {
   //Check max_energy.cpp and unit_speed.cpp for more info
@@ -670,6 +618,14 @@ int viewingCheck[8];
   //3 = Addon related
 }
 
+namespace warpgateMechanic {
+  void manageWarpgateFlags(CUnit *warpgate);
+  void cleanWarpgate(CUnit *warpgate);
+  void setWarpUnit(CUnit *warpUnit);
+  void runWarpgatePlacing(CUnit *unit);
+  void runWarpgate(CUnit *warpgate);
+}
+
 namespace smartCasting {
   COrder *getCurrentOrder(CUnit *unit); 
   COrder *getLastOrder(CUnit *unit);
@@ -748,7 +704,7 @@ bool nextFrame() {
       runZealotCharge(unit);
 
       runWarpgateMorph(unit);
-      runWarpgateBehaviour(unit);
+      warpgateMechanic::runWarpgate(unit);
 
   //KYSXD - Terran plugins
       runReactorBehaviour(unit);
@@ -1861,6 +1817,77 @@ bool gameEnd() {
 
 } //hooks
 
+namespace warpgateMechanic {
+  void manageWarpgateFlags(CUnit *warpgate) {
+      if(warpgate->getMaxEnergy()
+        && warpgate->getMaxEnergy() == warpgate->energy) {
+        warpgate->previousUnitType = UnitId::None;
+        warpgate->building.addon = NULL;
+      }
+  }
+
+  void cleanWarpgate(CUnit *warpgate) {
+      warpgate->buildQueue[warpgate->buildQueueSlot] = UnitId::None;
+      warpgate->mainOrderId = OrderId::Nothing2;
+      warpgate->secondaryOrderId = OrderId::Nothing2;
+      warpgate->building.addon = warpgate;
+  }
+
+  void setWarpUnit(CUnit *warpUnit) {
+    if(warpUnit) {
+
+      u16 warpSeconds = 5;
+      u16 warpTime = warpSeconds * 15;
+
+      s32 maxShield = (s32)(units_dat::MaxShieldPoints[warpUnit->id]) << 8;
+      s32 maxHp = units_dat::MaxHitPoints[warpUnit->id];
+
+      s32 hpRegen = maxHp / warpTime;
+      s32 shieldRegen = maxShield / warpTime;
+
+      //Set unit
+      warpUnit->buildRepairHpGain = hpRegen;
+      warpUnit->shieldGain = shieldRegen;
+      warpUnit->remainingBuildTime = warpTime;
+
+      warpUnit->hitPoints = 1;
+      warpUnit->shields = 1;
+
+      replaceSpriteImages(warpUnit->sprite,
+        ImageId::WarpAnchor, warpUnit->currentDirection1);
+      warpUnit->status &= ~UnitStatus::Completed;
+      warpUnit->orderTo(OrderId::BuildSelf2);
+      warpUnit->currentButtonSet = UnitId::Buildings;
+    }
+  }
+
+  //OrderId::PlaceAddon
+  void runWarpgatePlacing(CUnit *unit) {
+    if(unit->mainOrderId == OrderId::PlaceAddon
+      && unit->buildQueue[unit->buildQueueSlot] != UnitId::None) {
+
+      u16 warpUnitId = unit->buildQueue[unit->buildQueueSlot];
+      unit->previousUnitType = warpUnitId;
+
+      CUnit *warpUnit =
+        scbw::createUnitAtPos(warpUnitId,
+          unit->playerId,
+          unit->orderTarget.pt.x,
+          unit->orderTarget.pt.y);
+      setWarpUnit(warpUnit);
+
+      cleanWarpgate(unit);
+    }
+  }
+
+  void runWarpgate(CUnit *warpgate) {
+    if(warpgate->id == UnitId::Special_WarpGate) {
+      manageWarpgateFlags(warpgate);
+      runWarpgatePlacing(warpgate);
+    }
+  }  
+}
+
 namespace smartCasting {
   //Get a COrder pointer with the current order
   COrder *getCurrentOrder(CUnit *unit) {
@@ -2050,8 +2077,8 @@ namespace smartCasting {
           && caster != bestCaster[caster->playerId]
           && !isPartnerInOrder(bestCaster[caster->playerId], caster, orderId)) {
           tryLastOrder(caster);
-          caster->userActionFlags = 0;
         }
+        caster->userActionFlags = 0;
       }
     }
 
