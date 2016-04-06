@@ -18,10 +18,9 @@ This is the cutting edge and may be buggy.
 
 Other short-lived branches may pop-up from time to time as i stabilize new releases or hotfixes.
 
-_Now you can check the wiki to understand how every plugin was developed!_:
+_Now you can check the wiki to learn how every plugin was developed!_:
 
-Check now the
-[Wiki](https://github.com/KYSXD/GPTP-For-VS2008/wiki)
+Check now the [Wiki](https://github.com/KYSXD/GPTP-For-VS2008/wiki)
 to find all the available tutorials.
 
 ### Work done:
