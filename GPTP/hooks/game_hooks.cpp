@@ -31,6 +31,12 @@ namespace {
 		//3 = Addon related
 }
 
+namespace buildingMorph {
+	void morphBuildingInto(CUnit *unit, u16 newUnitId, IscriptAnimation::Enum animation, bool canBeCanceled);
+	void manageMorphing(CUnit *unit, u16 seconds);
+	void runBuildingMorph(CUnit *unit);
+}
+
 namespace plugins {
 	CUnit *nearestTemplarMergePartner(CUnit *unit);
 	bool chargeTargetInRange(const CUnit *zealot);
@@ -42,13 +48,14 @@ namespace plugins {
 	class ContainerTargetFinder;
 
 	void runFirstFrameBehaviour();
+	void showUnitGraphicHelpers(CUnit *unit);
 	void manageWorkerCollision(CUnit *unit);
+
 	void runAdeptPsionicTransfer_cast(CUnit *adept);
 	void runAdeptPsionicTransfer_behavior(CUnit *shade);
 	void runChronoBoost_cast(CUnit *unit);
 	void runChronoBoost_behavior(CUnit *unit);
 	void runStalkerBlink(CUnit *unit);
-	void runWarpgateMorph(CUnit *unit);
 	void runZealotCharge(CUnit *unit);
 	void runReactorBehaviour(CUnit *unit);
 	void runBurrowedMovement(CUnit *unit);
@@ -93,18 +100,25 @@ bool nextFrame() {
 
 		smartCasting::runSmarCast();
 		//KYSXD idle worker amount
-		u32 idleWorkerCount = 0;
-
-		//Number of displayed lines:
-		u32 titleRow = 1;
-		u32 titleCol = 1;
 
 		bool isOperationCwalEnabled = scbw::isCheatEnabled(CheatFlags::OperationCwal);
+		u32 idleWorkerCount = 0;
 
 		//This block is executed once every game.
 		if(*elapsedTimeFrames == 0) {
 			plugins::runFirstFrameBehaviour();
-
+/*  	char mainText[500];
+			for(int i = 0; i <= 248; i++) {
+				sprintf_s(mainText, "    playfram            %d    # Frame set %d, direction %d", i, (int)i/17, (int)i%17);
+				sprintf_s(mainText, "%s\n    wait:               %d", mainText, 2);
+				WRITE_TO_LOG(mainText);
+			}
+			for(int i = 248; i >= 0; i--) {
+				sprintf_s(mainText, "    playfram            %d    # Frame set %d, direction %d", i, (int)i/17, (int)i%17);
+				sprintf_s(mainText, "%s\n    wait:               %d", mainText, 2);
+				WRITE_TO_LOG(mainText);
+			}
+*/
 			//start viewingCheck
 			for (int i = 0; i < 8; i++) {
 				viewingCheck[i] = 0;
@@ -115,7 +129,22 @@ bool nextFrame() {
 		//Loop through all visible units in the game - start
 		for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
 			plugins::manageWorkerCollision(unit);
-
+/*
+			if((unit->id == UnitId::ZergHatchery
+				|| unit->id == UnitId::ZergLair
+				|| unit->id == UnitId::ProtossGateway
+				|| unit->id == UnitId::Special_WarpGate)
+				&& unit->playerId == *LOCAL_NATION_ID) {
+				char mainText[500];
+				sprintf_s(mainText, "mainOrder----------------: %02x", unit->mainOrderId);
+				sprintf_s(mainText, "%s\nsecondaryOrderId: %02x", mainText, unit->secondaryOrderId);
+				sprintf_s(mainText, "%s\nqueueUnit: %d", mainText, unit->buildQueue[unit->buildQueueSlot]);
+				sprintf_s(mainText, "%s\norderSignal: %d", mainText, unit->orderSignal);
+				sprintf_s(mainText, "%s\nspriteId: %d", mainText, unit->sprite->spriteId);
+				sprintf_s(mainText, "%s\nimageId: %d", mainText, unit->sprite->mainGraphic->id);
+				WRITE_TO_LOG(mainText);
+			}
+*/
 			//KYSXD Idle worker count
 			if((unit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())
 					&& units_dat::BaseProperty[unit->id] & UnitProperty::Worker
@@ -140,7 +169,6 @@ bool nextFrame() {
 			plugins::runStalkerBlink(unit);
 			plugins::runZealotCharge(unit);
 
-			plugins::runWarpgateMorph(unit);
 			warpgateMechanic::runWarpgate(unit);
 
 	//KYSXD - Terran plugins
@@ -154,49 +182,6 @@ bool nextFrame() {
 		for (int i = 0; i < *clientSelectionCount; ++i) {
 			CUnit *selUnit = clientSelectionGroup->unit[i];
 
-			/*/KYSXD unit worker count start  
-			if(selUnit->playerId == *LOCAL_NATION_ID
-				&& selUnit->status & UnitStatus::Completed
-				&& units_dat::BaseProperty[selUnit->id] & UnitProperty::ResourceDepot) {
-				int nearmineral = 0;
-				int nearworkers = 0;
-				CUnit *nearestContainer = NULL;
-				//KYSXD count the neares minerals
-				static scbw::UnitFinder mineralfinder;
-				mineralfinder.search(selUnit->getX()-256, selUnit->getY()-256, selUnit->getX()+256, selUnit->getY()+256);
-				for(int k = 0; k < mineralfinder.getUnitCount(); ++k) {
-					CUnit *curMin = mineralfinder.getUnit(k);
-					if(thisIsMineral(curMin)) {
-						containerTargetFinder.setMineral(curMin);
-						nearestContainer = scbw::UnitFinder::getNearestTarget(
-						curMin->getX() - 300, curMin->getY() - 300,
-						curMin->getX() + 300, curMin->getY() + 300,
-						curMin,
-						containerTargetFinder);
-						if(nearestContainer != NULL
-							&& nearestContainer == selUnit) {
-							nearmineral++;
-						}
-					}
-					for(CUnit *thisUnit = *firstVisibleUnit; thisUnit; thisUnit = thisUnit->link.next) {
-						if(thisUnit->playerId == *LOCAL_NATION_ID
-							&& (units_dat::BaseProperty[thisUnit->id] & UnitProperty::Worker)
-							&& isInHarvestState(thisUnit)
-							&& thisUnit->worker.targetResource.unit != NULL
-							&& thisUnit->worker.targetResource.unit == curMin) {
-								nearworkers++;
-						}
-					}
-				}
-				//KYSXD count the nearest Workers
-				if(nearmineral > 0) {
-					static char unitcount[64];
-					sprintf_s(unitcount, "Workers: %d / %d", nearworkers, nearmineral);
-					graphics::drawText(selUnit->getX() - 32, selUnit->getY() - 60, unitcount, graphics::FONT_MEDIUM, graphics::ON_MAP);
-				}
-			}*/
-			//KYSXD unit worker count end
-
 			//KYSXD Twilight Archon
 			if(selUnit->id == UnitId::ProtossDarkTemplar || selUnit->id == UnitId::ProtossHighTemplar) {
 				if(selUnit->mainOrderId == OrderId::ReaverStop) {
@@ -208,55 +193,13 @@ bool nextFrame() {
 					else selUnit->mainOrderId = OrderId::Stop;
 				}
 			}
-
-		//KYSXD - For selected units - From SC Transition - start
-			//Draw attack radius circles for Siege Mode Tanks in current selection
-			if(selUnit->id == UnitId::TerranSiegeTankSiegeMode) {
-				graphics::drawCircle(selUnit->getX(), selUnit->getY(),
-				selUnit->getMaxWeaponRange(units_dat::GroundWeapon[selUnit->subunit->id]) + 30,
-				graphics::TEAL, graphics::ON_MAP);
-			}
-
-			//Display rally points for factories selected
-			if(selUnit->status & UnitStatus::GroundedBuilding
-				&& (selUnit->rally.unit
-				|| (selUnit->rally.pt.x && selUnit->rally.pt.y))
-				&& (selUnit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())) //Show only if unit is your own or the game is in replay mode
-			{
-				const CUnit *rallyUnit = selUnit->rally.unit;
-				//Rallied to self; disable rally altogether
-				if(rallyUnit != selUnit) {
-					//Is usable rally unit
-					if(rallyUnit && rallyUnit->playerId == selUnit->playerId) {
-						graphics::drawLine(selUnit->getX(), selUnit->getY(),
-							rallyUnit->getX(), rallyUnit->getY(),
-							graphics::GREEN, graphics::ON_MAP);
-						graphics::drawCircle(rallyUnit->getX(), rallyUnit->getY(), 10,
-							graphics::GREEN, graphics::ON_MAP);
-					}
-					//Use map position instead
-					else if(selUnit->rally.pt.x != 0) {
-						graphics::drawLine(selUnit->getX(), selUnit->getY(),
-							selUnit->rally.pt.x, selUnit->rally.pt.y,
-							graphics::YELLOW, graphics::ON_MAP);
-						graphics::drawCircle(selUnit->rally.pt.x, selUnit->rally.pt.y, 10,
-							graphics::YELLOW, graphics::ON_MAP);
-					}
-				}
-
-				//Show worker rally point
-				const CUnit *workerRallyUnit = selUnit->moveTarget.unit;
-				if(workerRallyUnit) {
-					graphics::drawLine(selUnit->getX(), selUnit->getY(),
-						workerRallyUnit->getX(), workerRallyUnit->getY(),
-						graphics::ORANGE, graphics::ON_MAP);
-					graphics::drawCircle(
-						workerRallyUnit->getX(), workerRallyUnit->getY(), 10,
-						graphics::ORANGE, graphics::ON_MAP);
-				}
-			}
+			plugins::showUnitGraphicHelpers(selUnit);
 			//KYSXD - For selected units - From SC Transition - end
 		}
+
+		//Number of displayed lines:
+		u32 titleRow = 1;
+		u32 titleCol = 1;
 
 	//KYSXD Print info on screen
 		if(viewingCheck[*LOCAL_HUMAN_ID] == 0) {
@@ -375,6 +318,82 @@ namespace {
 		else unit->status &= ~(flag);
 	}
 } //unnamed namespace
+
+namespace buildingMorph {
+	void morphBuildingInto(CUnit *unit, u16 newUnitId, IscriptAnimation::Enum animation, bool canBeCanceled) {
+		u16 timeCost = units_dat::TimeCost[newUnitId];
+
+		unit->previousUnitType = unit->id;
+		unit->id = newUnitId;
+		unit->energy = 0;
+		manageUnitStatusFlags(unit, UnitStatus::Completed, false);	
+
+		unit->mainOrderId = OrderId::Nothing2;
+		unit->remainingBuildTime = timeCost;
+		if(canBeCanceled)
+			unit->currentButtonSet = UnitId::Buildings;
+		else unit->currentButtonSet = UnitId::None;
+		scbw::refreshConsole();
+		unit->playIscriptAnim(animation);
+		unit->_unused_0x106 = 1;
+
+	}
+
+	void manageMorphing(CUnit *unit, u16 seconds = 0) {
+		//Morphing flag
+		if(unit->_unused_0x106 == 1) {
+			u16 timeCost = units_dat::TimeCost[unit->id];
+			u16 timeGain;
+			if(seconds && (timeCost/15) > seconds) {
+				timeGain = timeCost/(seconds * 15);
+			}
+			else timeGain = timeCost;
+
+			unit->remainingBuildTime -= std::min(unit->remainingBuildTime, timeGain);
+			if(!unit->remainingBuildTime
+				&& !(unit->status & UnitStatus::NoBrkCodeStart)) {
+
+				manageUnitStatusFlags(unit, UnitStatus::Completed, true);
+				unit->currentButtonSet = unit->id;
+				unit->mainOrderState = 0;
+				replaceUnitWithType(unit, unit->id);
+				unit->_unused_0x106 = 0;
+			}
+		}
+	}
+
+	void runBuildingMorph(CUnit *unit) {
+		//Usage exaplme: Gateway/WarpGate morph
+
+		if(unit->id == UnitId::ProtossGateway
+			||unit->id == UnitId::Special_WarpGate) {
+			if(unit->mainOrderId == OrderId::ReaverStop) {
+				u16 morphVariant = UnitId::ProtossGateway + UnitId::Special_WarpGate - unit->id;
+				morphBuildingInto(unit, morphVariant, IscriptAnimation::Unused1, false);
+			}
+			manageMorphing(unit, 20);
+		}
+
+		//Set unit id
+		else if(unit->id == UnitId::TerranCommandCenter) {
+			//Set condition to morph
+				//Morph into Planetary F.
+			if(unit->mainOrderId == OrderId::ReaverStop) {
+				//unit who is morphing
+				//id to morph into
+				//animation with the morph animation (unit--->newUnit)
+				//Can be canceled?
+				morphBuildingInto(unit, UnitId::Special_IonCannon, IscriptAnimation::Unused1, true);
+			}
+				//Morph into Orbital C.
+			else if(unit->id == OrderId::CarrierStop) {
+				morphBuildingInto(unit, UnitId::TerranComsatStation, IscriptAnimation::Unused1, true);
+			}
+			//Run morph behaviour: the second value is only if you want any fixed morph time
+			manageMorphing(unit);
+		}
+	}
+}
 
 namespace plugins {
 	//KYSXD helpers
@@ -562,6 +581,54 @@ namespace plugins {
 		//For non-custom games - end  
 	}
 
+	void showUnitGraphicHelpers(CUnit *unit) {
+		if(unit->id == UnitId::TerranSiegeTankSiegeMode
+			|| unit->id == UnitId::Hero_EdmundDukeSiegeMode) {
+			graphics::drawCircle(unit->getX(), unit->getY(),
+			unit->getMaxWeaponRange(units_dat::GroundWeapon[unit->subunit->id]) + 30,
+			graphics::TEAL, graphics::ON_MAP);
+		}
+
+		//Display rally points for factories selected
+		if(unit->status & UnitStatus::GroundedBuilding
+			&& unit->rally.pt.x
+			&& unit->rally.pt.y
+			&& unit->id != UnitId::ProtossPylon
+			&& (unit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())) {
+			const CUnit *rallyUnit = unit->rally.unit;
+			//Rallied to self; disable rally altogether
+			if(rallyUnit != unit) {
+				//Is usable rally unit
+				if(rallyUnit && rallyUnit->playerId == unit->playerId) {
+					graphics::drawLine(unit->getX(), unit->getY(),
+						rallyUnit->getX(), rallyUnit->getY(),
+						graphics::GREEN, graphics::ON_MAP);
+					graphics::drawCircle(rallyUnit->getX(), rallyUnit->getY(), 10,
+						graphics::GREEN, graphics::ON_MAP);
+				}
+				//Use map position instead
+				else if(unit->rally.pt.x != 0) {
+					graphics::drawLine(unit->getX(), unit->getY(),
+						unit->rally.pt.x, unit->rally.pt.y,
+						graphics::YELLOW, graphics::ON_MAP);
+					graphics::drawCircle(unit->rally.pt.x, unit->rally.pt.y, 10,
+						graphics::YELLOW, graphics::ON_MAP);
+				}
+			}
+
+			//Show worker rally point
+			const CUnit *workerRallyUnit = unit->moveTarget.unit;
+			if(workerRallyUnit) {
+				graphics::drawLine(unit->getX(), unit->getY(),
+					workerRallyUnit->getX(), workerRallyUnit->getY(),
+					graphics::ORANGE, graphics::ON_MAP);
+				graphics::drawCircle(
+					workerRallyUnit->getX(), workerRallyUnit->getY(), 10,
+					graphics::ORANGE, graphics::ON_MAP);
+			}
+		}
+	}
+
 	//KYSXD worker no collision if harvesting - start
 	void manageWorkerCollision(CUnit *unit) {
 		if(units_dat::BaseProperty[unit->id] & UnitProperty::Worker) {
@@ -720,24 +787,6 @@ namespace plugins {
 				if(!scbw::isCheatEnabled(CheatFlags::TheGathering)) {
 					unit->energy = 0;
 				}
-			}
-		}
-	}
-
-	//KYSXD Warpgate morph
-	void runWarpgateMorph(CUnit *unit) {
-		if((unit->id == UnitId::ProtossGateway
-			|| unit->id == UnitId::Special_WarpGate)
-			&& unit->mainOrderId == OrderId::ReaverStop) {
-			unit->mainOrderId = OrderId::Nothing2;
-			if(unit->status & UnitStatus::Completed
-				&& !(unit->isFrozen())) {
-				u16 morphId = UnitId::ProtossGateway + UnitId::Special_WarpGate - unit->id;
-				replaceUnitWithType(unit, morphId);
-				unit->mainOrderId = OrderId::Nothing2;
-				unit->previousUnitType = UnitId::None;
-				unit->shields = units_dat::MaxShieldPoints[morphId] << 8;
-				unit->energy = 0;          
 			}
 		}
 	}
@@ -923,10 +972,8 @@ namespace warpgateMechanic {
 		}
 	}
 
-	//OrderId::PlaceAddon
 	void runWarpgatePlacing(CUnit *unit) {
-		if(unit->mainOrderId == OrderId::BuildProtoss1
-			&& unit->buildQueue[unit->buildQueueSlot] != UnitId::None) {
+		if(unit->buildQueue[unit->buildQueueSlot] != UnitId::None) {
 
 			u16 warpUnitId = unit->buildQueue[unit->buildQueueSlot];
 			unit->previousUnitType = warpUnitId;
@@ -943,6 +990,8 @@ namespace warpgateMechanic {
 	}
 
 	void runWarpgate(CUnit *warpgate) {
+		buildingMorph::runBuildingMorph(warpgate);
+
 		if(warpgate->id == UnitId::Special_WarpGate) {
 			runWarpgatePlacing(warpgate);
 			manageWarpgateFlags(warpgate);
@@ -951,6 +1000,10 @@ namespace warpgateMechanic {
 } //namespace warpagteMechanic
 
 namespace smartCasting {
+	//Here we store the last order for each unit,
+	//to do not mess with the members of the CUnit structure
+	COrder lastOrderArray[UNIT_ARRAY_LENGTH];
+
 	//Get a COrder pointer with a custom order
 	COrder *createOrder(u16 orderId = OrderId::Nothing2, u16 unitId = 0, CUnit *target = NULL, u16 posX = 0, u16 posY = 0){
 		static COrder thisOrder;
@@ -976,26 +1029,24 @@ namespace smartCasting {
 
 	//Get a COrder pointer with the last order
 	inline COrder *getLastOrder(CUnit *unit) {
-		return createOrder((u16)unit->_unknown_0x086,
-			unit->_unknown_0x066,
-			CUnit::getFromIndex(unit->_unknown_0x052),
-			unit->secondaryOrderPos.x,
-			unit->secondaryOrderPos.y);
+		int index = unit->getIndex();
+		COrder *unitLastOrder = &lastOrderArray[index];
+		return createOrder(unitLastOrder->orderId,
+			unitLastOrder->unitId,
+			unitLastOrder->target.unit,
+			unitLastOrder->target.pt.x,
+			unitLastOrder->target.pt.y);
 	}
 
 	//Stores all variables of COrder in the unit using unused members of CUnit
 	inline void saveAsLastOrder(CUnit *unit, COrder *lastOrder = NULL) {
 		if(lastOrder) {
-			unit->_unknown_0x086 = (u8)lastOrder->orderId;
-			unit->_unknown_0x066 = lastOrder->unitId;
+			int index = unit->getIndex();
+			COrder *unitLastOrder = &lastOrderArray[index];
 
-			u32 targetIndex = 0;
-			if(lastOrder->target.unit)
-				targetIndex = lastOrder->target.unit->getIndex();
-
-			unit->_unknown_0x052 = targetIndex;
-			unit->secondaryOrderPos.x = lastOrder->target.pt.x;
-			unit->secondaryOrderPos.y = lastOrder->target.pt.y;
+			unitLastOrder->orderId = (u8)lastOrder->orderId;
+			unitLastOrder->unitId = lastOrder->unitId;
+			unitLastOrder->target = lastOrder->target;
 		}
 		else {
 			saveAsLastOrder(unit, getCurrentOrder(unit));
