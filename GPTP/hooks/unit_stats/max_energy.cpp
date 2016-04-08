@@ -63,6 +63,8 @@ u16 getUnitMaxEnergyHook(const CUnit* const unit) {
       // KYSXD Unit Cooldowns = TimeCost[] - 5 seconds
     case UnitId::Special_WarpGate:
       switch(unit->previousUnitType) {
+        case UnitId::ProtossGateway:
+        case UnitId::Special_WarpGate:
         case UnitId::None: return 0; break;
         default:
         u16 cooldownVal = units_dat::TimeCost[unit->previousUnitType]/15; //cause 15 frames per second
