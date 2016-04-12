@@ -10,9 +10,7 @@ bool setSelectOneHook(const CUnit *unit){
 	bool selectGroup = true;
 
 
-	if(((unit->status & UnitStatus::GroundedBuilding)
-		&& unit->id != UnitId::Special_WarpGate
-		&& unit->id != UnitId::ProtossGateway)
+	if((unit->status & UnitStatus::GroundedBuilding)
 		|| (BaseProperty[unit->id] & UnitProperty::NeutralAccessories))
 			selectGroup = false;
 
