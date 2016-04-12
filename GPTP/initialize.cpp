@@ -42,7 +42,9 @@
 #include "hooks/orders/infestation.h"
 #include "hooks/orders/siege_transform.h"
 #include "hooks/interface/buttonsets.h"
-#include "hooks/interface/selection.h"
+//#include "hooks/interface/selection.h"
+#include "hooks/interface/select_one.h"
+
 #include "hooks/orders/merge_units.h"
 #include "hooks/orders/larva_creep_spawn.h"
 #include "hooks/orders/liftland.h"
@@ -94,7 +96,9 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
   hooks::injectInfestationHooks();
   hooks::injectSiegeTransformHooks();
   hooks::injectButtonSetHooks();
-  hooks::injectSelectMod();
+//  hooks::injectSelectMod();
+  hooks::injectSelectOneHooks();
+  
   hooks::injectMergeUnitsHooks();
   hooks::injectLarvaCreepSpawnHooks();
   hooks::injectLiftLandHooks();
