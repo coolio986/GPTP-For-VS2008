@@ -22,13 +22,6 @@ namespace {
 	void removeOrderFromUnitQueue(CUnit *unit);
 
 	inline void manageUnitStatusFlags(CUnit *unit, u32 flag, bool status);
-	//KYSXD - display info on screen - Credits to GagMania
-	const int viewingStatus = 5;
-	int viewingCheck[8];
-		//0 = Normal info. Eventually to be removed
-		//1 = Basic info
-		//2 = Order related
-		//3 = Addon related
 }
 
 namespace buildingMorph {
@@ -107,44 +100,12 @@ bool nextFrame() {
 		//This block is executed once every game.
 		if(*elapsedTimeFrames == 0) {
 			plugins::runFirstFrameBehaviour();
-/*  	char mainText[500];
-			for(int i = 0; i <= 248; i++) {
-				sprintf_s(mainText, "    playfram            %d    # Frame set %d, direction %d", i, (int)i/17, (int)i%17);
-				sprintf_s(mainText, "%s\n    wait:               %d", mainText, 2);
-				WRITE_TO_LOG(mainText);
-			}
-			for(int i = 248; i >= 0; i--) {
-				sprintf_s(mainText, "    playfram            %d    # Frame set %d, direction %d", i, (int)i/17, (int)i%17);
-				sprintf_s(mainText, "%s\n    wait:               %d", mainText, 2);
-				WRITE_TO_LOG(mainText);
-			}
-*/
-			//start viewingCheck
-			for (int i = 0; i < 8; i++) {
-				viewingCheck[i] = 0;
-			}
-
 		}
 
 		//Loop through all visible units in the game - start
 		for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
 			plugins::manageWorkerCollision(unit);
-/*
-			if((unit->id == UnitId::ZergHatchery
-				|| unit->id == UnitId::ZergLair
-				|| unit->id == UnitId::ProtossGateway
-				|| unit->id == UnitId::Special_WarpGate)
-				&& unit->playerId == *LOCAL_NATION_ID) {
-				char mainText[500];
-				sprintf_s(mainText, "mainOrder----------------: %02x", unit->mainOrderId);
-				sprintf_s(mainText, "%s\nsecondaryOrderId: %02x", mainText, unit->secondaryOrderId);
-				sprintf_s(mainText, "%s\nqueueUnit: %d", mainText, unit->buildQueue[unit->buildQueueSlot]);
-				sprintf_s(mainText, "%s\norderSignal: %d", mainText, unit->orderSignal);
-				sprintf_s(mainText, "%s\nspriteId: %d", mainText, unit->sprite->spriteId);
-				sprintf_s(mainText, "%s\nimageId: %d", mainText, unit->sprite->mainGraphic->id);
-				WRITE_TO_LOG(mainText);
-			}
-*/
+
 			//KYSXD Idle worker count
 			if((unit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())
 					&& units_dat::BaseProperty[unit->id] & UnitProperty::Worker
@@ -159,7 +120,7 @@ bool nextFrame() {
 				unit->previousUnitType = UnitId::None;
 			}
 
-	//KYSXD - Protoss plugins:
+			//KYSXD - Protoss plugins:
 			plugins::runAdeptPsionicTransfer_cast(unit);
 			plugins::runAdeptPsionicTransfer_behavior(unit);
 
@@ -171,14 +132,14 @@ bool nextFrame() {
 
 			warpgateMechanic::runWarpgate(unit);
 
-	//KYSXD - Terran plugins
+			//KYSXD - Terran plugins
 			plugins::runReactorBehaviour(unit);
 
-	//KYSXD - Zerg plugins
+			//KYSXD - Zerg plugins
 			plugins::runBurrowedMovement(unit);
 		} //Loop through all visible units in the game - end
 
-	//KYSXD - Selection plugins
+		//KYSXD - Selection plugins
 		for (int i = 0; i < *clientSelectionCount; ++i) {
 			CUnit *selUnit = clientSelectionGroup->unit[i];
 
@@ -197,22 +158,11 @@ bool nextFrame() {
 			//KYSXD - For selected units - From SC Transition - end
 		}
 
-		//Number of displayed lines:
-		u32 titleRow = 1;
-		u32 titleCol = 1;
-
-	//KYSXD Print info on screen
-		if(viewingCheck[*LOCAL_HUMAN_ID] == 0) {
-			if(idleWorkerCount != 0) {
-				char idleworkers[64];
-				sprintf_s(idleworkers, "Idle Workers: %d", idleWorkerCount);
-				graphics::drawText(10 + (titleCol - 1)*150, 10*titleRow, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
-				++titleRow;
-				if(10*titleRow > 250) {
-					titleRow = 1;
-					titleCol++;
-				}
-			}
+		//KYSXD Print info on screen
+		if(idleWorkerCount != 0) {
+			char idleworkers[64];
+			sprintf_s(idleworkers, "Idle Workers: %d", idleWorkerCount);
+			graphics::drawText(5, 5, idleworkers, graphics::FONT_MEDIUM, graphics::ON_SCREEN);
 		}
 
 		scbw::setInGameLoopState(false);
@@ -341,22 +291,26 @@ namespace buildingMorph {
 
 	void manageMorphing(CUnit *unit, u16 seconds = 0) {
 		//Morphing flag
-		if(unit->_unused_0x106 == 1) {
+		if(unit->_unused_0x106 == 1
+			&& !unit->isFrozen()) {
 			u16 timeCost = units_dat::TimeCost[unit->id];
 			u16 timeGain;
 			if(seconds && (timeCost/15) > seconds) {
 				timeGain = timeCost/(seconds * 15);
 			}
-			else timeGain = timeCost;
+			else timeGain = 1;
 
 			unit->remainingBuildTime -= std::min(unit->remainingBuildTime, timeGain);
 			if(!unit->remainingBuildTime
 				&& !(unit->status & UnitStatus::NoBrkCodeStart)) {
 
+				s32 shieldHolder = unit->shields;
+
 				manageUnitStatusFlags(unit, UnitStatus::Completed, true);
 				unit->currentButtonSet = unit->id;
 				unit->mainOrderState = 0;
 				replaceUnitWithType(unit, unit->id);
+				unit->shields = shieldHolder;
 				unit->_unused_0x106 = 0;
 			}
 		}
@@ -370,12 +324,15 @@ namespace buildingMorph {
 			if(unit->mainOrderId == OrderId::ReaverStop) {
 				u16 morphVariant = UnitId::ProtossGateway + UnitId::Special_WarpGate - unit->id;
 				morphBuildingInto(unit, morphVariant, IscriptAnimation::Unused1, false);
+				unit->rally.unit = unit;
 			}
 			manageMorphing(unit, 20);
 		}
 
 		//Set unit id
-		else if(unit->id == UnitId::TerranCommandCenter) {
+		else if(unit->id == UnitId::TerranCommandCenter
+			|| unit->id == UnitId::Special_IonCannon
+			|| unit->id == UnitId::TerranComsatStation) {
 			//Set condition to morph
 				//Morph into Planetary F.
 			if(unit->mainOrderId == OrderId::ReaverStop) {
@@ -925,7 +882,6 @@ namespace plugins {
 			}
 		}
 	} //KYSXD - Burrow movement end
-
 } //namespace plugins
 
 namespace warpgateMechanic {
