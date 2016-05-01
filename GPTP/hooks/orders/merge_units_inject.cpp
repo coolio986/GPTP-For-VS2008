@@ -1,6 +1,8 @@
 #include "merge_units.h"
 #include <hook_tools.h>
 
+#include "SCBW/scbwdata.h"
+
 namespace {
 
 //004BFA80
@@ -25,6 +27,12 @@ void __declspec(naked) templarMergePartnerWrapper() {
 	}
 
 	nearestPartner = hooks::templarMergePartner(unit, units_list, units_list_length);
+	//KYSXD set UserActionFlags for archon orders
+	if(nearestPartner
+		&& playerTable[unit->playerId].type == PlayerType::Human) {
+		unit->userActionFlags = 2;
+		nearestPartner->userActionFlags = 2;		
+	}
 
 	__asm {
 		POPAD

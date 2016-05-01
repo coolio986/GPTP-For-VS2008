@@ -56,6 +56,57 @@
 #include "AI/spellcasting.h"
 
 #include <cstdio>
+#include <ctime>
+
+namespace {
+  int compareDates(int d1_day, int d1_month, int d1_year, int d2_day, int d2_month, int d2_year) {
+    int res = 0;
+    res += (d2_year - d1_year)*10000;
+    res += (d2_month - d1_month)*100;
+    res += (d2_day - d1_day);
+    return res;
+  }
+
+  void runDemoValidation() {
+    struct tm aTime;
+    memset(&aTime,0,sizeof(struct tm));
+    time_t currentTime = time(NULL);
+    localtime_s(&aTime, &currentTime);
+
+    char *Months[]={"January","February","March","April","May","June","July","August","September","October","November","December"};
+
+    //Current date
+    const int year = aTime.tm_year + 1900;
+    const int month = aTime.tm_mon + 1;
+    const int day = aTime.tm_mday;
+
+    //Initial date for the demo
+    const int i_YY = 2016;
+    const int i_MM = 4;
+    const int i_DD = 22;
+
+    //Last date for the demo
+    const int f_YY = 2016;
+    const int f_MM = 4;
+    const int f_DD = 24;
+
+    if(compareDates(i_DD, i_MM, i_YY, day, month, year) < 0) {
+      char demoText[200];
+      sprintf_s(demoText, "Sorry!\nThe demo period begins %02d/%s/%04d", i_DD, Months[i_MM-1], i_YY);
+      sprintf_s(demoText, "%s\nFor more info contact us at: %s", demoText, CONTACT_EMAIL);
+      MessageBox(NULL, demoText, PLUGIN_NAME, MB_OK);
+      exit(0);
+    }
+    else if(compareDates(day, month, year, f_DD, f_MM, f_YY) < 0) {
+      char demoText[200];
+      sprintf_s(demoText, "Sorry!\nThe demo period concluded %02d/%s/%04d", f_DD, Months[f_MM-1], f_YY);
+      sprintf_s(demoText, "%s\nFor more info contact us at: %s", demoText, CONTACT_EMAIL);
+      MessageBox(NULL, demoText, PLUGIN_NAME, MB_OK);
+      exit(0);
+    }
+    return;
+  }
+}
 
 /// This function is called when the plugin is loaded into StarCraft.
 /// You can enable/disable each group of hooks by commenting them.
@@ -63,6 +114,9 @@
 ///    memoryPatch(address_to_patch, value_to_patch_with);
 
 BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
+  //KYSXD - Demo's Date validation
+//  runDemoValidation();
+
   //KYSXD W-Mode start
   char exeChar[81];
   sprintf_s(exeChar, "Initializing %s", PLUGIN_NAME);

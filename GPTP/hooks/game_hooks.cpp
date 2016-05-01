@@ -40,6 +40,8 @@ namespace plugins {
 	class HarvestTargetFinder;
 	class ContainerTargetFinder;
 
+	void exploreMap();
+
 	void runFirstFrameBehaviour();
 	void showUnitGraphicHelpers(CUnit *unit);
 	void manageWorkerCollision(CUnit *unit);
@@ -77,7 +79,7 @@ namespace smartCasting {
 	inline void tryLastOrder(CUnit *unit);
 	inline void smartCastOrder(u8 orderId);
 	inline void prepareUnitsForNextFrame();
-	inline void runSmarCast();
+	inline void runSmartCast();
 }
 
 namespace hooks {
@@ -91,7 +93,7 @@ bool nextFrame() {
 		graphics::resetAllGraphics();
 		hooks::updatePsiFieldProviders();
 
-		smartCasting::runSmarCast();
+		smartCasting::runSmartCast();
 		//KYSXD idle worker amount
 
 		bool isOperationCwalEnabled = scbw::isCheatEnabled(CheatFlags::OperationCwal);
@@ -100,6 +102,7 @@ bool nextFrame() {
 		//This block is executed once every game.
 		if(*elapsedTimeFrames == 0) {
 			plugins::runFirstFrameBehaviour();
+
 		}
 
 		//Loop through all visible units in the game - start
@@ -150,6 +153,9 @@ bool nextFrame() {
 					if(templarPartner != NULL) {
 							selUnit->orderTo(OrderId::WarpingDarkArchon, templarPartner);
 							templarPartner->orderTo(OrderId::WarpingDarkArchon, selUnit);
+
+							selUnit->mainOrderId = OrderId::WarpingDarkArchon;
+							templarPartner->mainOrderId = OrderId::WarpingDarkArchon;
 					}
 					else selUnit->mainOrderId = OrderId::Stop;
 				}
@@ -479,6 +485,20 @@ namespace plugins {
 	};
 	ContainerTargetFinder containerTargetFinder;
 
+	void exploreMap(){
+		for(int x = 0; x < mapTileSize->width; x++) {
+			for(int y = 0; y < mapTileSize->height; y++) {
+
+				if((x+y)%2) {
+					ActiveTile *currentTile = &(*activeTileArray)[(x) + mapTileSize->width * (y)];
+					currentTile->exploredFlags = 0;
+					
+				}
+
+			}
+		}
+	}
+
 	void runFirstFrameBehaviour() {
 		scbw::printText("You're now playing:\n     "
 			PLUGIN_NAME "\n     By " AUTHOR_NAME);
@@ -497,6 +517,7 @@ namespace plugins {
 		}
 		//KYSXD - For non-custom games - start
 		if(*GAME_TYPE != GameType::UseMapSettings) {
+			exploreMap();
 			CUnit *firstMineral[8];
 			u16 initialworkeramount = 12;
 			for(CUnit *base = *firstVisibleUnit; base; base = base->link.next) {
@@ -921,7 +942,7 @@ namespace warpgateMechanic {
 			warpUnit->shields = 1;
 
 			replaceSpriteImages(warpUnit->sprite,
-				ImageId::WarpAnchor, warpUnit->currentDirection1);
+				ImageId::ArchonBirth_Unused, warpUnit->currentDirection1);
 			warpUnit->status &= ~UnitStatus::Completed;
 			warpUnit->orderTo(OrderId::BuildSelf2);
 			warpUnit->currentButtonSet = UnitId::Buildings;
@@ -1209,7 +1230,8 @@ namespace smartCasting {
 	//Runs smartcast for each order and prepares for next frame
 	//Archon's orders doesn't work now:
 	//Archon Merge and Dark Archon Meld buttons doesn't set userActionFlags on the unit
-	inline void runSmarCast() {
+	inline void runSmartCast() {
+		smartCastOrder(OrderId::WarpingArchon);
 		smartCastOrder(OrderId::FireYamatoGun1);
 		smartCastOrder(OrderId::MagnaPulse);
 		smartCastOrder(OrderId::DarkSwarm);
@@ -1229,6 +1251,7 @@ namespace smartCasting {
 		smartCastOrder(OrderId::Restoration);
 		smartCastOrder(OrderId::CastDisruptionWeb);
 		smartCastOrder(OrderId::CastMindControl);
+		smartCastOrder(OrderId::WarpingDarkArchon);
 		smartCastOrder(OrderId::CastFeedback);
 		smartCastOrder(OrderId::CastOpticalFlare);
 		smartCastOrder(OrderId::CastMaelstrom);

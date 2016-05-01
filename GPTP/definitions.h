@@ -17,3 +17,4 @@ char ( &_ArraySizeHelper( T (&array)[N] ))[N];
 //What is the plugin's name (and version)? KYSXD edit
 #define AUTHOR_NAME "KYSXD"
 #define PLUGIN_NAME "Starcraft V - Version 0.1 (TEST)"
+#define CONTACT_EMAIL "KYSXDreplays@hotmail.com"
