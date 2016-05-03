@@ -498,26 +498,4 @@ void minimapPing(u32 x, u32 y, s32 color, u32 playerId) {
 
 }
 
-const u32 Func_MoveScreenToUnit = 0x004E6020;
-void MoveScreenToUnit(CUnit *unit) {
-  __asm {
-    PUSHAD
-    MOV EAX, unit
-    CALL Func_MoveScreenToUnit
-    POPAD
-  }
-}
-
-const u32 Func_minimapPing = 0x004A34C0;
-void __stdcall minimapPing(u32 x, u32 y, s32 color) {
-  __asm {
-    PUSHAD
-    PUSH color
-    PUSH y
-    PUSH x
-    CALL Func_minimapPing
-    POPAD
-  }
-}
-
 } //scbw
