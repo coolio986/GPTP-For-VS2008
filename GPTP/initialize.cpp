@@ -11,7 +11,6 @@
 #include "hooks/bunker_hooks.h"
 #include "hooks/cloak_nearby_units.h"
 #include "hooks/cloak_tech.h"
-#include "hooks/consume.h"
 #include "hooks/detector.h"
 #include "hooks/harvest.h"
 #include "hooks/rally_point.h"
@@ -50,8 +49,10 @@
 #include "hooks/orders/base_orders/stopholdpos_orders.h"
 #include "hooks/orders/spells/recall_spell.h"
 #include "hooks/orders/enter_nydus.h"
+#include "hooks/orders/spells/cast_order.h"
+#include "hooks/wpnspellhit.h"
 
-#include "AI/spellcasting.h"
+//#include "AI/spellcasting.h"
 
 /// This function is called when the plugin is loaded into StarCraft.
 /// You can enable/disable each group of hooks by commenting them.
@@ -95,13 +96,14 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
   hooks::injectStopHoldPosOrdersHooks();
   hooks::injectRecallSpellHooks();
   hooks::injectEnterNydusHooks();
+  hooks::injectCastOrderHooks();
+  hooks::injectWpnSpellHitHooks();
 
   hooks::injectApplyUpgradeFlags();
   hooks::injectAttackPriorityHooks();
   hooks::injectBunkerHooks();
   hooks::injectCloakNearbyUnits();
   hooks::injectCloakingTechHooks();
-  hooks::injectConsumeHooks();
   hooks::injectDetectorHooks();
   hooks::injectHarvestResource();
   hooks::injectRallyHooks();
@@ -130,7 +132,7 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
   
   hooks::injectUnitTooltipHook();
 
-  hooks::injectSpellcasterAI();
+  //hooks::injectSpellcasterAI();
 
   return TRUE;
 }

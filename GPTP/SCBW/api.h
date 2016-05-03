@@ -236,10 +236,10 @@ u16 random();
 void refreshConsole();
 
 // Moves the camera/screen to the unit
-void MoveScreenToUnit(CUnit *unit);
+void MoveScreenToUnit(CUnit *unit, u32 playerId = 8);
 
 // Creates a minimap ping at x,y (relative pos)
-void __stdcall minimapPing(u32 x, u32 y, s32 color);
+void minimapPing(u32 x, u32 y, s32 color, u32 playerId = 8);
 
 // Functionally identical to the [playfram] opcode in iscript.bin.
 inline void playFrame(CImage* image, u16 frameset) {
@@ -247,8 +247,8 @@ inline void playFrame(CImage* image, u16 frameset) {
     image->frameSet = frameset;
     u16 frameIndex = frameset + image->direction;
     if (image->frameIndex != frameIndex) {
-      image->flags |= CImage_Flags::Redraw;	//Order the game to redraw the image
-      image->frameIndex = frameIndex;
+		image->flags |= CImage_Flags::Redraw;	//Order the game to redraw the image
+		image->frameIndex = frameIndex;
     }
   }
 }
