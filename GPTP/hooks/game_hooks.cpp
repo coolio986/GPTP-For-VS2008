@@ -34,7 +34,7 @@ namespace plugins {
 	CUnit *nearestTemplarMergePartner(CUnit *unit);
 	bool chargeTargetInRange(const CUnit *zealot);
 	bool isInHarvestState(const CUnit *worker);
-	bool thisIsMineral(const CUnit *resource);
+	bool isMineral(const CUnit *resource);
 	bool hasHarvestOrders(const CUnit *worker);
 
 	class HarvestTargetFinder;
@@ -62,6 +62,24 @@ namespace warpgateMechanic {
 	void setWarpUnit(CUnit *warpUnit);
 	void runWarpgatePlacing(CUnit *unit);
 	void runWarpgate(CUnit *warpgate);
+}
+
+namespace buildingPreview {
+	void saveUnitAsParent(CUnit *parent, CUnit *unit);
+	CUnit *getPrevParent(CUnit *preview);
+	u8 getPrevPlayerId(CUnit *preview);
+	void cleanPrevPlayerId(CUnit *preview);
+	void convertToHallucination(CUnit *unit);
+	void useHallucinationDrawfunc(CSprite *sprite, u32 palette);
+	bool IsBuildOrder(u16 orderId);
+	bool isValidPreview(CUnit *preview);
+	void removePreview(CUnit *preview);
+	void freeOccupiedTiles(CUnit *building);
+	bool placementIsFree(u16 unitId, u16 pos_x, u16 pos_y);
+	void setPreview(CUnit *preview);
+	CUnit *placePreviewAt(u16 unitId, u16 pos_x, u16 pos_y);
+	void createPreview(CUnit *unit);
+	void manageBuildingPreview(CUnit *unit);
 }
 
 namespace smartCasting {
@@ -108,6 +126,7 @@ bool nextFrame() {
 		//Loop through all visible units in the game - start
 		for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
 			plugins::manageWorkerCollision(unit);
+			buildingPreview::manageBuildingPreview(unit);
 
 			//KYSXD Idle worker count
 			if((unit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())
@@ -145,6 +164,7 @@ bool nextFrame() {
 		//KYSXD - Selection plugins
 		for (int i = 0; i < *clientSelectionCount; ++i) {
 			CUnit *selUnit = clientSelectionGroup->unit[i];
+			plugins::showUnitGraphicHelpers(selUnit);
 
 			//KYSXD Twilight Archon
 			if(selUnit->id == UnitId::ProtossDarkTemplar || selUnit->id == UnitId::ProtossHighTemplar) {
@@ -160,7 +180,6 @@ bool nextFrame() {
 					else selUnit->mainOrderId = OrderId::Stop;
 				}
 			}
-			plugins::showUnitGraphicHelpers(selUnit);
 			//KYSXD - For selected units - From SC Transition - end
 		}
 
@@ -425,7 +444,7 @@ namespace plugins {
 		else return true;
 	}
 
-	bool thisIsMineral(const CUnit *resource) {
+	bool isMineral(const CUnit *resource) {
 		if(UnitId::ResourceMineralField <= resource->id && resource->id <= UnitId::ResourceMineralFieldType3) {
 			return true;
 		}
@@ -451,7 +470,7 @@ namespace plugins {
 				if(mainHarvester->getDistanceToTarget(unit) > (16 << 5)) //Harvest distance
 					return false;
 
-				if(!(thisIsMineral(unit)))
+				if(!(isMineral(unit)))
 					return false;
 
 				return true;
@@ -495,6 +514,14 @@ namespace plugins {
 					
 				}
 
+			}
+		}
+		//By RavenWolf:
+		//if vespene geyser or a mineral field, reveal it to all players
+		for(CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
+			if(isMineral(unit)
+				|| unit->id == UnitId::ResourceVespeneGeyser) {
+				unit->sprite->visibilityFlags = 0xFF;
 			}
 		}
 	}
@@ -1259,3 +1286,171 @@ namespace smartCasting {
 		prepareUnitsForNextFrame();
 	}
 } //namespace smartCasting
+
+namespace buildingPreview {
+	u16 previewParent[UNIT_ARRAY_LENGTH];
+	u8 previewPlayerId[UNIT_ARRAY_LENGTH];
+
+	void saveUnitAsParent(CUnit *parent, CUnit *unit) {
+		previewParent[unit->getIndex()] = parent->getIndex();
+		previewPlayerId[unit->getIndex()] = parent->playerId;
+	}
+
+	CUnit *getPrevParent(CUnit *preview) {
+		return CUnit::getFromIndex(previewParent[preview->getIndex()]);
+	}
+
+	u8 getPrevPlayerId(CUnit *preview) {
+		return previewPlayerId[preview->getIndex()];
+	}
+
+	void cleanPrevPlayerId(CUnit *preview) {
+		previewPlayerId[preview->getIndex()] = NULL;
+	}
+
+	const u32 Func_ConvertToHallucination = 0x004F6180;
+	void convertToHallucination(CUnit *unit) {
+
+		__asm {
+			PUSHAD
+			MOV EAX, unit
+			CALL Func_ConvertToHallucination
+			POPAD
+		}
+
+	}
+
+	const u32 Func_UseHallucinationDrawfunc = 0x00497DC0;;
+	void useHallucinationDrawfunc(CSprite *sprite, u32 palette = 0) {
+
+		__asm {
+			PUSHAD
+			MOV EAX, sprite
+			MOV EBX, palette
+			CALL Func_UseHallucinationDrawfunc
+			POPAD
+		}
+
+	}
+
+	bool IsBuildOrder(u16 orderId) {
+		switch(orderId) {
+			case OrderId::BuildTerran:
+			case OrderId::BuildProtoss1:
+				return true;
+			default: return false;
+
+		}
+	}
+
+	bool isValidPreview(CUnit *preview) {
+		CUnit *parent = CUnit::getFromIndex(previewParent[preview->getIndex()]);
+		if(preview->status & UnitStatus::IsHallucination
+			&& preview->playerId == 11
+			&& (!parent
+				|| !IsBuildOrder(parent->mainOrderId)
+				|| parent->orderTarget.unit != preview
+				|| parent->orderTarget.pt.x != preview->getX()
+				|| parent->orderTarget.pt.y != preview->getY())) {
+			return false;
+		}
+		return true;
+	}
+
+	void removePreview(CUnit *preview) {
+		if(!isValidPreview(preview)) {
+
+			preview->sprite->visibilityFlags = 0;
+			ActiveTile *tile = &scbw::getActiveTileAt(preview->getX(), preview->getY());
+			tile->visibilityFlags &= ~(1 << getPrevPlayerId(preview));
+			cleanPrevPlayerId(preview);
+
+			preview->remove();
+
+		}
+	}
+
+	void freeOccupiedTiles(CUnit *building) {
+		Point16 const dimensions = units_dat::BuildingDimensions[building->id];;
+		u16 init_x = building->getX();
+		init_x -= std::min(init_x, (u16)(dimensions.x/2));
+		u16 init_y = building->getY();
+		init_y -= std::min(init_y, (u16)(dimensions.y/2));
+
+		for(int tile_x = 0; tile_x < dimensions.x; tile_x++) {
+			for(int tile_y = 0; tile_y < dimensions.y; tile_y++) {
+				ActiveTile *tile = &scbw::getActiveTileAt(init_x + tile_x, init_y + tile_y);
+				if(tile) tile->currentlyOccupied &= ~1;
+			}
+		}
+	}
+
+	bool placementIsFree(u16 unitId, u16 pos_x, u16 pos_y) {
+		Point16 const dimensions = units_dat::BuildingDimensions[unitId];;
+		u16 init_x = pos_x;
+		init_x -= std::min(init_x, (u16)(dimensions.x/2));
+		u16 init_y = pos_y;
+		init_y -= std::min(init_y, (u16)(dimensions.y/2));
+
+		for(int tile_x = 0; tile_x < dimensions.x; tile_x += 32) {
+			for(int tile_y = 0; tile_y < dimensions.y; tile_y += 32) {
+				ActiveTile *tile = &scbw::getActiveTileAt(init_x + tile_x, init_y + tile_y);
+				if(tile && tile->currentlyOccupied == 1) return false;
+			}
+		}
+		return true;
+	}
+
+	void setPreview(CUnit *preview) {
+		preview->userActionFlags |= 0x4;
+
+		convertToHallucination(preview);
+		manageUnitStatusFlags(preview, UnitStatus::NoCollide, true);
+		manageUnitStatusFlags(preview, UnitStatus::Invincible, true);
+
+		if(preview->sprite) {
+			useHallucinationDrawfunc(preview->sprite);
+			preview->sprite->visibilityFlags = (1 << getPrevPlayerId(preview));
+
+			if(preview->sprite->mainGraphic) {
+				preview->sprite->mainGraphic->flags &= ~CImage_Flags::Clickable;
+			}
+		}
+	}
+
+	CUnit *placePreviewAt(u16 unitId, u16 pos_x, u16 pos_y) {
+
+		bool freeTiles = placementIsFree(unitId, pos_x, pos_y);
+		CUnit *preview = scbw::createUnitAtPos(unitId,
+			11,
+			pos_x,
+			pos_y);
+		if(freeTiles) freeOccupiedTiles(preview);
+
+		return preview;
+	}
+
+	void createPreview(CUnit *unit) {
+		u16 creationId = unit->buildQueue[unit->buildQueueSlot];
+		if(creationId != UnitId::None
+			&& unit->orderTarget.unit == NULL
+			&& IsBuildOrder(unit->mainOrderId)) {
+
+			CUnit* preview = placePreviewAt(creationId,
+				unit->orderTarget.pt.x,
+				unit->orderTarget.pt.y);
+
+			if(preview) {
+				unit->orderTarget.unit = preview;
+				saveUnitAsParent(unit, preview);
+
+				setPreview(preview);
+			}
+		}
+	}
+
+	void manageBuildingPreview(CUnit *unit) {
+		removePreview(unit);
+		createPreview(unit);
+	}
+}

@@ -6,6 +6,33 @@
 #include "../SCBW/api.h"
 
 namespace {
+  //From GagMania
+  const u32 Func_ModifiyHangerCount = 0x004C8A30;
+  void modifyHangerCount(CUnit *unit, u32 count){
+    __asm {
+      PUSHAD
+      PUSH count
+      PUSH unit
+      CALL Func_ModifiyHangerCount
+      POPAD
+    }
+  }
+
+  void manageHangerCount(CUnit *unit) {
+    u32 count = 0;
+    switch(unit->id) {
+      case UnitId::ProtossReaver:
+        count = 5;
+        break;
+      case UnitId::ProtossCarrier:
+        count = 4;
+        break;
+      default:
+        break;
+    }
+    if(count) modifyHangerCount(unit, count);
+  }
+
   ///   Checks whether the @p resource unit can be harvested by \p playerId.
   bool canBeHarvestedBy(const CUnit* resource, u8 playerId) {
     using units_dat::BaseProperty;
@@ -78,6 +105,7 @@ void orderNewUnitToRally(CUnit* unit, CUnit* factory) {
   //Default StarCraft behavior
 
   moveReactorCreation(unit, factory);
+  manageHangerCount(unit);
   manageRally(unit, factory);
 }
 

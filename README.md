@@ -45,6 +45,9 @@ Other short-lived branches may pop-up from time to time as i stabilize new relea
 - Adept's psionic transfer (SCII inspired).
 - Nydus canal rally point.
 - Zerg burrowed movement.
+- Smart Casting.
+- Starting hangar units (for carrier/reaver).
+- Terran/Protoss building placement preview.
 
 **To do:**
 
