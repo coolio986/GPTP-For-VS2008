@@ -1,3 +1,18 @@
+Update 3.999:
+
+-Remove //V241 for VS2008 in several files (was some kind of helper to me, no longer needed)
+-Add some infos or change layout in some files
+-Modify some old code sections to make them closer to original code when there's possibility of difference
+-replaced "const CUnit*" by "CUnit*" (otherwise incompatibilities with new code could happen)
+-removed an unused comment line in CUnitLayout.h
+-add clientSelectionGroupEnd in scbwdata.h
+-added several temporary units array variables because used in hooks in scbwdata.h
+-fixed a bug with some static variables with wrong initialization
+-fixed inject code to be more consistent (and possibly stables too)
+-added constants around some functions to make edit easier
+-started changing build unit/building code
+-other changes around (future versions changelog will be more referenced regarding details)
+
 Update 3:
 
 -Minor fixes and optimizations
@@ -12,6 +27,7 @@ Update 3:
 -Fix for drawEllipse graphics function and adding drawDottedEllipse function
 -Fix for CUnit::getColor (so it return the correct value...probably all the time)
 -Fix for units cloaking hook (could cause crashes if used from another hook, or lead to instability)
+-Fix for removeOrderFromUnitQueue helper function (could cause freeze through infinite loops)
 -Changes on buttonsets hook (maybe easier to debug this way)
 -Add StringEmpty variable in scbwdata.h (in case Starcraft would check if a string is empty by comparing
 	the pointer to a char* to that value (could happen since it's the official empty string address))

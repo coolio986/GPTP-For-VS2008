@@ -22,15 +22,12 @@
 #include "hooks/unit_speed.h"
 #include "hooks/update_status_effects.h"
 #include "hooks/update_unit_state.h"
-#include "hooks/weapon_cooldown.h"
-#include "hooks/weapon_damage.h"
-#include "hooks/weapon_fire.h"
+#include "hooks/weapons/weapon_cooldown.h"
+#include "hooks/weapons/weapon_damage.h"
+#include "hooks/weapons/weapon_fire.h"
 
 #include "hooks/unit_destructor_special.h"
 #include "hooks/psi_field.h"
-
-#include "hooks/unit_morph.h"
-#include "hooks/building_morph.h"
 
 #include "hooks/unit_stats/armor_bonus.h"
 #include "hooks/unit_stats/sight_range.h"
@@ -38,26 +35,31 @@
 #include "hooks/unit_stats/weapon_range.h"
 #include "hooks/interface/weapon_armor_tooltip.h"
 
-#include "hooks/orders/infestation.h"
-#include "hooks/orders/siege_transform.h"
+#include "hooks/orders/building_making/building_morph.h"
+#include "hooks/orders/building_making/make_nydus_exit.h"
+#include "hooks/orders/unit_making/unit_morph.h"
+#include "hooks/interface/wireframe.h"
+
+#include "hooks/orders/base_orders/attack_orders.h"
 #include "hooks/interface/buttonsets.h"
-#include "hooks/interface/selection.h"
-#include "hooks/orders/merge_units.h"
+#include "hooks/orders/spells/cast_order.h"
+#include "hooks/orders/enter_nydus.h"
+#include "hooks/orders/infestation.h"
 #include "hooks/orders/larva_creep_spawn.h"
 #include "hooks/orders/liftland.h"
-#include "hooks/orders/base_orders/attack_orders.h"
-#include "hooks/orders/base_orders/stopholdpos_orders.h"
+#include "hooks/orders/merge_units.h"
 #include "hooks/orders/spells/recall_spell.h"
-#include "hooks/orders/enter_nydus.h"
-#include "hooks/orders/spells/cast_order.h"
-#include "hooks/wpnspellhit.h"
+#include "hooks/interface/selection.h"
+#include "hooks/orders/siege_transform.h"
+#include "hooks/orders/base_orders/stopholdpos_orders.h"
+#include "hooks/weapons/wpnspellhit.h"
 
 //#include "AI/spellcasting.h"
 
 /// This function is called when the plugin is loaded into StarCraft.
 /// You can enable/disable each group of hooks by commenting them.
 /// You can also add custom modifications to StarCraft.exe by using:
-///    memoryPatch(address_to_patch, value_to_patch_with);
+///		memoryPatch(address_to_patch, value_to_patch_with);
 
 BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
   //KYSXD W-Mode start
