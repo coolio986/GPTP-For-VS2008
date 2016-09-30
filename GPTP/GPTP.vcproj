@@ -200,6 +200,14 @@
 			<File
 				RelativePath=".\hooks\orders\building_making\building_morph_inject.cpp"
 				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\building_making\building_terran.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\building_making\building_terran_inject.cpp"
+				>
 			</File>			
 			<File
 				RelativePath=".\hooks\interface\buttonsets.cpp"
@@ -219,6 +227,14 @@
 			</File>			
 			<File
 				RelativePath=".\configure.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\base_orders\die_order.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\base_orders\die_order_inject.cpp"
 				>
 			</File>
 			<File
@@ -778,6 +794,10 @@
 			<File
 				RelativePath=".\hooks\orders\building_making\building_morph.h"
 				>
+			</File>	
+			<File
+				RelativePath=".\hooks\orders\building_making\building_terran.h"
+				>
 			</File>			
 			<File
 				RelativePath=".\hooks\interface\buttonsets.h"
@@ -789,6 +809,10 @@
 			</File>			
 			<File
 				RelativePath=".\definitions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\base_orders\die_order.h"
 				>
 			</File>
 			<File

@@ -39,10 +39,12 @@
 #include "hooks/orders/building_making/make_nydus_exit.h"
 #include "hooks/orders/unit_making/unit_morph.h"
 #include "hooks/interface/wireframe.h"
+#include "hooks/orders/building_making/building_terran.h"
 
 #include "hooks/orders/base_orders/attack_orders.h"
 #include "hooks/interface/buttonsets.h"
 #include "hooks/orders/spells/cast_order.h"
+#include "hooks/orders/base_orders/die_order.h"
 #include "hooks/orders/enter_nydus.h"
 #include "hooks/orders/infestation.h"
 #include "hooks/orders/larva_creep_spawn.h"
@@ -80,67 +82,72 @@ namespace {
 BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
   runWMode();
 
-  //StarCraft.exe version check
-  char exePath[300];
-  const DWORD pathLen = GetModuleFileName(NULL, exePath, sizeof(exePath));
-  if (pathLen == sizeof(exePath)) {
-    MessageBox(NULL, "Error: Cannot check version of StarCraft.exe. The file path is too long.", NULL, MB_OK);
-    return FALSE;
-  }
-  if (!checkStarCraftExeVersion(exePath))
-    return FALSE;
+	//StarCraft.exe version check
+	char exePath[300];
+	const DWORD pathLen = GetModuleFileName(NULL, exePath, sizeof(exePath));
 
-  hooks::injectGameHooks();
-  hooks::injectDrawHook();
-  
-  hooks::injectInfestationHooks();
-  hooks::injectSiegeTransformHooks();
-  hooks::injectButtonSetHooks();
-  hooks::injectSelectMod();
-  hooks::injectMergeUnitsHooks();
-  hooks::injectLarvaCreepSpawnHooks();
-  hooks::injectLiftLandHooks();
-  hooks::injectAttackOrdersHooks();
-  hooks::injectStopHoldPosOrdersHooks();
-  hooks::injectRecallSpellHooks();
-  hooks::injectEnterNydusHooks();
-  hooks::injectCastOrderHooks();
-  hooks::injectWpnSpellHitHooks();
+	if (pathLen == sizeof(exePath)) {
+		MessageBox(NULL, "Error: Cannot check version of StarCraft.exe. The file path is too long.", NULL, MB_OK);
+		return FALSE;
+	}
 
-  hooks::injectApplyUpgradeFlags();
-  hooks::injectAttackPriorityHooks();
-  hooks::injectBunkerHooks();
-  hooks::injectCloakNearbyUnits();
-  hooks::injectCloakingTechHooks();
-  hooks::injectDetectorHooks();
-  hooks::injectHarvestResource();
-  hooks::injectRallyHooks();
-  hooks::injectRechargeShieldsHooks();
-  hooks::injectSpiderMineHooks();
-  hooks::injectStimPacksHooks();
-  hooks::injectTechTargetCheckHooks();
-  hooks::injectTransferTechAndUpgradesHooks();
-  hooks::injectUnitSpeedHooks();
-  hooks::injectUpdateStatusEffects();
-  hooks::injectUpdateUnitState();
-  hooks::injectWeaponCooldownHook();
-  hooks::injectWeaponDamageHook();
-  hooks::injectWeaponFireHooks();
-  
-  hooks::injectUnitDestructorSpecial();
-  hooks::injectPsiFieldHooks();
+	if (!checkStarCraftExeVersion(exePath))
+		return FALSE;
 
-  hooks::injectUnitMorphHooks();
-  hooks::injectBuildingMorphHooks();
-  
-  hooks::injectArmorBonusHook();
-  hooks::injectSightRangeHook();
-  hooks::injectUnitMaxEnergyHook();
-  hooks::injectWeaponRangeHooks();
-  
-  hooks::injectUnitTooltipHook();
+	hooks::injectGameHooks();
+	hooks::injectDrawHook();
 
-  //hooks::injectSpellcasterAI();
+	hooks::injectInfestationHooks();
+	hooks::injectSiegeTransformHooks();
+	hooks::injectButtonSetHooks();
+	hooks::injectSelectMod();
+	hooks::injectMergeUnitsHooks();
+	hooks::injectLarvaCreepSpawnHooks();
+	hooks::injectLiftLandHooks();
+	hooks::injectAttackOrdersHooks();
+	hooks::injectStopHoldPosOrdersHooks();
+	hooks::injectRecallSpellHooks();
+	hooks::injectEnterNydusHooks();
+	hooks::injectCastOrderHooks();
+	hooks::injectWpnSpellHitHooks();
+	hooks::injectBuildingMorphHooks();
+	hooks::injectMakeNydusExitHook();
+	hooks::injectUnitMorphHooks();
+	hooks::injectWireframeHook();
+	hooks::injectDieOrderHook();
+	hooks::injectBuildingTerranHook();
 
-  return TRUE;
+	hooks::injectApplyUpgradeFlags();
+	hooks::injectAttackPriorityHooks();
+	hooks::injectBunkerHooks();
+	hooks::injectCloakNearbyUnits();
+	hooks::injectCloakingTechHooks();
+	hooks::injectDetectorHooks();
+	hooks::injectHarvestResource();
+	hooks::injectRallyHooks();
+	hooks::injectRechargeShieldsHooks();
+	hooks::injectSpiderMineHooks();
+	hooks::injectStimPacksHooks();
+	hooks::injectTechTargetCheckHooks();
+	hooks::injectTransferTechAndUpgradesHooks();
+	hooks::injectUnitSpeedHooks();
+	hooks::injectUpdateStatusEffects();
+	hooks::injectUpdateUnitState();
+	hooks::injectWeaponCooldownHook();
+	hooks::injectWeaponDamageHook();
+	hooks::injectWeaponFireHooks();
+	
+	hooks::injectUnitDestructorSpecial();
+	hooks::injectPsiFieldHooks();
+	
+	hooks::injectArmorBonusHook();
+	hooks::injectSightRangeHook();
+	hooks::injectUnitMaxEnergyHook();
+	hooks::injectWeaponRangeHooks();
+	
+	hooks::injectUnitTooltipHook();
+
+	//hooks::injectSpellcasterAI();
+
+	return TRUE;
 }
