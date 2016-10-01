@@ -1,6 +1,6 @@
 #include "weapon_cooldown.h"
-#include "../SCBW/scbwdata.h"
-#include "../SCBW/enumerations.h"
+#include "../../SCBW/scbwdata.h"
+#include "../../SCBW/enumerations.h"
 
 //V241 for VS2008
 
@@ -56,7 +56,7 @@ namespace hooks {
 /// Calculates the unit's weapon cooldown, factoring in upgrades and status effects.
 ///
 /// @return		The modified cooldown value.
-u32 getModifiedWeaponCooldownHook(const CUnit* unit, u8 weaponId) {
+u32 getModifiedWeaponCooldownHook(CUnit* unit, u8 weaponId) {
 	//KYSXD new behavior
 	u32 cooldown = weapons_dat::Cooldown[weaponId];
 

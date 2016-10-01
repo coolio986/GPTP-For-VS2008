@@ -3,7 +3,6 @@
 #include "game_hooks.h"
 #include <graphics/graphics.h>
 #include <SCBW/api.h>
-#include <SCBW/scbwdata.h>
 #include <SCBW/ExtendSightLimit.h>
 
 #include "psi_field.h"
@@ -83,22 +82,76 @@ namespace buildingPreview {
 }
 
 namespace smartCasting {
+	//Here we store the last order for each unit,
+	//to do not mess with the members of the CUnit structure
+	static COrder lastOrderArray[UNIT_ARRAY_LENGTH + 1];
+
+	const int ORDER_TYPE_COUNT = ((int)(0xBD) + 1);
+	//Stores the pointer for the next CUnit (like a linked list)
+	static CUnit *custom_unit_array[UNIT_ARRAY_LENGTH + 1];
+	
+	//First and last node of the casters lists
+	static CUnit *firstCaster[ORDER_TYPE_COUNT][PLAYABLE_PLAYER_COUNT];
+	static CUnit *lastCaster[ORDER_TYPE_COUNT][PLAYABLE_PLAYER_COUNT];
+
+	bool isOrderValidForSmartcasting(u16 orderId);
+
+	//Get a COrder pointer with a custom order
 	COrder *createOrder(u16 orderId, u16 unitId, CUnit *target, u16 posX, u16 posY);
+
+	//Get a COrder pointer with the current order
 	inline COrder *getCurrentOrder(CUnit *unit);
+
+	//Get a COrder pointer with the last order
 	inline COrder *getLastOrder(CUnit *unit);
+
+	//Stores all variables of COrder in the unit using unused members of CUnit
 	inline void saveAsLastOrder(CUnit *unit, COrder *lastOrder);
+
+	//Stores all variables of COrder in the variables of the current order
 	inline void saveAsMainOrder(CUnit *unit, COrder *mainOrder);
+
+	//This function does three things:
+	//1) resets the variables of the current order
+	//2) issues the COrder newOrder
+	//3) stores the newOrder's variables in the unit's last order variables
 	inline void setOrderInUnit(CUnit *unit, COrder *newOrder);
+
+	//This function checks three things:
+	//1) If the user has interacted with the unit
+	//2) if the unit's mainOrderId is the same as the asked orderId
+	//3) If the last order is different from the asked orderId or is allowed to overrun orders
 	inline bool isCasterValidForOrder(CUnit *unit, u8 orderId);
+
+	//Checks if the new order is different from the last
 	inline bool isOverruningLastOrder(CUnit *unit, u8 orderId);
+
+	//Checks of the orderId requires two units (warp archon)
 	inline bool isCouplesOrder(u8 orderId);
+
+	//Checks if two units are partners in a 2-units order
 	inline bool isPartnerInOrder(CUnit *unit1, CUnit *unit2, u8 orderId);
+
+	void setCasters();
+
+	//Returns the best caster running orderId for player playerId
 	CUnit **getBestCasters(u8 orderId);
+
+	//Issued the last order to unit
+	//If the last order was completed, orders to idle
 	inline void tryLastOrder(CUnit *unit);
+
+	//Smartcast behaviour
 	inline void smartCastOrder(u8 orderId);
+
+	//Sets flags and saves last order
 	inline void prepareUnitsForNextFrame();
+
+	//Runs smartcast for each order and prepares for next frame
+	//Archon's orders doesn't work now:
+	//Archon Merge and Dark Archon Meld buttons doesn't set userActionFlags on the unit
 	inline void runSmartCast();
-}
+} //namespace smartCasting
 
 namespace hooks {
 
@@ -193,6 +246,7 @@ bool nextFrame() {
 		scbw::setInGameLoopState(false);
 	}
 	return true;
+
 }
 
 bool gameOn() {
@@ -460,10 +514,10 @@ namespace plugins {
 	}
 
 	class HarvestTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
-		const CUnit *mainHarvester;
+		CUnit *mainHarvester;
 		public:
-			void setmainHarvester(const CUnit *mainHarvester) { this->mainHarvester = mainHarvester; }
-			bool match(const CUnit *unit) {
+			void setmainHarvester(CUnit *mainHarvester) { this->mainHarvester = mainHarvester; }
+			bool match(CUnit *unit) {
 				if(!unit)
 					return false;
 
@@ -479,10 +533,10 @@ namespace plugins {
 	HarvestTargetFinder harvestTargetFinder;
 
 	class ContainerTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
-		const CUnit *mineral;
+		CUnit *mineral;
 		public:
-			void setMineral(const CUnit *mineral) { this->mineral = mineral; }
-			bool match(const CUnit *unit) {
+			void setMineral(CUnit *mineral) { this->mineral = mineral; }
+			bool match(CUnit *unit) {
 				if(!unit)
 					return false;
 
@@ -1003,293 +1057,9 @@ namespace warpgateMechanic {
 	}  
 } //namespace warpagteMechanic
 
-namespace smartCasting {
-	//Here we store the last order for each unit,
-	//to do not mess with the members of the CUnit structure
-	COrder lastOrderArray[UNIT_ARRAY_LENGTH];
-
-	//Get a COrder pointer with a custom order
-	COrder *createOrder(u16 orderId = OrderId::Nothing2, u16 unitId = 0, CUnit *target = NULL, u16 posX = 0, u16 posY = 0){
-		static COrder thisOrder;
-		thisOrder.prev = NULL;
-		thisOrder.next = NULL;
-		thisOrder.orderId = orderId;
-		thisOrder.unitId = unitId;
-		thisOrder.target.unit = target;
-		thisOrder.target.pt.x = posX;
-		thisOrder.target.pt.y = posY;
-
-		return &thisOrder;
-	}
-
-	//Get a COrder pointer with the current order
-	inline COrder *getCurrentOrder(CUnit *unit) {
-		return createOrder((u16)unit->mainOrderId,
-			unit->buildQueue[unit->buildQueueSlot],
-			unit->orderTarget.unit,
-			unit->orderTarget.pt.x,
-			unit->orderTarget.pt.y);
-	}
-
-	//Get a COrder pointer with the last order
-	inline COrder *getLastOrder(CUnit *unit) {
-		int index = unit->getIndex();
-		COrder *unitLastOrder = &lastOrderArray[index];
-		return createOrder(unitLastOrder->orderId,
-			unitLastOrder->unitId,
-			unitLastOrder->target.unit,
-			unitLastOrder->target.pt.x,
-			unitLastOrder->target.pt.y);
-	}
-
-	//Stores all variables of COrder in the unit using unused members of CUnit
-	inline void saveAsLastOrder(CUnit *unit, COrder *lastOrder = NULL) {
-		if(lastOrder) {
-			int index = unit->getIndex();
-			COrder *unitLastOrder = &lastOrderArray[index];
-
-			unitLastOrder->orderId = (u8)lastOrder->orderId;
-			unitLastOrder->unitId = lastOrder->unitId;
-			unitLastOrder->target = lastOrder->target;
-		}
-		else {
-			saveAsLastOrder(unit, getCurrentOrder(unit));
-		}
-	}
-
-	//Stores all variables of COrder in the variables of the current order
-	inline void saveAsMainOrder(CUnit *unit, COrder *mainOrder) {
-		if(mainOrder) {
-			unit->mainOrderId = (u8)mainOrder->orderId;
-			unit->buildQueue[unit->buildQueueSlot] = mainOrder->unitId;
-			unit->orderTarget.unit = mainOrder->target.unit;
-			unit->orderTarget.pt.x = mainOrder->target.pt.x;
-			unit->orderTarget.pt.y = mainOrder->target.pt.y;
-		}
-	}
-
-	//This function does three things:
-	//1) resets the variables of the current order
-	//2) issues the COrder newOrder
-	//3) stores the newOrder's variables in the unit's last order variables
-	inline void setOrderInUnit(CUnit *unit, COrder *newOrder = NULL) {
-		if(newOrder) {
-			//If the order is the same, just change the current targets
-			if(newOrder->orderId == unit->mainOrderId) {
-				saveAsMainOrder(unit, newOrder);
-			}
-			//If the order is the different, clean and queue...
-			else {
-				saveAsMainOrder(unit, createOrder());
-				unit->order((u8)newOrder->orderId, newOrder->target.pt.x, newOrder->target.pt.y, newOrder->target.unit, newOrder->unitId, true);
-			}
-			//Save the variables
-			saveAsLastOrder(unit, newOrder);
-		}
-		//If no order... do the same with a Nothing2 order
-		else {
-			setOrderInUnit(unit, createOrder());
-		}
-	}
-
-	//This function checks three things:
-	//1) If the user has interacted with the unit
-	//2) if the unit's mainOrderId is the same as the asked orderId
-	//3) If the last order is different from the asked orderId or is allowed to overrun orders
-	inline bool isCasterValidForOrder(CUnit *unit, u8 orderId) {
-		if(unit
-			&& unit->userActionFlags == 2
-			&& unit->mainOrderId == orderId) {
-			return true;
-		}
-		return false;
-	}
-
-	//Checks if the new order is different from the last
-	inline bool isOverruningLastOrder(CUnit *unit, u8 orderId) {
-		if(getLastOrder(unit)->orderId == orderId) {
-			return true;
-		}
-		return false;
-	}
-
-	//Checks of the orderId requires two units (warp archon)
-	inline bool isCouplesOrder(u8 orderId) {
-		switch(orderId) {
-			case OrderId::WarpingArchon:
-			case OrderId::WarpingDarkArchon:
-				return true;
-				break;
-			default:
-				break;
-		}
-		return false;
-	}
-
-	//Checks if two units are partners in a 2-units order
-	inline bool isPartnerInOrder(CUnit *unit1, CUnit *unit2, u8 orderId) {
-		if(unit1 && unit2 && isCouplesOrder(orderId)
-			&& unit1->orderTarget.unit == unit2
-			&& unit2->orderTarget.unit == unit1) {
-			return true;
-		}
-		else return false;
-	}
-
-	//Returns the best caster running orderId for player playerId
-	CUnit **getBestCasters(u8 orderId) {
-		static CUnit *bestCasterClean[8];
-		static CUnit *bestCasterOverrun[8];
-
-		static CUnit *bestCasterArray[8];
-
-		for(int i = 0; i < 8; i++) {
-			bestCasterClean[i] = NULL;
-			bestCasterOverrun[i] = NULL;
-		}
-
-		for(CUnit *caster = *firstVisibleUnit; caster; caster = caster->link.next) {
-			if(isCasterValidForOrder(caster, orderId)) {
-
-				u8 p_id = caster->playerId;
-
-				//If is clean order (different than the last one), we have a winner
-				if(!isOverruningLastOrder(caster, orderId)
-					&& (!bestCasterClean[p_id]
-					|| bestCasterClean[p_id]->energy < caster->energy)) {
-					bestCasterClean[p_id] = caster;
-				}
-
-
-				//Store in case we don't have a winner (clean caster)
-				//We're going to need this if we can't find a new caster
-				if(!bestCasterOverrun[p_id]
-					|| bestCasterOverrun[p_id]->energy < caster->energy) {
-					bestCasterOverrun[p_id] = caster;
-				}
-
-			}
-		}
-
-		//For each player, store the caster
-		for(int i = 0; i < 8; i++) {
-			bestCasterArray[i] = (bestCasterClean[i] == NULL ? bestCasterOverrun[i] : bestCasterClean[i]);
-		}
-
-		return bestCasterArray;
-	}
-
-	//Issued the last order to unit
-	//If the last order was completed, orders to idle
-	inline void tryLastOrder(CUnit *unit) {
-		if(unit->orderSignal == 2) {
-			setOrderInUnit(unit);
-			unit->orderSignal = 0;
-		}
-		else
-			setOrderInUnit(unit, getLastOrder(unit));
-	}
-
-	//Smartcast behaviour
-	inline void smartCastOrder(u8 orderId) {
-		CUnit **bestCasterArray = getBestCasters(orderId);
-		long int target_x[8];
-		long int target_y[8];
-		u16 totalCasters[8];
-
-		//Set if we can find at leat one unit new-casting the order
-		bool atLeastOneCaster = false;
-		for(int i = 0; i < 8; i++){
-			if(bestCasterArray[i]) {
-				bestCasterArray[i]->userActionFlags = 0;
-				atLeastOneCaster = true;
-			}
-			target_x[i] = 0;
-			target_y[i] = 0;
-			totalCasters[i] = 0;
-		}
-
-		if(atLeastOneCaster) {
-			//Order other units to continue with the lasts orders
-			for(CUnit *caster = *firstVisibleUnit; caster; caster = caster->link.next) {
-				if(caster->userActionFlags == 2
-					&& caster->mainOrderId == orderId) {
-
-					target_x[caster->playerId] += caster->orderTarget.pt.x;
-					target_y[caster->playerId] += caster->orderTarget.pt.y;
-					totalCasters[caster->playerId]++;
-
-					//Checks if the unit is the partner of the current best
-					//This is going to help (eventually) with smart casting archon warp and dark archon meld
-					if(!isPartnerInOrder(bestCasterArray[caster->playerId], caster, orderId)) {
-						tryLastOrder(caster);
-					}
-
-					//Unset the user flags (To avoid mistakes in the next frame)
-					caster->userActionFlags = 0;
-				}
-			}
-
-			//Fix the target point for ground spells
-			//Ground spells like psi storm, ensnare, lockdown
-			for(int j = 0; j < 8; j++) {
-				if(bestCasterArray[j]
-					&& !bestCasterArray[j]->orderTarget.unit
-					&& totalCasters[j]) {
-					target_x[j] /= totalCasters[j];
-					target_y[j] /= totalCasters[j];
-
-					bestCasterArray[j]->orderTarget.pt.x = (u16)target_x[j];
-					bestCasterArray[j]->orderTarget.pt.y = (u16)target_y[j];
-				}
-			}
-		}
-	}
-
-	//Sets flags and saves last order
-	inline void prepareUnitsForNextFrame() {
-		for(CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
-			//Stores the last order for smartCast
-			saveAsLastOrder(unit);
-		}
-	}
-
-	//Runs smartcast for each order and prepares for next frame
-	//Archon's orders doesn't work now:
-	//Archon Merge and Dark Archon Meld buttons doesn't set userActionFlags on the unit
-	inline void runSmartCast() {
-		smartCastOrder(OrderId::WarpingArchon);
-		smartCastOrder(OrderId::FireYamatoGun1);
-		smartCastOrder(OrderId::MagnaPulse);
-		smartCastOrder(OrderId::DarkSwarm);
-		smartCastOrder(OrderId::CastParasite);
-		smartCastOrder(OrderId::SummonBroodlings);
-		smartCastOrder(OrderId::EmpShockwave);
-		smartCastOrder(OrderId::NukePaint);
-		smartCastOrder(OrderId::PlaceMine);
-		smartCastOrder(OrderId::DefensiveMatrix);
-		smartCastOrder(OrderId::PsiStorm);
-		smartCastOrder(OrderId::Irradiate);
-		smartCastOrder(OrderId::Plague);
-		smartCastOrder(OrderId::Consume);
-		smartCastOrder(OrderId::Ensnare);
-		smartCastOrder(OrderId::StasisField);
-		smartCastOrder(OrderId::Hallucianation1);
-		smartCastOrder(OrderId::Restoration);
-		smartCastOrder(OrderId::CastDisruptionWeb);
-		smartCastOrder(OrderId::CastMindControl);
-		smartCastOrder(OrderId::WarpingDarkArchon);
-		smartCastOrder(OrderId::CastFeedback);
-		smartCastOrder(OrderId::CastOpticalFlare);
-		smartCastOrder(OrderId::CastMaelstrom);
-
-		prepareUnitsForNextFrame();
-	}
-} //namespace smartCasting
-
 namespace buildingPreview {
-	u16 previewParent[UNIT_ARRAY_LENGTH];
-	u8 previewPlayerId[UNIT_ARRAY_LENGTH];
+	u16 previewParent[UNIT_ARRAY_LENGTH + 1];
+	u8 previewPlayerId[UNIT_ARRAY_LENGTH + 1];
 
 	void saveUnitAsParent(CUnit *parent, CUnit *unit) {
 		previewParent[unit->getIndex()] = parent->getIndex();
@@ -1454,3 +1224,343 @@ namespace buildingPreview {
 		createPreview(unit);
 	}
 }
+
+namespace smartCasting {
+	bool isOrderValidForSmartcasting(u16 orderId) {
+		switch(orderId) {
+			case OrderId::WarpingArchon:
+			case OrderId::FireYamatoGun1:
+			case OrderId::MagnaPulse:
+			case OrderId::DarkSwarm:
+			case OrderId::CastParasite:
+			case OrderId::SummonBroodlings:
+			case OrderId::EmpShockwave:
+			case OrderId::NukePaint:
+			case OrderId::PlaceMine:
+			case OrderId::DefensiveMatrix:
+			case OrderId::PsiStorm:
+			case OrderId::Irradiate:
+			case OrderId::Plague:
+			case OrderId::Consume:
+			case OrderId::Ensnare:
+			case OrderId::StasisField:
+			case OrderId::Hallucianation1:
+			case OrderId::Restoration:
+			case OrderId::CastDisruptionWeb:
+			case OrderId::CastMindControl:
+			case OrderId::WarpingDarkArchon:
+			case OrderId::CastFeedback:
+			case OrderId::CastOpticalFlare:
+			case OrderId::CastMaelstrom:
+				return true;
+				break;
+			default:
+				return false;
+				break;
+		}
+	}
+
+	//Adds a node to the order's stack
+	void addToOrderList(CUnit *unit)
+	{
+		int currentOrder  = unit->mainOrderId;
+		int currentPlayer = unit->playerId;
+		int index;
+
+		if(!firstCaster[currentOrder][currentPlayer])
+		{
+			firstCaster[currentOrder][currentPlayer] = unit;
+			lastCaster[currentOrder][currentPlayer] = unit;
+
+			index = lastCaster[currentOrder][currentPlayer]->getIndex();
+
+			custom_unit_array[index] = NULL;
+
+		}
+		else
+		{
+			index = lastCaster[currentOrder][currentPlayer]->getIndex();
+			custom_unit_array[index] = unit;
+			lastCaster[currentOrder][currentPlayer] = unit;
+
+			index = lastCaster[currentOrder][currentPlayer]->getIndex();
+			custom_unit_array[index] = NULL;
+		}
+	}
+
+	//Get a COrder pointer with a custom order
+	COrder *createOrder(u16 orderId = OrderId::Nothing2, u16 unitId = 0, CUnit *target = NULL, u16 posX = 0, u16 posY = 0){
+		static COrder thisOrder;
+		thisOrder.prev = NULL;
+		thisOrder.next = NULL;
+		thisOrder.orderId = orderId;
+		thisOrder.unitId = unitId;
+		thisOrder.target.unit = target;
+		thisOrder.target.pt.x = posX;
+		thisOrder.target.pt.y = posY;
+
+		return &thisOrder;
+	}
+
+	//Get a COrder pointer with the current order
+	inline COrder *getCurrentOrder(CUnit *unit) {
+		return createOrder((u16)unit->mainOrderId,
+			unit->buildQueue[unit->buildQueueSlot],
+			unit->orderTarget.unit,
+			unit->orderTarget.pt.x,
+			unit->orderTarget.pt.y);
+	}
+
+	//Get a COrder pointer with the last order
+	inline COrder *getLastOrder(CUnit *unit) {
+		int index = unit->getIndex();
+		COrder *unitLastOrder = &lastOrderArray[index];
+		return createOrder(unitLastOrder->orderId,
+			unitLastOrder->unitId,
+			unitLastOrder->target.unit,
+			unitLastOrder->target.pt.x,
+			unitLastOrder->target.pt.y);
+	}
+
+	//Stores all variables of COrder in the unit using unused members of CUnit
+	inline void saveAsLastOrder(CUnit *unit, COrder *lastOrder = NULL) {
+		if(lastOrder) {
+			int index = unit->getIndex();
+			COrder *unitLastOrder = &lastOrderArray[index];
+
+			unitLastOrder->orderId = (u8)lastOrder->orderId;
+			unitLastOrder->unitId = lastOrder->unitId;
+			unitLastOrder->target = lastOrder->target;
+		}
+		else {
+			saveAsLastOrder(unit, getCurrentOrder(unit));
+		}
+	}
+
+	//Stores all variables of COrder in the variables of the current order
+	inline void saveAsMainOrder(CUnit *unit, COrder *mainOrder) {
+		if(mainOrder) {
+			unit->mainOrderId = (u8)mainOrder->orderId;
+			unit->buildQueue[unit->buildQueueSlot] = mainOrder->unitId;
+			unit->orderTarget.unit = mainOrder->target.unit;
+			unit->orderTarget.pt.x = mainOrder->target.pt.x;
+			unit->orderTarget.pt.y = mainOrder->target.pt.y;
+		}
+	}
+
+	//This function does three things:
+	//1) resets the variables of the current order
+	//2) issues the COrder newOrder
+	//3) stores the newOrder's variables in the unit's last order variables
+	inline void setOrderInUnit(CUnit *unit, COrder *newOrder = NULL) {
+		if(newOrder) {
+			//If the order is the same, just change the current targets
+			if(newOrder->orderId == unit->mainOrderId) {
+				saveAsMainOrder(unit, newOrder);
+			}
+			//If the order is the different, clean and queue...
+			else {
+				saveAsMainOrder(unit, createOrder());
+				unit->order((u8)newOrder->orderId, newOrder->target.pt.x, newOrder->target.pt.y, newOrder->target.unit, newOrder->unitId, true);
+			}
+			//Save the variables
+			saveAsLastOrder(unit, newOrder);
+		}
+		//If no order... do the same with a Nothing2 order
+		else {
+			setOrderInUnit(unit, createOrder());
+		}
+	}
+
+	//This function checks three things:
+	//1) If the user has interacted with the unit
+	//2) if the unit's mainOrderId is the same as the asked orderId
+	//3) If the last order is different from the asked orderId or is allowed to overrun orders
+	inline bool isCasterValidForOrder(CUnit *unit, u8 orderId) {
+		if(unit
+			&& unit->userActionFlags == 2
+			&& unit->mainOrderId == orderId) {
+			return true;
+		}
+		return false;
+	}
+
+	//Checks if the new order is different from the last
+	inline bool isOverruningLastOrder(CUnit *unit, u8 orderId) {
+		if(getLastOrder(unit)->orderId == orderId) {
+			return true;
+		}
+		return false;
+	}
+
+	//Checks of the orderId requires two units (warp archon)
+	inline bool isCouplesOrder(u8 orderId) {
+		switch(orderId) {
+			case OrderId::WarpingArchon:
+			case OrderId::WarpingDarkArchon:
+				return true;
+				break;
+			default:
+				break;
+		}
+		return false;
+	}
+
+	//Checks if two units are partners in a 2-units order
+	inline bool isPartnerInOrder(CUnit *unit1, CUnit *unit2, u8 orderId) {
+		if(unit1 && unit2 && isCouplesOrder(orderId)
+			&& unit1->orderTarget.unit == unit2
+			&& unit2->orderTarget.unit == unit1) {
+			return true;
+		}
+		else return false;
+	}
+
+	void setCasters() {
+		for(CUnit *caster = *firstVisibleUnit; caster; caster = caster->link.next) {
+			if(isOrderValidForSmartcasting(caster->mainOrderId)) {
+				addToOrderList(caster);
+			}
+		}
+	}
+
+	//Returns the best caster running orderId for player playerId
+	CUnit **getBestCasters(u8 orderId) {
+		static CUnit *bestCasterClean[8];
+		static CUnit *bestCasterOverrun[8];
+
+		static CUnit *bestCasterArray[8];
+
+		for(int i = 0; i < 8; i++) {
+			bestCasterClean[i] = NULL;
+			bestCasterOverrun[i] = NULL;
+
+			for(CUnit *caster = firstCaster[orderId][i]; caster; caster = custom_unit_array[caster->getIndex()]) {
+				if(isCasterValidForOrder(caster, orderId)) {
+
+					u8 p_id = caster->playerId;
+
+					//If is clean order (different than the last one), we have a winner
+					if(!isOverruningLastOrder(caster, orderId)
+						&& (!bestCasterClean[p_id]
+						|| bestCasterClean[p_id]->energy < caster->energy)) {
+						bestCasterClean[p_id] = caster;
+					}
+
+
+					//Store in case we don't have a winner (clean caster)
+					//We're going to need this if we can't find a new caster
+					if(!bestCasterOverrun[p_id]
+						|| bestCasterOverrun[p_id]->energy < caster->energy) {
+						bestCasterOverrun[p_id] = caster;
+					}
+
+				}
+			}
+		}
+
+
+		//For each player, store the caster
+		for(int i = 0; i < 8; i++) {
+			bestCasterArray[i] = (bestCasterClean[i] == NULL ? bestCasterOverrun[i] : bestCasterClean[i]);
+		}
+
+		return bestCasterArray;
+	}
+
+	//Issued the last order to unit
+	//If the last order was completed, orders to idle
+	inline void tryLastOrder(CUnit *unit) {
+		if(unit->orderSignal == 2) {
+			setOrderInUnit(unit);
+			unit->orderSignal = 0;
+		}
+		else
+			setOrderInUnit(unit, getLastOrder(unit));
+	}
+
+	//Smartcast behaviour
+	inline void smartCastOrder(u8 orderId) {
+		CUnit **bestCasterArray = getBestCasters(orderId);
+		long int target_x[8];
+		long int target_y[8];
+		u16 totalCasters[8];
+
+		//Set if we can find at leat one unit new-casting the order
+		bool atLeastOneCaster = false;
+		for(int i = 0; i < 8; i++){
+			if(bestCasterArray[i]) {
+				bestCasterArray[i]->userActionFlags = 0;
+				atLeastOneCaster = true;
+			}
+			target_x[i] = 0;
+			target_y[i] = 0;
+			totalCasters[i] = 0;
+		}
+
+		if(atLeastOneCaster) {
+			//For each player
+			for(int i = 0; i < PLAYABLE_PLAYER_COUNT; i++)
+			{
+				//Order other units to continue with the lasts orders
+				for(CUnit *caster = firstCaster[orderId][i]; caster; caster = custom_unit_array[caster->getIndex()]) {
+					if(caster->userActionFlags == 2
+						&& caster->mainOrderId == orderId) {
+
+						target_x[caster->playerId] += caster->orderTarget.pt.x;
+						target_y[caster->playerId] += caster->orderTarget.pt.y;
+						totalCasters[caster->playerId]++;
+
+						//Checks if the unit is the partner of the current best
+						//This is going to help (eventually) with smart casting archon warp and dark archon meld
+						if(!isPartnerInOrder(bestCasterArray[caster->playerId], caster, orderId)) {
+							tryLastOrder(caster);
+						}
+
+						//Unset the user flags (To avoid mistakes in the next frame)
+						caster->userActionFlags = 0;
+					}
+				}
+				firstCaster[orderId][i] = NULL;
+			}
+
+			//Fix the target point for ground spells
+			//Ground spells like psi storm, ensnare, lockdown
+			for(int j = 0; j < 8; j++) {
+				if(bestCasterArray[j]
+					&& !bestCasterArray[j]->orderTarget.unit
+					&& totalCasters[j]) {
+					target_x[j] /= totalCasters[j];
+					target_y[j] /= totalCasters[j];
+
+					bestCasterArray[j]->orderTarget.pt.x = (u16)target_x[j];
+					bestCasterArray[j]->orderTarget.pt.y = (u16)target_y[j];
+				}
+			}
+		}
+	}
+
+	//Sets flags and saves last order
+	inline void prepareUnitsForNextFrame() {
+		for(CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
+			//Stores the last order for smartCast
+			saveAsLastOrder(unit);
+		}
+	}
+
+	//Runs smartcast for each order and prepares for next frame
+	//Archon's orders doesn't work now:
+	//Archon Merge and Dark Archon Meld buttons doesn't set userActionFlags on the unit
+	inline void runSmartCast() {
+		setCasters();
+		for(int i = 0; i < ORDER_TYPE_COUNT; i++)
+		{
+			if(isOrderValidForSmartcasting(i))
+			{
+				smartCastOrder(i);
+			}
+		}
+
+		prepareUnitsForNextFrame();
+	}
+} //namespace smartCasting

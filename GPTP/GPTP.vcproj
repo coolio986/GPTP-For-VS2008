@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ks_c_5601-1987"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="GPTP"
 	ProjectGUID="{BAE0A287-3166-4C79-9F90-0C6A6DDB5A69}"
 	RootNamespace="GPTP"
@@ -192,6 +192,22 @@
 			<File
 				RelativePath=".\hooks\orders\base_orders\attack_orders_inject.cpp"
 				>
+			</File>	
+			<File
+				RelativePath=".\hooks\orders\building_making\building_morph.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\building_making\building_morph_inject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\building_making\building_terran.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\building_making\building_terran_inject.cpp"
+				>
 			</File>			
 			<File
 				RelativePath=".\hooks\interface\buttonsets.cpp"
@@ -211,6 +227,14 @@
 			</File>			
 			<File
 				RelativePath=".\configure.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\base_orders\die_order.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\base_orders\die_order_inject.cpp"
 				>
 			</File>
 			<File
@@ -258,6 +282,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\hooks\orders\building_making\make_nydus_exit.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\building_making\make_nydus_exit_inject.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\hooks\orders\merge_units.cpp"
 				>
 			</File>
@@ -296,15 +328,7 @@
 			<File
 				RelativePath=".\hooks\interface\selection_inject.cpp"
 				>
-			</File>
-			<File
-				RelativePath=".\hooks\interface\select_one.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\hooks\interface\select_one_inject.cpp"
-				>
-			</File>
+			</File>			
 			<File
 				RelativePath=".\hooks\orders\siege_transform.cpp"
 				>
@@ -322,13 +346,29 @@
 				>
 			</File>	
 			<File
-				RelativePath=".\hooks\wpnspellhit.cpp"
+				RelativePath=".\hooks\orders\unit_making\unit_morph.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\hooks\wpnspellhit_inject.cpp"
+				RelativePath=".\hooks\orders\unit_making\unit_morph_inject.cpp"
 				>
-			</File>			
+			</File>
+			<File
+				RelativePath=".\hooks\interface\wireframe.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\interface\wireframe_inject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\weapons\wpnspellhit.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\weapons\wpnspellhit_inject.cpp"
+				>
+			</File>		
 			<Filter
 				Name="Subfolders"
 				>
@@ -387,11 +427,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\building_morph.cpp"
+					RelativePath=".\unhooked\building_morph.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\building_morph_inject.cpp"
+					RelativePath=".\unhooked\building_morph_inject.cpp"
 					>
 				</File>
 				<File
@@ -661,11 +701,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\unit_morph.cpp"
+					RelativePath=".\unhooked\unit_morph.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\unit_morph_inject.cpp"
+					RelativePath=".\unhooked\unit_morph_inject.cpp"
 					>
 				</File>
 				<File
@@ -705,27 +745,27 @@
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\weapon_cooldown.cpp"
+					RelativePath=".\hooks\weapons\weapon_cooldown.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\weapon_cooldown_inject.cpp"
+					RelativePath=".\hooks\weapons\weapon_cooldown_inject.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\weapon_damage.cpp"
+					RelativePath=".\hooks\weapons\weapon_damage.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\weapon_damage_inject.cpp"
+					RelativePath=".\hooks\weapons\weapon_damage_inject.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\weapon_fire.cpp"
+					RelativePath=".\hooks\weapons\weapon_fire.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\weapon_fire_inject.cpp"
+					RelativePath=".\hooks\weapons\weapon_fire_inject.cpp"
 					>
 				</File>
 				<File
@@ -750,6 +790,14 @@
 			<File
 				RelativePath=".\hooks\orders\base_orders\attack_orders.h"
 				>
+			</File>	
+			<File
+				RelativePath=".\hooks\orders\building_making\building_morph.h"
+				>
+			</File>	
+			<File
+				RelativePath=".\hooks\orders\building_making\building_terran.h"
+				>
 			</File>			
 			<File
 				RelativePath=".\hooks\interface\buttonsets.h"
@@ -764,13 +812,17 @@
 				>
 			</File>
 			<File
+				RelativePath=".\hooks\orders\base_orders\die_order.h"
+				>
+			</File>
+			<File
 				RelativePath=".\hooks\orders\enter_nydus.h"
 				>
 			</File>			
 			<File
 				RelativePath=".\SCBW\enumerations\FlingyId.h"
 				>
-			</File>
+			</File>			
 			<File
 				RelativePath=".\hook_tools.h"
 				>
@@ -778,7 +830,7 @@
 			<File
 				RelativePath=".\SCBW\enumerations\IconId.h"
 				>
-			</File>
+			</File>			
 			<File
 				RelativePath=".\hooks\orders\infestation.h"
 				>
@@ -795,6 +847,10 @@
 				RelativePath=".\logger.h"
 				>
 			</File>
+			<File
+				RelativePath=".\hooks\orders\building_making\make_nydus_exit.h"
+				>
+			</File>			
 			<File
 				RelativePath=".\hooks\orders\merge_units.h"
 			>
@@ -814,15 +870,11 @@
 			<File
 				RelativePath=".\hooks\interface\selection.h"
 				>
-			</File>
-			<File
-				RelativePath=".\hooks\interface\select_one.h"
-				>
-			</File>
+			</File>			
 			<File
 				RelativePath=".\hooks\orders\siege_transform.h"
 				>
-			</File>
+			</File>			
 			<File
 				RelativePath=".\SCBW\enumerations\SoundId.h"
 				>
@@ -840,9 +892,17 @@
 				>
 			</File>
 			<File
-				RelativePath=".\hooks\wpnspellhit.h"
+				RelativePath=".\hooks\orders\unit_making\unit_morph.h"
 				>
-			</File>			
+			</File>
+			<File
+				RelativePath=".\hooks\interface\wireframe.h"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\weapons\wpnspellhit.h"
+				>
+			</File>		
 			<Filter
 				Name="Subfolders"
 				>
@@ -871,7 +931,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\building_morph.h"
+					RelativePath=".\unhooked\building_morph.h"
 					>
 				</File>
 				<File
@@ -1043,7 +1103,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\unit_morph.h"
+					RelativePath=".\unhooked\unit_morph.h"
 					>
 				</File>
 				<File
@@ -1075,15 +1135,15 @@
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\weapon_cooldown.h"
+					RelativePath=".\hooks\weapons\weapon_cooldown.h"
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\weapon_damage.h"
+					RelativePath=".\hooks\weapons\weapon_damage.h"
 					>
 				</File>
 				<File
-					RelativePath=".\hooks\weapon_fire.h"
+					RelativePath=".\hooks\weapons\weapon_fire.h"
 					>
 				</File>
 				<File

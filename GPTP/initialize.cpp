@@ -22,15 +22,12 @@
 #include "hooks/unit_speed.h"
 #include "hooks/update_status_effects.h"
 #include "hooks/update_unit_state.h"
-#include "hooks/weapon_cooldown.h"
-#include "hooks/weapon_damage.h"
-#include "hooks/weapon_fire.h"
+#include "hooks/weapons/weapon_cooldown.h"
+#include "hooks/weapons/weapon_damage.h"
+#include "hooks/weapons/weapon_fire.h"
 
 #include "hooks/unit_destructor_special.h"
 #include "hooks/psi_field.h"
-
-#include "hooks/unit_morph.h"
-#include "hooks/building_morph.h"
 
 #include "hooks/unit_stats/armor_bonus.h"
 #include "hooks/unit_stats/sight_range.h"
@@ -38,28 +35,50 @@
 #include "hooks/unit_stats/weapon_range.h"
 #include "hooks/interface/weapon_armor_tooltip.h"
 
-#include "hooks/orders/infestation.h"
-#include "hooks/orders/siege_transform.h"
-#include "hooks/interface/buttonsets.h"
-//#include "hooks/interface/selection.h"
-#include "hooks/interface/select_one.h"
+#include "hooks/orders/building_making/building_morph.h"
+#include "hooks/orders/building_making/make_nydus_exit.h"
+#include "hooks/orders/unit_making/unit_morph.h"
+#include "hooks/interface/wireframe.h"
+#include "hooks/orders/building_making/building_terran.h"
 
-#include "hooks/orders/merge_units.h"
+#include "hooks/orders/base_orders/attack_orders.h"
+#include "hooks/interface/buttonsets.h"
+#include "hooks/orders/spells/cast_order.h"
+#include "hooks/orders/base_orders/die_order.h"
+#include "hooks/orders/enter_nydus.h"
+#include "hooks/orders/infestation.h"
 #include "hooks/orders/larva_creep_spawn.h"
 #include "hooks/orders/liftland.h"
-#include "hooks/orders/base_orders/attack_orders.h"
-#include "hooks/orders/base_orders/stopholdpos_orders.h"
+#include "hooks/orders/merge_units.h"
 #include "hooks/orders/spells/recall_spell.h"
-#include "hooks/orders/enter_nydus.h"
-#include "hooks/orders/spells/cast_order.h"
-#include "hooks/wpnspellhit.h"
+#include "hooks/interface/selection.h"
+#include "hooks/orders/siege_transform.h"
+#include "hooks/orders/base_orders/stopholdpos_orders.h"
+#include "hooks/weapons/wpnspellhit.h"
 
 //#include "AI/spellcasting.h"
 
+//#include "hooks/interface/selection.h"
+#include "hooks/interface/select_one.h"
 #include <cstdio>
 #include <ctime>
 
 namespace {
+  void runWMode() {
+    //KYSXD W-Mode start
+    int msgboxID = MessageBox(NULL, "Do you want to play in W-Mode?", PLUGIN_NAME , MB_YESNOCANCEL);
+    switch (msgboxID) {
+      case IDYES:
+        HINSTANCE hDll;
+        hDll =LoadLibrary("./WMODE.dll");
+        hDll =LoadLibrary("./WMODE_FIX.dll");
+        break;
+      case IDCANCEL:
+        exit(0);
+    }//KYSXD W-Mode end
+    return;
+  }
+
   int compareDates(int d1_day, int d1_month, int d1_year, int d2_day, int d2_month, int d2_year) {
     int res = 0;
     res += (d2_year - d1_year)*10000;
@@ -105,55 +124,36 @@ namespace {
       MessageBox(NULL, demoText, PLUGIN_NAME, MB_OK);
       exit(0);
     }
-    return;
   }
 }
 
 /// This function is called when the plugin is loaded into StarCraft.
 /// You can enable/disable each group of hooks by commenting them.
 /// You can also add custom modifications to StarCraft.exe by using:
-///    memoryPatch(address_to_patch, value_to_patch_with);
+///		memoryPatch(address_to_patch, value_to_patch_with);
 
 BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
-  //KYSXD - Demo's Date validation
-//  runDemoValidation();
+  runWMode();
 
-  //KYSXD W-Mode start
-  char exeChar[81];
-  sprintf_s(exeChar, "Initializing %s", PLUGIN_NAME);
-  sprintf_s(exeChar, "%s\nInclude W-Mode?", exeChar);
-  int msgboxID = MessageBox(NULL, exeChar, PLUGIN_NAME , MB_YESNOCANCEL);
-  switch (msgboxID) {
-    case IDYES:
-      HINSTANCE hDll;
-      hDll =LoadLibrary("./WMODE.dll");
-      hDll =LoadLibrary("./WMODE_FIX.dll");
-      break;
-    case IDCANCEL:
-      exit(0);
-      break;
-    default: break;
-  }//KYSXD W-Mode end
+	//StarCraft.exe version check
+	char exePath[300];
+	const DWORD pathLen = GetModuleFileName(NULL, exePath, sizeof(exePath));
 
-  //StarCraft.exe version check
-  char exePath[300];
-  const DWORD pathLen = GetModuleFileName(NULL, exePath, sizeof(exePath));
-  if (pathLen == sizeof(exePath)) {
-    MessageBox(NULL, "Error: Cannot check version of StarCraft.exe. The file path is too long.", NULL, MB_OK);
-    return FALSE;
-  }
-  if (!checkStarCraftExeVersion(exePath))
-    return FALSE;
+	if (pathLen == sizeof(exePath)) {
+		MessageBox(NULL, "Error: Cannot check version of StarCraft.exe. The file path is too long.", NULL, MB_OK);
+		return FALSE;
+	}
+
+	if (!checkStarCraftExeVersion(exePath))
+		return FALSE;
 
   hooks::injectGameHooks();
   hooks::injectDrawHook();
-  
+
   hooks::injectInfestationHooks();
   hooks::injectSiegeTransformHooks();
   hooks::injectButtonSetHooks();
-//  hooks::injectSelectMod();
-  hooks::injectSelectOneHooks();
-  
+  hooks::injectSelectMod();
   hooks::injectMergeUnitsHooks();
   hooks::injectLarvaCreepSpawnHooks();
   hooks::injectLiftLandHooks();
@@ -163,6 +163,12 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
   hooks::injectEnterNydusHooks();
   hooks::injectCastOrderHooks();
   hooks::injectWpnSpellHitHooks();
+  hooks::injectBuildingMorphHooks();
+  hooks::injectMakeNydusExitHook();
+  hooks::injectUnitMorphHooks();
+  hooks::injectWireframeHook();
+  hooks::injectDieOrderHook();
+  hooks::injectBuildingTerranHook();
 
   hooks::injectApplyUpgradeFlags();
   hooks::injectAttackPriorityHooks();
@@ -186,9 +192,6 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
   
   hooks::injectUnitDestructorSpecial();
   hooks::injectPsiFieldHooks();
-
-  hooks::injectUnitMorphHooks();
-  hooks::injectBuildingMorphHooks();
   
   hooks::injectArmorBonusHook();
   hooks::injectSightRangeHook();
@@ -199,5 +202,6 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
 
   //hooks::injectSpellcasterAI();
 
-  return TRUE;
+return TRUE;
+
 }

@@ -17,41 +17,46 @@ namespace {
 	u32 creepModifier_speed(const CUnit *zergUnit);
 	u32 ensnareModifier_speed(const CUnit *unit);
 	u32 unitModifier_speed(const CUnit *unit);
-}
+};
 
 namespace hooks {
 
 /// Calculates the unit's modified movement speed, factoring in upgrades and status effects.
 ///
 /// @return		The modified speed value.
-u32 getModifiedUnitSpeedHook(const CUnit* unit, u32 baseSpeed) {
+u32 getModifiedUnitSpeedHook(CUnit* unit, u32 baseSpeed) {
 	//KYSXD new behavior
 	u32 speed = baseSpeed;
 	speed *= unitModifier_speed(unit);
 	speed = speed/10000;
+
 	return speed;
+
 }
 
 /// Calculates the unit's acceleration, factoring in upgrades and status effects.
 ///
 /// @return		The modified acceleration value.
-u32 getModifiedUnitAccelerationHook(const CUnit* unit) {
+u32 getModifiedUnitAccelerationHook(CUnit* unit) {
 	//KYSXD new behavior
 	u32 acceleration = flingy_dat::Acceleration[units_dat::Graphic[unit->id]];
 	acceleration *= unitModifier_speed(unit);
 	acceleration = acceleration/10000;
 	return acceleration;
+
+
 }
 
 /// Calculates the unit's turn speed, factoring in upgrades and status effects.
 ///
 /// @return		The modified turning speed value.
-u32 getModifiedUnitTurnSpeedHook(const CUnit* unit) {
+u32 getModifiedUnitTurnSpeedHook(CUnit* unit) {
 	//KYSXD new behavior
 	u32 turnSpeed = flingy_dat::TurnSpeed[units_dat::Graphic[unit->id]];
 	turnSpeed *= unitModifier_speed(unit);
 	turnSpeed = turnSpeed/10000;
 	return turnSpeed;
+
 }
 
 } //hooks

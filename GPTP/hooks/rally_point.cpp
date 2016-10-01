@@ -1,8 +1,6 @@
 //Contains hooks that control how rally points are used.
 
 #include "rally_point.h"
-#include "../SCBW/scbwdata.h"
-#include "../SCBW/enumerations.h"
 #include "../SCBW/api.h"
 
 namespace {
@@ -100,6 +98,9 @@ namespace hooks { //KYSXD - From SC_Transition mod
 ///
 /// @param  unit      The unit that needs to receive rally orders.
 /// @param  factory   The unit (building) that created the given unit.
+///
+/// Identical to sub_466F50 @ 00466F50
+
 void orderNewUnitToRally(CUnit* unit, CUnit* factory) {
   using units_dat::BaseProperty;
   //Default StarCraft behavior
@@ -107,15 +108,19 @@ void orderNewUnitToRally(CUnit* unit, CUnit* factory) {
   moveReactorCreation(unit, factory);
   manageHangerCount(unit);
   manageRally(unit, factory);
+
 }
 
+;
+
 /// Called when the player sets the rally point on the ground.
-void setRallyPosition(CUnit *unit, u16 x, u16 y) {
-  //Default StarCraft behavior
-  unit->rally.unit = NULL;
-  unit->rally.pt.x = x;
-  unit->rally.pt.y = y;
+void setRallyPosition(CUnit* unit, u16 x, u16 y) {
+	unit->rally.unit = NULL;
+	unit->rally.pt.x = x;
+	unit->rally.pt.y = y;
 }
+
+;
 
 /// Called when the player sets the rally point on a unit.
 void setRallyUnit(CUnit *unit, CUnit *target) {
@@ -132,5 +137,7 @@ void setRallyUnit(CUnit *unit, CUnit *target) {
     unit->moveTarget.unit = NULL;
   }
 }
+
+;
 
 } //hooks
