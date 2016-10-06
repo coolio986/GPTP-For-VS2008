@@ -202,6 +202,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\hooks\orders\building_making\building_protoss.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\building_making\building_protoss_inject.cpp"
+				>
+			</File>			
+			<File
 				RelativePath=".\hooks\orders\building_making\building_terran.cpp"
 				>
 			</File>
@@ -351,6 +359,14 @@
 			</File>
 			<File
 				RelativePath=".\hooks\orders\unit_making\unit_morph_inject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\unit_making\unit_train.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\unit_making\unit_train_inject.cpp"
 				>
 			</File>
 			<File
@@ -796,6 +812,10 @@
 				>
 			</File>	
 			<File
+				RelativePath=".\hooks\orders\building_making\building_protoss.h"
+				>
+			</File>			
+			<File
 				RelativePath=".\hooks\orders\building_making\building_terran.h"
 				>
 			</File>			
@@ -895,6 +915,10 @@
 				RelativePath=".\hooks\orders\unit_making\unit_morph.h"
 				>
 			</File>
+			<File
+				RelativePath=".\hooks\orders\unit_making\unit_train.h"
+				>
+			</File>			
 			<File
 				RelativePath=".\hooks\interface\wireframe.h"
 				>

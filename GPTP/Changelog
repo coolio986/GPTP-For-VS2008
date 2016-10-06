@@ -1,3 +1,14 @@
+Version 4.003:
+adding Unit_train hooks
+
+----------------------------------------
+
+
+Version 4.002:
+
+-adding Building_Protoss hooks
+-fix a param type in Building_Terran helper function
+-modify a more identified member of CImage (2 u8 to 1 u16)
 
 ----------------------------------------
 
