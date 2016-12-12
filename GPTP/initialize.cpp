@@ -42,6 +42,9 @@
 #include "hooks/orders/building_making/building_terran.h"
 #include "hooks/orders/building_making/building_protoss.h"
 #include "hooks/orders/unit_making/unit_train.h"
+#include "hooks/load_unload_proc.h"
+#include "hooks/orders/load_unload_orders.h"
+#include "hooks/orders/spells/nuke_orders.h"
 
 #include "hooks/orders/base_orders/attack_orders.h"
 #include "hooks/interface/buttonsets.h"
@@ -120,6 +123,9 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
 	hooks::injectBuildingTerranHook();
 	hooks::injectBuildingProtossHooks();
 	hooks::injectUnitTrainHooks();
+	hooks::injectLoadUnloadProcHooks();
+	hooks::injectLoadUnloadOrdersHooks();
+	hooks::injectNukeOrdersHooks();
 
 	hooks::injectApplyUpgradeFlags();
 	hooks::injectAttackPriorityHooks();

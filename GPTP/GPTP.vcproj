@@ -284,6 +284,22 @@
 			<File
 				RelativePath=".\hooks\orders\liftland_inject.cpp"
 				>
+			</File>	
+			<File
+				RelativePath=".\hooks\orders\load_unload_orders.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\load_unload_orders_inject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\load_unload_proc.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\load_unload_proc_inject.cpp"
+				>
 			</File>			
 			<File
 				RelativePath=".\logger.cpp"
@@ -303,6 +319,14 @@
 			</File>
 			<File
 				RelativePath=".\hooks\orders\merge_units_inject.cpp"
+				>
+			</File>	
+			<File
+				RelativePath=".\hooks\orders\spells\nuke_orders.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\spells\nuke_orders_inject.cpp"
 				>
 			</File>			
 			<File
@@ -862,6 +886,14 @@
 			<File
 				RelativePath=".\hooks\orders\liftland.h"
 				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\load_unload_orders.h"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\load_unload_proc.h"
+				>
 			</File>			
 			<File
 				RelativePath=".\logger.h"
@@ -879,6 +911,10 @@
 				RelativePath=".\MPQDraftPlugin.h"
 				>
 			</File>
+			<File
+				RelativePath=".\hooks\orders\spells\nuke_orders.h"
+				>
+			</File>			
 			<File
 				RelativePath=".\SCBW\structures\Player.h"
 				>
