@@ -202,11 +202,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\hooks\orders\building_making\building_protoss.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\building_making\building_protoss_inject.cpp"
+				>
+			</File>			
+			<File
 				RelativePath=".\hooks\orders\building_making\building_terran.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\hooks\orders\building_making\building_terran_inject.cpp"
+				>
+			</File>	
+			<File
+				RelativePath=".\hooks\burrow_tech.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\burrow_tech_inject.cpp"
 				>
 			</File>			
 			<File
@@ -276,6 +292,22 @@
 			<File
 				RelativePath=".\hooks\orders\liftland_inject.cpp"
 				>
+			</File>	
+			<File
+				RelativePath=".\hooks\orders\load_unload_orders.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\load_unload_orders_inject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\load_unload_proc.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\load_unload_proc_inject.cpp"
+				>
 			</File>			
 			<File
 				RelativePath=".\logger.cpp"
@@ -290,11 +322,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\hooks\orders\medic_orders.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\medic_orders_inject.cpp"
+				>
+			</File>			
+			<File
 				RelativePath=".\hooks\orders\merge_units.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\hooks\orders\merge_units_inject.cpp"
+				>
+			</File>	
+			<File
+				RelativePath=".\hooks\orders\spells\nuke_orders.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\spells\nuke_orders_inject.cpp"
 				>
 			</File>			
 			<File
@@ -319,6 +367,14 @@
 			</File>
 			<File
 				RelativePath=".\hooks\orders\spells\recall_spell_inject.cpp"
+				>
+			</File>	
+			<File
+				RelativePath=".\hooks\orders\research_upgrade_orders.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\research_upgrade_orders_inject.cpp"
 				>
 			</File>			
 			<File
@@ -351,6 +407,14 @@
 			</File>
 			<File
 				RelativePath=".\hooks\orders\unit_making\unit_morph_inject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\unit_making\unit_train.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\unit_making\unit_train_inject.cpp"
 				>
 			</File>
 			<File
@@ -796,7 +860,15 @@
 				>
 			</File>	
 			<File
+				RelativePath=".\hooks\orders\building_making\building_protoss.h"
+				>
+			</File>			
+			<File
 				RelativePath=".\hooks\orders\building_making\building_terran.h"
+				>
+			</File>	
+			<File
+				RelativePath=".\hooks\burrow_tech.h"
 				>
 			</File>			
 			<File
@@ -842,6 +914,14 @@
 			<File
 				RelativePath=".\hooks\orders\liftland.h"
 				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\load_unload_orders.h"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\load_unload_proc.h"
+				>
 			</File>			
 			<File
 				RelativePath=".\logger.h"
@@ -852,6 +932,10 @@
 				>
 			</File>			
 			<File
+				RelativePath=".\hooks\orders\medic_orders.h"
+				>
+			</File>
+			<File
 				RelativePath=".\hooks\orders\merge_units.h"
 			>
 			</File>			
@@ -860,6 +944,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\hooks\orders\spells\nuke_orders.h"
+				>
+			</File>			
+			<File
 				RelativePath=".\SCBW\structures\Player.h"
 				>
 			</File>
@@ -867,6 +955,10 @@
 				RelativePath=".\Plugin.h"
 				>
 			</File>
+			<File
+				RelativePath=".\hooks\orders\research_upgrade_orders.h"
+				>
+			</File>			
 			<File
 				RelativePath=".\hooks\interface\selection.h"
 				>
@@ -895,6 +987,10 @@
 				RelativePath=".\hooks\orders\unit_making\unit_morph.h"
 				>
 			</File>
+			<File
+				RelativePath=".\hooks\orders\unit_making\unit_train.h"
+				>
+			</File>			
 			<File
 				RelativePath=".\hooks\interface\wireframe.h"
 				>

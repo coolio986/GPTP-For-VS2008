@@ -1,3 +1,39 @@
+Version 4.007
+-Add performAnotherOrder() to CUnit functions
+-Add Medic hooks
+-minor fixes
+
+----------------------------------------
+
+Version 4.006
+-adding Burrow tech hooks
+-adding Research/Upgrade orders hooks
+-removed some useless include
+
+----------------------------------------
+
+Version 4.005
+adding Nuke Orders hooks
+
+----------------------------------------
+
+Version 4.004
+-adding Load/Unload orders hooks
+-adding Load/Unload proc hooks
+
+----------------------------------------
+
+Version 4.003:
+adding Unit_train hooks
+
+----------------------------------------
+
+
+Version 4.002:
+
+-adding Building_Protoss hooks
+-fix a param type in Building_Terran helper function
+-modify a more identified member of CImage (2 u8 to 1 u16)
 
 ----------------------------------------
 
