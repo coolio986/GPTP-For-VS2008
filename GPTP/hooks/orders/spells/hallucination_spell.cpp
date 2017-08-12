@@ -40,7 +40,7 @@ namespace hooks {
 				CUnit* hal_unit = createHallucinationUnit(unit->orderTarget.unit,unit->playerId);
 
 				if(hal_unit == NULL)
-					counter == 0;
+					counter = 0;
 				else
 				if(!function_004F66D0(hal_unit)) {
 					counter = 0;
@@ -49,7 +49,7 @@ namespace hooks {
 
 			}
 
-			if(!*CHEAT_STATE & CheatFlags::TheGathering)
+			if(!(*CHEAT_STATE & CheatFlags::TheGathering))
 				unit->energy -= techCost;
 
 			scbw::playSound(SoundId::Protoss_TEMPLAR_PTeHal00_WAV,unit->orderTarget.unit);

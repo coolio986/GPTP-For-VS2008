@@ -194,6 +194,14 @@
 				>
 			</File>	
 			<File
+				RelativePath=".\hooks\interface\btns_cond.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\interface\btns_cond_inject.cpp"
+				>
+			</File>			
+			<File
 				RelativePath=".\hooks\orders\building_making\building_morph.cpp"
 				>
 			</File>
@@ -385,6 +393,14 @@
 				RelativePath=".\hooks\orders\spells\recall_spell_inject.cpp"
 				>
 			</File>	
+			<File
+				RelativePath=".\hooks\receive_command.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\receive_command_inject.cpp"
+				>
+			</File>			
 			<File
 				RelativePath=".\hooks\orders\research_upgrade_orders.cpp"
 				>
@@ -872,6 +888,10 @@
 				>
 			</File>	
 			<File
+				RelativePath=".\hooks\interface\btns_cond.h"
+				>
+			</File>			
+			<File
 				RelativePath=".\hooks\orders\building_making\building_morph.h"
 				>
 			</File>	
@@ -979,6 +999,10 @@
 				RelativePath=".\Plugin.h"
 				>
 			</File>
+			<File
+				RelativePath=".\hooks\receive_command.h"
+				>
+			</File>			
 			<File
 				RelativePath=".\hooks\orders\research_upgrade_orders.h"
 				>
