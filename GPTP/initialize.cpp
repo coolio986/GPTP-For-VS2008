@@ -44,9 +44,11 @@
 #include "hooks/orders/building_making/building_terran.h"
 #include "hooks/burrow_tech.h"
 #include "hooks/orders/spells/cast_order.h"
+#include "hooks/create_init_units.h"
 #include "hooks/orders/base_orders/die_order.h"
 #include "hooks/orders/enter_nydus.h"
 #include "hooks/orders/spells/feedback_spell.h"
+#include "hooks/give_unit.h"
 #include "hooks/orders/spells/hallucination_spell.h"
 #include "hooks/orders/infestation.h"
 #include "hooks/orders/larva_creep_spawn.h"
@@ -58,11 +60,12 @@
 #include "hooks/orders/merge_units.h"
 #include "hooks/orders/spells/nuke_orders.h"
 #include "hooks/orders/spells/recall_spell.h"
-#include "hooks/receive_command.h"
+#include "hooks/recv_commands/receive_command.h"
 #include "hooks/orders/research_upgrade_orders.h"
 #include "hooks/interface/selection.h"
 #include "hooks/orders/siege_transform.h"
 #include "hooks/orders/base_orders/stopholdpos_orders.h"
+#include "hooks/recv_commands/train_cmd_receive.h"
 #include "hooks/orders/unit_making/unit_morph.h"
 #include "hooks/orders/unit_making/unit_train.h"
 #include "hooks/interface/wireframe.h"
@@ -194,6 +197,9 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
 	hooks::injectFeedbackSpellHook();	
 	hooks::injectBtnsCondHook();
 	hooks::injectRecvCmdHook();
+	hooks::injectCreateInitUnitsHooks();
+	hooks::injectGiveUnitHook();
+	hooks::injectTrainCmdRecvHooks();
 
 	hooks::injectApplyUpgradeFlags();
 	hooks::injectAttackPriorityHooks();
