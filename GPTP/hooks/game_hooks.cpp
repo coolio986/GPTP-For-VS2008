@@ -164,7 +164,7 @@ bool nextFrame() {
 		graphics::resetAllGraphics();
 		hooks::updatePsiFieldProviders();
 
-		smartCasting::runSmartCast();
+		//smartCasting::runSmartCast();
 		//KYSXD idle worker amount
 
 		bool isOperationCwalEnabled = scbw::isCheatEnabled(CheatFlags::OperationCwal);
@@ -179,7 +179,7 @@ bool nextFrame() {
 		//Loop through all visible units in the game - start
 		for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
 			plugins::manageWorkerCollision(unit);
-			buildingPreview::manageBuildingPreview(unit);
+			//buildingPreview::manageBuildingPreview(unit);
 
 			//KYSXD Idle worker count
 			if((unit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())
@@ -603,22 +603,8 @@ namespace plugins {
 			u16 initialworkeramount = 12;
 			for(CUnit *base = *firstVisibleUnit; base; base = base->link.next) {
 				//KYSXD - Increase initial amount of Workers - From GagMania
-				if(units_dat::BaseProperty[base->id] & UnitProperty::ResourceDepot) {
-					u16 workerUnitId = UnitId::None;
-					switch(base->getRace()) {
-						case RaceId::Terran:
-							workerUnitId = UnitId::TerranSCV; break;
-						case RaceId::Zerg:
-							workerUnitId = UnitId::ZergDrone; break;
-						case RaceId::Protoss:
-							workerUnitId = UnitId::ProtossProbe; break;
-						default: break;
-					}
-					if(workerUnitId != UnitId::None) {
-						for(u16 i = 0; i < (initialworkeramount-4); i++) {
-							scbw::createUnitAtPos(workerUnitId, base->playerId, base->getX(), base->getY());
-						}
-					}
+				if(units_dat::BaseProperty[base->id] & UnitProperty::ResourceDepot)
+				{
 				//KYSXD - Find nearest mineral patch
 					harvestTargetFinder.setmainHarvester(base);
 					firstMineral[base->playerId] = scbw::UnitFinder::getNearestTarget(
