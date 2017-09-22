@@ -27,16 +27,21 @@ void CreateInitialMeleeBuildings(u8 raceId, u32 playerId) {
 	Box16 searchBox; 
 	CUnit* created_unit;
 
-	if(raceId == RaceId::Zerg)
-		buildingId = UnitId::ZergHatchery;
-	else
-	if(raceId == RaceId::Terran)
-		buildingId = UnitId::TerranCommandCenter;
-	else
-	if(raceId == RaceId::Protoss)
-		buildingId = UnitId::ProtossNexus;
-	else
-		buildingId = UnitId::None;
+	switch(raceId)
+	{
+		case RaceId::Zerg:
+			buildingId = UnitId::ZergHatchery;
+			break;
+		case:: RaceId::Terran:
+			buildingId = UnitId::TerranCommandCenter;
+			break;
+		case:: RaceId::Protoss:
+			buildingId = UnitId::ProtossNexus;
+			break;
+		default:
+			buildingId = UnitId::None;
+			break;
+	}
 
 	buildingSizeX = units_dat::BuildingDimensions[buildingId].x;
 	buildingSizeY = units_dat::BuildingDimensions[buildingId].y;

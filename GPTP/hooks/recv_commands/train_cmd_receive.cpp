@@ -7,92 +7,56 @@ namespace {
 
 bool HasMoneyCanMake(CUnit* builder, u32 unitToBuild);	//67250		//HasMoneyCanMake
 
+u32 getFighterId(CUnit* trainer);
+bool isFightersTrainer(CUnit *trainer);
+
+CUnit *getBestTrainer();
+CUnit *getBestBuilder(u16 wUnitType);
+CUnit *getLowestQueueUnit(CUnit **units_array, int array_length);
+
 } //unnamed namespace
 
 namespace hooks {
 
-void CMDRECV_TrainFighter() {
-
-	CUnit* current_selection;
-
-	*selectionIndexStart = 0;
-	current_selection = getActivePlayerNextSelection();
-
-	while(current_selection != NULL) {
-
-		u32 unitToBuild;
-
-		//the original code was messy, simplified/optimized version here
-		if(current_selection->id == UnitId::ProtossCarrier)
-			unitToBuild = UnitId::ProtossInterceptor;
-		else
-		if(current_selection->id == UnitId::Hero_Gantrithor)
-			unitToBuild = UnitId::ProtossInterceptor;
-		else
-		if(current_selection->id == UnitId::ProtossReaver)
-			unitToBuild = UnitId::ProtossScarab;
-		else
-		if(current_selection->id == UnitId::Hero_Warbringer)
-			unitToBuild = UnitId::ProtossScarab;
-		else
-			unitToBuild = 0; //not translating it as marine as it's an error case
-
-		if(current_selection->canMakeUnit(unitToBuild,*ACTIVE_NATION_ID) &&
-			HasMoneyCanMake(current_selection,unitToBuild) //add unit to build queue if successful
-			) 
+void CMDRECV_TrainFighter()
+{
+	CUnit *trainer = getBestTrainer();
+	if(trainer != NULL)
+	{
+		if(HasMoneyCanMake(trainer, getFighterId(trainer))
+			&& trainer->secondaryOrderState != 2)
 		{
-			if(	current_selection->id == UnitId::ProtossCarrier ||
-				current_selection->id == UnitId::Hero_Gantrithor ||
-				current_selection->id == UnitId::ProtossReaver ||
-				current_selection->id == UnitId::Hero_Warbringer
-				)
-			{
-
-				if(current_selection->secondaryOrderState != 2) {
-					current_selection->secondaryOrderId = OrderId::TrainFighter;
-					current_selection->secondaryOrderPos.y = 0;
-					current_selection->secondaryOrderPos.x = 0;
-					current_selection->currentBuildUnit = NULL;
-					current_selection->secondaryOrderState = 0;
-				}
-
-			}
+			trainer->secondaryOrderId = OrderId::TrainFighter;
+			trainer->secondaryOrderPos.y = 0;
+			trainer->secondaryOrderPos.x = 0;
+			trainer->currentBuildUnit = NULL;
+			trainer->secondaryOrderState = 0;
 		}
-
-		current_selection = getActivePlayerNextSelection();
-
+		scbw::refreshConsole();
 	}
-
-	scbw::refreshConsole();
-
-}
-
-;
+	return;
+};
 
 //Note: the default function isn't compatible with multiple selection
 void CMDRECV_Train(u16 wUnitType) {
 
-	CUnit* builder;
+	CUnit* builder = getBestBuilder(wUnitType);
 
-	*selectionIndexStart = 0;
-	builder = getActivePlayerNextSelection();
-
-	if(builder != NULL && getActivePlayerNextSelection() == NULL) {
-
+	if(builder != NULL)
+	{
+		/*
 		if(builder->canMakeUnit(wUnitType,*ACTIVE_NATION_ID) &&
 			wUnitType <= UnitId::Spell_DisruptionWeb //id before buildings id
 		)
+		*/
+		if(HasMoneyCanMake(builder,wUnitType))
 		{
-			if(HasMoneyCanMake(builder,wUnitType)) //add unit to build queue if successful
-				builder->setSecondaryOrder(OrderId::Train);
-			scbw::refreshConsole();
+			builder->setSecondaryOrder(OrderId::Train);
 		}
-
+		scbw::refreshConsole();
 	}
-
-}
-
-;
+	return;
+};
 
 } //namespace hooks
 
@@ -116,6 +80,105 @@ bool HasMoneyCanMake(CUnit* builder, u32 unitToBuild) {
 
 	return (bPreResult != 0);
 
+}
+
+u32 getFighterId(CUnit* trainer)
+{
+	u32 fighterId;
+	switch(trainer->id)
+	{
+		case UnitId::ProtossCarrier:
+		case UnitId::Hero_Gantrithor:
+			fighterId = UnitId::ProtossInterceptor;
+			break;
+		case UnitId::ProtossReaver:
+		case UnitId::Hero_Warbringer:
+			fighterId = UnitId::ProtossScarab;
+			break;
+		default:
+			fighterId = UnitId::None;
+			break;
+	}
+	return fighterId;
+}
+
+bool isFightersTrainer(CUnit *trainer)
+{
+	switch(trainer->id)
+	{
+		case UnitId::ProtossCarrier:
+		case UnitId::Hero_Gantrithor:
+		case UnitId::ProtossReaver:
+		case UnitId::Hero_Warbringer:
+			return true;
+			break;
+		default:
+			return false;
+			break;
+	}
+}
+
+CUnit *getBestTrainer()
+{
+	int i = 0;
+	CUnit *trainers[SELECTION_ARRAY_LENGTH] = {NULL};
+
+	*selectionIndexStart = 0;
+	CUnit *current_unit = getActivePlayerNextSelection();
+	while(current_unit != NULL)
+	{
+		if(isFightersTrainer(current_unit)
+			&& current_unit->canMakeUnit(getFighterId(current_unit),
+				*ACTIVE_NATION_ID))
+		{
+			trainers[i++] = current_unit;
+		}
+		current_unit = getActivePlayerNextSelection();
+	}
+	return getLowestQueueUnit(trainers, i);
+}
+
+
+CUnit *getBestBuilder(u16 wUnitType)
+{
+	int i = 0;
+	CUnit *builder[SELECTION_ARRAY_LENGTH] = {NULL};
+
+	*selectionIndexStart = 0;
+	CUnit *current_unit = getActivePlayerNextSelection();
+	while(current_unit != NULL)
+	{
+		if(current_unit->canMakeUnit(wUnitType, *ACTIVE_NATION_ID))
+		{
+			builder[i++] = current_unit;
+		}
+		current_unit = getActivePlayerNextSelection();
+	}
+	return getLowestQueueUnit(builder, i);
+}
+
+CUnit *getLowestQueueUnit(CUnit **units_array, int array_length)
+{
+	CUnit *bestUnit = units_array[0];
+	int bestLength = 5;
+
+	for(int i = 0; i < array_length; i++)
+	{
+		if(units_array[i] != NULL)
+		{
+			int currentLength = 0;
+			while(units_array[i]->buildQueue[ (units_array[i]->buildQueueSlot + currentLength)%5 ] != UnitId::None)
+			{
+				currentLength++;
+			}
+			if(currentLength < bestLength)
+			{
+				bestLength = currentLength;
+				bestUnit = units_array[i];
+			}
+		}
+	}
+	return bestUnit;
 }
 
 } //unnamed namespace
