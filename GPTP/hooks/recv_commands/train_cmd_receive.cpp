@@ -142,7 +142,7 @@ CUnit *getBestTrainer()
 CUnit *getBestBuilder(u16 wUnitType)
 {
 	int i = 0;
-	CUnit *builder[SELECTION_ARRAY_LENGTH] = {NULL};
+	CUnit *builders[SELECTION_ARRAY_LENGTH] = {NULL};
 
 	*selectionIndexStart = 0;
 	CUnit *current_unit = getActivePlayerNextSelection();
@@ -150,11 +150,11 @@ CUnit *getBestBuilder(u16 wUnitType)
 	{
 		if(current_unit->canMakeUnit(wUnitType, *ACTIVE_NATION_ID))
 		{
-			builder[i++] = current_unit;
+			builders[i++] = current_unit;
 		}
 		current_unit = getActivePlayerNextSelection();
 	}
-	return getLowestQueueUnit(builder, i);
+	return getLowestQueueUnit(builders, i);
 }
 
 CUnit *getLowestQueueUnit(CUnit **units_array, int array_length)

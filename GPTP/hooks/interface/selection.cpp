@@ -21,6 +21,7 @@ namespace {
 	void CreateNewUnitSelectionsFromList(CUnit** unit_list, u32 unit_list_length);								//0x0049AE40
 	void CMDACT_Select(CUnit** unit_list, u32 unit_list_length); 												//0x004C0860
 
+	inline void setBox16(Box16 *box, s16 n_left, s16 n_top, s16 n_right, s16 n_bottom);
 } //unnamed namespace
 
 namespace hooks {
@@ -271,6 +272,9 @@ namespace hooks {
 	///
 	/// Function used by Click on unit (possibly with key pressed)
 	///
+	/* KYSXD
+	 * void getSelectedUnitsAtPoint()
+	 */
 	void function_0046FB40(CUnit* clicked_unit) {
 
 		Bool32* const IS_DOUBLE_CLICKING =	(Bool32*)	0x0066FF58;
@@ -294,64 +298,60 @@ namespace hooks {
 		for(int i = 0; i < SELECTION_ARRAY_LENGTH; i++)
 			local_temp_array_1[i] = NULL;
 
-		if(
+		if( // Is multiselecting
 			isHoldingCtrl_OR_isDoubleClickingSelectedClickedUnit ||
 			( *IS_HOLDING_SHIFT && (activePlayerSelection->unit[0] != NULL) )
 			) 
 		{
 
-			if( !*IS_HOLDING_SHIFT ) {
+			if( !*IS_HOLDING_SHIFT && isHoldingCtrl_OR_isDoubleClickingSelectedClickedUnit) {
 
-				//6FE07
+				//Ctrl+click on unit or double-click on already
+				//selected unit without other key
+				// =>	select surrounding units with same type as 
+				//		clicked unit, making them the current 
+				//		selection
 
-				if(isHoldingCtrl_OR_isDoubleClickingSelectedClickedUnit) {
+				CUnit** units_in_bounds;
+				u32 sorted_list_length;
 
-					//Ctrl+click on unit or double-click on already
-					//selected unit without other key
-					// =>	select surrounding units with same type as 
-					//		clicked unit, making them the current 
-					//		selection
+				//locate surrounding units for selection
+				setBox16(&local_temp_box16_structure, *MoveToX, *MoveToY, *MoveToX + 640, *MoveToY + 400);
+				units_in_bounds = getAllUnitsInBounds(&local_temp_box16_structure);
+				sorted_list_length = SortAllUnits(clicked_unit,local_temp_array_1,units_in_bounds);
 
-					CUnit** units_in_bounds;
-					u32 sorted_list_length;
+				//reload the previous temporary unit list from before the call to getAllUnitsInBounds
+				*tempUnitsListArraysCountsListLastIndex = *tempUnitsListArraysCountsListLastIndex - 1;
+				*tempUnitsListCurrentArrayCount = tempUnitsListArraysCountsList[*tempUnitsListArraysCountsListLastIndex];
 
-					//locate surrounding units for selection
-					local_temp_box16_structure.left = *MoveToX;
-					local_temp_box16_structure.top = *MoveToY;
-					local_temp_box16_structure.right = *MoveToX + 640;
-					local_temp_box16_structure.bottom = *MoveToY + 400;
-					units_in_bounds = getAllUnitsInBounds(&local_temp_box16_structure);
-					sorted_list_length = SortAllUnits(clicked_unit,local_temp_array_1,units_in_bounds);
+				if(sorted_list_length != 0) {
 
-					//reload the previous temporary unit list from before the call to getAllUnitsInBounds
-					*tempUnitsListArraysCountsListLastIndex = *tempUnitsListArraysCountsListLastIndex - 1;
-					*tempUnitsListCurrentArrayCount = tempUnitsListArraysCountsList[*tempUnitsListArraysCountsListLastIndex];
+					//turn the local array as the newly applied selection
+					applyNewSelect_Sub_6FA00(local_temp_array_1,sorted_list_length);
 
-					if(sorted_list_length != 0) {
+					//this is what make the rally point briefly appear when
+					//selecting a building with one.
+					//maybe can do others things?
+					if(
+						sorted_list_length == 1 &&
+						clicked_unit->playerId == *ACTIVE_NATION_ID &&
+						clicked_unit->isFactory()
+						) 
+						function_00468670(clicked_unit);
 
-						//turn the local array as the newly applied selection
-						applyNewSelect_Sub_6FA00(local_temp_array_1,sorted_list_length);
+				}
 
-						//this is what make the rally point briefly appear when
-						//selecting a building with one.
-						//maybe can do others things?
-						if(
-							sorted_list_length == 1 &&
-							clicked_unit->playerId == *ACTIVE_NATION_ID &&
-							clicked_unit->isFactory()
-							) 
-							function_00468670(clicked_unit);
 
-					}
-
-				} //if(isHoldingCtrl_OR_isDoubleClickingSelectedClickedUnit)
-
-			} //if( !*IS_HOLDING_SHIFT )
+			} //if( !*IS_HOLDING_SHIFT && isHoldingCtrl_OR_isDoubleClickingSelectedClickedUnit )
 			else {
 
 				//holding SHIFT (if not holding CTRL, then there's an active selection too)
 
 				if(isHoldingCtrl_OR_isDoubleClickingSelectedClickedUnit) {
+
+					//save existing selection to a temporary array
+					for(int i = 0; i < SELECTION_ARRAY_LENGTH; i++)
+						local_temp_array_2[i] = activePlayerSelection->unit[i];
 
 					//{Ctrl+Shift+click on unit} OR {Shift+double-click on 
 					//selected unit WHILE having an active selection}
@@ -361,17 +361,8 @@ namespace hooks {
 					CUnit** units_in_bounds;
 					u32 sorted_list_length;
 
-					//prepare to locate surrounding units for selection
-					local_temp_box16_structure.left = *MoveToX;
-					local_temp_box16_structure.top = *MoveToY;
-					local_temp_box16_structure.right = *MoveToX + 640;
-					local_temp_box16_structure.bottom = *MoveToY + 400;
-
-					//save existing selection to a temporary array
-					for(int i = 0; i < SELECTION_ARRAY_LENGTH; i++)
-						local_temp_array_2[i] = activePlayerSelection->unit[i];
-
 					//locate surrounding units for selection
+					setBox16(&local_temp_box16_structure, *MoveToX, *MoveToY, *MoveToX + 640, *MoveToY + 400);
 					units_in_bounds = getAllUnitsInBounds(&local_temp_box16_structure);
 					sorted_list_length = SortAllUnits(clicked_unit,local_temp_array_1,units_in_bounds);
 
@@ -753,6 +744,8 @@ namespace {
 			POPAD
 		}
 
+		return_value_unconverted = (return_value_unconverted || units_dat::GroupFlags[unit->id].isFactory);
+
 		return (return_value_unconverted != 0);
 
 	}
@@ -821,6 +814,16 @@ namespace {
 	}
 
 	;
+
+	inline void setBox16(Box16 *box, s16 n_left, s16 n_top, s16 n_right, s16 n_bottom)
+	{
+	  box->left = n_left;
+	  box->top = n_top;
+	  box->right = n_right;
+	  box->bottom = n_bottom;
+	  return;
+	};
+
 
 } //unnamed namespace
 
