@@ -21,17 +21,18 @@ namespace {
 
 	void __declspec(naked) CMDRECV_BurrowWrapper() {
 
-		static u32 unknown;
+		static u8 bCommandType;
 
 		__asm {
 			PUSH EBP
 			MOV EBP, ESP
 			MOV EAX, [EBP+0x08]
-			MOV unknown, EAX
+			MOV AL, [EAX+1]
+			MOV bCommandType, AL
 			PUSHAD
 		}
 
-		hooks::CMDRECV_Burrow(unknown);
+		hooks::CMDRECV_Burrow(bCommandType);
 
 		__asm {
 			POPAD
