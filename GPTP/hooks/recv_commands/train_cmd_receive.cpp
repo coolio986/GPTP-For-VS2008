@@ -14,6 +14,11 @@ CUnit *getBestTrainer();
 CUnit *getBestBuilder(u16 wUnitType);
 CUnit *getLowestQueueUnit(CUnit **units_array, int array_length);
 
+const u32 Can_Create_UnitorBuilding = 0x00428E60; 	//BTNSCOND_CanBuildUnit
+const u32 Can_Build_Subunit = 0x00428E00; 			//BTNSCOND_TrainingFighter
+
+s32 req_check(u32 reqFunc, u16 reqVar, u32 playerId, CUnit* unit);
+
 } //unnamed namespace
 
 namespace hooks {
@@ -145,14 +150,16 @@ CUnit *getBestBuilder(u16 wUnitType)
 	CUnit *builders[SELECTION_ARRAY_LENGTH] = {NULL};
 
 	*selectionIndexStart = 0;
-	CUnit *current_unit = getActivePlayerNextSelection();
+	int j = 0;
+	CUnit *current_unit = clientSelectionGroup->unit[j];
 	while(current_unit != NULL)
 	{
-		if(current_unit->canMakeUnit(wUnitType, *ACTIVE_NATION_ID))
+		if(current_unit->canMakeUnit(wUnitType, *ACTIVE_NATION_ID)
+			&& req_check(Can_Create_UnitorBuilding, wUnitType, current_unit->playerId, current_unit) == BUTTON_STATE::Enabled)
 		{
 			builders[i++] = current_unit;
 		}
-		current_unit = getActivePlayerNextSelection();
+		current_unit = clientSelectionGroup->unit[++j];
 	}
 	return getLowestQueueUnit(builders, i);
 }
@@ -180,6 +187,26 @@ CUnit *getLowestQueueUnit(CUnit **units_array, int array_length)
 	}
 	return bestUnit;
 }
+
+s32 req_check(u32 reqFunc, u16 reqVar, u32 playerId, CUnit* unit) {
+
+	static s32 return_value;
+
+	__asm {
+		PUSHAD
+		MOV CX, reqVar
+		MOV EDX, playerId
+		PUSH unit
+		CALL reqFunc
+		MOV return_value, EAX
+		POPAD
+	}
+
+	return return_value;
+
+}
+
+;
 
 } //unnamed namespace
 
