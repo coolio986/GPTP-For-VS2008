@@ -49,11 +49,6 @@ void CMDRECV_Train(u16 wUnitType) {
 
 	if(builder != NULL)
 	{
-		/*
-		if(builder->canMakeUnit(wUnitType,*ACTIVE_NATION_ID) &&
-			wUnitType <= UnitId::Spell_DisruptionWeb //id before buildings id
-		)
-		*/
 		if(HasMoneyCanMake(builder,wUnitType))
 		{
 			builder->setSecondaryOrder(OrderId::Train);
@@ -133,7 +128,7 @@ CUnit *getBestTrainer()
 	while(current_unit != NULL)
 	{
 		if(isFightersTrainer(current_unit)
-			&& current_unit->canMakeUnit(getFighterId(current_unit),
+			&& current_unit->canMakeUnit(getFighterId(current_unit) == 1,
 				*ACTIVE_NATION_ID))
 		{
 			trainers[i++] = current_unit;
@@ -154,7 +149,7 @@ CUnit *getBestBuilder(u16 wUnitType)
 	CUnit *current_unit = clientSelectionGroup->unit[j];
 	while(current_unit != NULL)
 	{
-		if(current_unit->canMakeUnit(wUnitType, *ACTIVE_NATION_ID)
+		if(current_unit->canMakeUnit(wUnitType, *ACTIVE_NATION_ID) == 1
 			&& req_check(Can_Create_UnitorBuilding, wUnitType, current_unit->playerId, current_unit) == BUTTON_STATE::Enabled)
 		{
 			builders[i++] = current_unit;

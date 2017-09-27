@@ -25,7 +25,7 @@ namespace hooks {
 
 			if(
 				units_dat::BaseProperty[selected_unit->id] & UnitProperty::Burrowable &&
-				selected_unit->canUseTech(TechId::Burrowing,*ACTIVE_NATION_ID)
+				selected_unit->canUseTech(TechId::Burrowing,*ACTIVE_NATION_ID) == 1
 			) 
 				function_004E97C0(selected_unit);
 
@@ -37,7 +37,7 @@ namespace hooks {
 
 	;
 
-	void CMDRECV_Burrow(u32 unk) {
+	void CMDRECV_Burrow(u8 bCommandType) {
 
 		CUnit* selected_unit;
 
@@ -48,20 +48,17 @@ namespace hooks {
 
 			if(
 				units_dat::BaseProperty[selected_unit->id] & UnitProperty::Burrowable &&
-				selected_unit->canUseTech(TechId::Burrowing,*ACTIVE_NATION_ID) &&
+				selected_unit->canUseTech(TechId::Burrowing,*ACTIVE_NATION_ID) == 1 &&
 				!(selected_unit->status & UnitStatus::Burrowed) &&
 				selected_unit->mainOrderId != OrderId::Burrow
 			)
 			{
 
-				u8 unknown_from_params = *(u8*)(unk+1);
-				
-
-				if(unknown_from_params != 0)
-					unknown_from_params = 1;
+				if(bCommandType != 0)
+					bCommandType = 1;
 				else
-					unknown_from_params = 0;				
-				
+					bCommandType = 0;
+
 				function_004754F0(
 					selected_unit,
 					UnitId::None,
@@ -69,7 +66,7 @@ namespace hooks {
 					*(u32*)(0x006D5C20),
 					OrderId::Burrow,
 					0,
-					unknown_from_params,
+					bCommandType,
 					1
 				);
 
