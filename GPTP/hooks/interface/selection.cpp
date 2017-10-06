@@ -22,179 +22,160 @@ namespace {
 	void CMDACT_Select(CUnit** unit_list, u32 unit_list_length); 												//0x004C0860
 
 	inline void setBox16(Box16 *box, s16 n_left, s16 n_top, s16 n_right, s16 n_bottom);
+	bool isStunned(const CUnit *unit);
+	bool unit_isMultiselectable(const CUnit *unit);
+
+	inline bool unitsShareSamePlayer(CUnit *unit1, CUnit *unit2)
+	{
+		return unit1->playerId == unit2->playerId;
+	};
+
+	inline bool unitsShareSameId(CUnit *unit1, CUnit *unit2)
+	{
+		return unit1->id == unit2->id;
+	};
+
+	inline bool isFlagOn(u32 status, u32 flag)
+	{
+		return (status & flag) != 0;
+	};
+
+	inline bool checkUnitStatus(CUnit *unit, u32 flag)
+	{
+		return (unit->status & flag) != 0;
+	};
+
+	inline bool checkUnitVisibilityStatus(CUnit *unit, u32 flag)
+	{
+		return (unit->visibilityStatus & flag) != 0;
+	};
+
+	inline bool checkSpriteVisibilityFlags(CSprite *sprite, u8 flag)
+	{
+		return (sprite->visibilityFlags & flag) != 0;
+	};
+
+	//Equivalent to " unit1->status XOR unit2->status "
+	//keep the flags appearing in only 1 of the variables
+	inline u32 getMixedFlags(CUnit *unit1, CUnit *unit2)
+	{
+		return ( ~(unit1->status) & unit2->status ) | ( unit1->status & ~(unit2->status) );
+	};
+
+	bool unitsMatchMultiselection(CUnit *ref_unit, CUnit *current_unit)
+	{
+		bool bUnitMatch = false;
+		if(ref_unit != NULL)
+		{
+			u32 mixed_flags = getMixedFlags(ref_unit, current_unit);
+			if(
+				unitsShareSamePlayer(ref_unit, current_unit)
+				&& unitsShareSameId(ref_unit, current_unit)
+				&& !isFlagOn(mixed_flags, UnitStatus::Burrowed)
+				&& (isFlagOn(ref_unit->status, UnitStatus::Burrowed)
+					|| !isFlagOn(mixed_flags, UnitStatus::RequiresDetection))
+				&& !isFlagOn(mixed_flags, UnitStatus::IsHallucination)
+				)
+				bUnitMatch = true;
+		}
+		else bUnitMatch = true;
+
+		return bUnitMatch;
+	};
+
+	const u32* VISIBILITY_CHECK_0057F0B0 = (u32*)0x0057F0B0;
+	bool unit_isVisible(CUnit *unit)
+	{
+		bool bUnitIsVisible = true;
+		if (
+			!checkSpriteVisibilityFlags(unit->sprite, (u8)*VISIBILITY_CHECK_0057F0B0)
+			||
+			//if the unit is cloaked and visibility status test (detection by detectors
+			//units probably) fail, the unit is skipped
+			(checkUnitStatus(unit, UnitStatus::Cloaked | UnitStatus::RequiresDetection)
+			&& !checkUnitVisibilityStatus(unit, *VISIBILITY_CHECK_0057F0B0) )
+			)
+		{
+			bUnitIsVisible = false;
+		}
+		return bUnitIsVisible;
+	};
+
 } //unnamed namespace
 
 namespace hooks {
-
 	///
 	/// Function used by Ctrl+Click (select all units of same type)
 	///
-	u32 SortAllUnits(CUnit* unit,CUnit** unit_list,CUnit** units_in_bounds) {
-
-		const u32* VISIBILITY_CHECK_0057F0B0 = (u32*)0x0057F0B0;
-		
-		CUnit* current_unit;
-		CUnit* backup_current_unit;
+	u32 SortAllUnits(CUnit* ref_unit, CUnit** unit_list, CUnit** units_in_bounds) {
+		CUnit* backup_current_unit = NULL;
 		u32 current_index_in_unit_list;
 
-		bool bStopBigLoop = false;
-
 		bool bKeepForEmptyListCase = false;
-		bool bDontAddToList = false;
-
-		backup_current_unit = NULL;
 
 		//if unit not null, become first entry of unit_list
-		if(unit != NULL) {
-			unit_list[0] = unit;
+		if(ref_unit != NULL)
+		{
+			unit_list[0] = ref_unit;
 			current_index_in_unit_list = 1;
 		}
 		else
+		{
 			current_index_in_unit_list = 0;
+		}
 
 		//work with the first unit from units_in_bounds
-		current_unit = *units_in_bounds;
+		int units_in_bounds_index = 0;
+		CUnit* current_unit = units_in_bounds[units_in_bounds_index];
 
-		if(current_unit == NULL)
-			bStopBigLoop = true;
+		/// Fill unit_list from 0 to SELECTION_ARRAY_LENGTH-1
+		while(current_unit != NULL)
+		{
+			bKeepForEmptyListCase = false;
+			bool bDontAddToList = false;
 
-		while(!bStopBigLoop) {
-
-			if(current_unit != unit) {
-
-				 //if current_unit==unit, then it's already in
-				//unit_list
-
-				if(current_unit->subunit != NULL) {
-
+			if(current_unit != ref_unit)
+			{
+				if(current_unit->subunit != NULL)
+				{
 					//if what got selected is the turret or another subunit, swap
-					//the unit and the subunit as current_unit
+					//the ref_unit and the subunit as current_unit
 					if(units_dat::BaseProperty[current_unit->id] & UnitProperty::Subunit)
 						current_unit = current_unit->subunit;
 
-					if(current_index_in_unit_list != 0) {
-
-						//6F150
-
+					if(current_index_in_unit_list != 0)
+					{
 						u32 index = current_index_in_unit_list;
-
 						do {
-
 							index--;
 
-							//if the unit is already in the list, skip it
+							//if the ref_unit is already in the list, skip it
 							if(unit_list[index] == current_unit)
 								bDontAddToList = true;
 
 						}while (index != 0 && !bDontAddToList);
-
 					}
-
 				} //if(current_unit->subunit != NULL)
 
-				if(!bDontAddToList) {
-
-					//6F161
-					
+				if(!bDontAddToList)
+				{
 					//if the unit sprite is visible, perform additionnal visibility test,
 					//else skip the unit
-					if(current_unit->sprite->visibilityFlags & (u8)*VISIBILITY_CHECK_0057F0B0) {
-
-						//if the unit is cloaked and visibility status test (detection by detectors
-						//units probably) fail, the unit is skipped
-						if(current_unit->status & (UnitStatus::Cloaked + UnitStatus::RequiresDetection))
-							if( !(current_unit->visibilityStatus & *VISIBILITY_CHECK_0057F0B0) )
-								bDontAddToList = true;
-
-					}
-					else
-						bDontAddToList = true;
-
-					if(!bDontAddToList) {
-
-						//6F18C
-
-						if(unit_isUnselectable(current_unit->id))
-							bDontAddToList = true;
-						else
-						if(!unit_IsStandardAndMovable(current_unit))
-							bKeepForEmptyListCase = true; //skip the unit for the list, unless it's the only available
-						else 
-						if(*IS_IN_REPLAY)
-							bKeepForEmptyListCase = true; //skip the unit for the list, unless it's the only available
-						else
-						if(current_unit->playerId != *LOCAL_NATION_ID)
-							bKeepForEmptyListCase = true; //skip the unit for the list, unless it's the only available
+					if( unit_isVisible(current_unit)
+						&& !unit_isUnselectable(current_unit->id) )
+					{
+						if(// Select One case
+							!unit_isMultiselectable(current_unit)
+							|| (!*IS_IN_REPLAY
+							&& current_unit->playerId != *LOCAL_NATION_ID))
+							bKeepForEmptyListCase = true; //skip the ref_unit for the list, unless it's the only available
 						else
 						{
-
-							//6F1C5
-
-							if(unit != NULL) {
-
-								//all units should belong to the same player (the one owning the clicked unit)
-								if(unit->playerId != current_unit->playerId)
-									bDontAddToList = true;
-								else
-								//select only units with same Id
-								if(unit->id != current_unit->id)
-									bDontAddToList = true;
-								else {
-
-									//6F1D9
-
-									//equivalent to " unit->status XOR current_unit->status "
-									//keep the flags appearing in only 1 of the variables
-									u32 mixed_flags =
-										( ~(unit->status) & current_unit->status ) | 
-										( unit->status & ~(current_unit->status) )
-										;
-
-									//Only select all burrowed OR all unburrowed
-									//units.The test exclude current_unit if the
-									//burrowed state differ from the one of unit.
-									if( mixed_flags & UnitStatus::Burrowed )
-										bDontAddToList = true;
-									else {
-
-										//6F1E8
-										if( !isUnitBurrowed(current_unit) ) {
-
-											//Only select all detectables OR all undetectables
-											//units.The test exclude current_unit if the
-											//detectable state differ from the one of unit.
-											if(mixed_flags & UnitStatus::RequiresDetection)
-												bDontAddToList = true;
-
-										}
-
-										if(!bDontAddToList) {
-
-											//6F1F8
-
-											//Only select hallucinations OR non-hallucinations
-											//units.The test exclude current_unit if the
-											//hallucination state differ from the one of unit.
-											if(mixed_flags & UnitStatus::IsHallucination)
-												bDontAddToList = true;
-
-										}
-
-									}
-
-								}
-
-							} //if(unit != NULL)
-
-							if(!bDontAddToList) {
-
-								//6F203
-
-								//0x0046F208 (use of SELECTION_ARRAY_LENGTH)
+							if(unitsMatchMultiselection(ref_unit, current_unit))
+							{
 								if(current_index_in_unit_list >= SELECTION_ARRAY_LENGTH) //action when unit_list is full
-									function_0046F040(current_unit, unit_list, unit, current_index_in_unit_list);
+									function_0046F040(current_unit, unit_list, ref_unit, current_index_in_unit_list);
 								else {
-									//6F217
 									//Add current_unit to unit_list
 									unit_list[current_index_in_unit_list] = current_unit;
 									current_index_in_unit_list++;
@@ -203,58 +184,37 @@ namespace hooks {
 							}
 
 						} //several ifs
-
-					} //if(!bDontAddToList) => 6F18C
+					}
 
 				} //if(!bDontAddToList) => 6F161
 
-			} //if(current_unit != unit)
+			} //if(current_unit != ref_unit)
 
 			if(bKeepForEmptyListCase)
 				backup_current_unit = current_unit;
-
-			//6F226
-
-			//select next unit in bounds
-			units_in_bounds++;				//this actually advance by 4 bytes
-			current_unit = *units_in_bounds;
-
-			bKeepForEmptyListCase = false;
-			bDontAddToList = false;
-
-			//continue until current_unit is NULL
-			if(current_unit == NULL)
-				bStopBigLoop = true;
+			//select next ref_unit in bounds
+			current_unit = units_in_bounds[++units_in_bounds_index];
 
 		} //loop back at 6F237
 
-		//6F242
-
-		if(current_index_in_unit_list == 0) {
-
-			//if current_index_in_unit_list == 0, the list is empty
-			//and cannot be used, so another solution is found here.
-
+		if(current_index_in_unit_list == 0)
+		{
 			if(backup_current_unit == NULL) {
-
-				//6F24E
-
-				if(unit == NULL)
-					current_index_in_unit_list = 0; //return 0 (no list)
+				if(ref_unit != NULL)
+				{
+					unit_list[0] = ref_unit;
+					current_index_in_unit_list = 1; //return 1 (the clicked ref_unit alone)
+				}
 				else {
-					//6F252
-					unit_list[0] = unit;
-					current_index_in_unit_list = 1; //return 1 (the clicked unit alone)
+					current_index_in_unit_list = 0; //return 0 (no list)
 				}
 
 			} //if(backup_current_unit == NULL)
 			else {
-
-				//6F264
-
-				if(unit != NULL) {
-					unit_list[0] = unit;
-					current_index_in_unit_list = 1; //return 1 (the clicked unit alone)
+				if(ref_unit != NULL)
+				{
+					unit_list[0] = ref_unit;
+					current_index_in_unit_list = 1; //return 1 (the clicked ref_unit alone)
 				}
 				else {
 					unit_list[0] = backup_current_unit;
@@ -267,7 +227,7 @@ namespace hooks {
 
 		return current_index_in_unit_list;
 
-	} //u32 SortAllUnits(CUnit* unit,CUnit** unit_list,CUnit* units_in_bounds)
+	} //u32 SortAllUnits(CUnit* ref_unit,CUnit** unit_list,CUnit* units_in_bounds)
 
 	///
 	/// Function used by Click on unit (possibly with key pressed)
@@ -406,9 +366,9 @@ namespace hooks {
 
 						if(
 							arrayIndex < SELECTION_ARRAY_LENGTH && 
-							unit_IsStandardAndMovable(local_temp_array_1[0]) && 
+							unit_isMultiselectable(local_temp_array_1[0]) && 
 							unitIsOwnedByCurrentPlayer(local_temp_array_1[0]) &&
-							unit_IsStandardAndMovable(clicked_unit) && 
+							unit_isMultiselectable(clicked_unit) && 
 							unitIsOwnedByCurrentPlayer(clicked_unit)
 							)
 						{
@@ -744,8 +704,6 @@ namespace {
 			POPAD
 		}
 
-		return_value_unconverted = (return_value_unconverted || units_dat::GroupFlags[unit->id].isFactory);
-
 		return (return_value_unconverted != 0);
 
 	}
@@ -824,6 +782,45 @@ namespace {
 	  return;
 	};
 
+	bool isStunned(const CUnit *unit)
+	{
+		return (unit->lockdownTimer != 0
+			|| unit->stasisTimer != 0
+			|| unit->maelstromTimer != 0);
+	};
+
+	bool unit_isMultiselectable(const CUnit *unit)
+	{
+		bool bIsMultiselectable = true;
+
+		if((unit->status & UnitStatus::GroundedBuilding)
+			|| (units_dat::BaseProperty[unit->id] & UnitProperty::NeutralAccessories))
+		{
+			bIsMultiselectable = false;
+		}
+
+		if(isStunned(unit)) //Should be CUnit::isFrozen()?
+		{
+			bIsMultiselectable = false;
+		}
+
+		else if (203 <= unit->id && unit->id <= 213) // 203 = Floor Gun Trap, 213 = Right Wall Flame Trap 
+		{
+			bIsMultiselectable = false;
+		}
+
+		else if ((unit->id == UnitId::TerranVultureSpiderMine
+			&& unit->status & UnitStatus::Burrowed)
+				|| unit->id == UnitId::TerranNuclearMissile
+				|| unit->id == UnitId::ProtossScarab
+				|| unit->id == UnitId::Spell_DarkSwarm
+				|| unit->id == UnitId::Spell_DisruptionWeb)
+		{
+				bIsMultiselectable = false;
+		}
+
+		return bIsMultiselectable;
+	};
 
 } //unnamed namespace
 
