@@ -25,49 +25,49 @@ namespace {
 	bool isStunned(const CUnit *unit);
 	bool unit_isMultiselectable(const CUnit *unit);
 
-	inline bool unitsShareSamePlayer(CUnit *unit1, CUnit *unit2)
+	inline bool unitsShareSamePlayer(const CUnit *unit1, const CUnit *unit2)
 	{
 		return unit1->playerId == unit2->playerId;
 	};
 
-	inline bool unitsShareSameId(CUnit *unit1, CUnit *unit2)
+	inline bool unitsShareSameId(const CUnit *unit1, const CUnit *unit2)
 	{
 		return unit1->id == unit2->id;
 	};
 
-	inline bool isFlagOn(u32 status, u32 flag)
+	inline bool isFlagOn(const u32 status, const u32 flag)
 	{
 		return (status & flag) != 0;
 	};
 
-	inline bool checkUnitStatus(CUnit *unit, u32 flag)
+	inline bool checkUnitStatus(const CUnit *unit, u32 flag)
 	{
 		return (unit->status & flag) != 0;
 	};
 
-	inline bool checkUnitVisibilityStatus(CUnit *unit, u32 flag)
+	inline bool checkUnitVisibilityStatus(const CUnit *unit, u32 flag)
 	{
 		return (unit->visibilityStatus & flag) != 0;
 	};
 
-	inline bool checkSpriteVisibilityFlags(CSprite *sprite, u8 flag)
+	inline bool checkSpriteVisibilityFlags(const CSprite *sprite, u8 flag)
 	{
 		return (sprite->visibilityFlags & flag) != 0;
 	};
 
 	//Equivalent to " unit1->status XOR unit2->status "
 	//keep the flags appearing in only 1 of the variables
-	inline u32 getMixedFlags(CUnit *unit1, CUnit *unit2)
+	inline u32 getMixedStatusFlags(const CUnit *unit1, const CUnit *unit2)
 	{
 		return ( ~(unit1->status) & unit2->status ) | ( unit1->status & ~(unit2->status) );
 	};
 
-	bool unitsMatchMultiselection(CUnit *ref_unit, CUnit *current_unit)
+	bool unitsMatchMultiselection(const CUnit *ref_unit, const CUnit *current_unit)
 	{
 		bool bUnitMatch = false;
 		if(ref_unit != NULL)
 		{
-			u32 mixed_flags = getMixedFlags(ref_unit, current_unit);
+			u32 mixed_flags = getMixedStatusFlags(ref_unit, current_unit);
 			if(
 				unitsShareSamePlayer(ref_unit, current_unit)
 				&& unitsShareSameId(ref_unit, current_unit)
@@ -84,7 +84,7 @@ namespace {
 	};
 
 	const u32* VISIBILITY_CHECK_0057F0B0 = (u32*)0x0057F0B0;
-	bool unit_isVisible(CUnit *unit)
+	bool unit_isVisible(const CUnit *unit)
 	{
 		bool bUnitIsVisible = true;
 		if (
@@ -101,6 +101,38 @@ namespace {
 		return bUnitIsVisible;
 	};
 
+	u32 getUnitSearchFlag(CUnit *unit)
+	{
+		u32 searchFlag = 0;
+		searchFlag +=
+			(!isFlagOn(unit->status, UnitStatus::IsBuilding) ? 0 : 1);
+		searchFlag +=
+			(units_dat::BaseProperty[unit->id]  & UnitProperty::NeutralAccessories ? 0 : 2);
+		return searchFlag;
+	}
+
+	u32 getUnitListSearchFlag(CUnit ** unit_list)
+	{
+		u32 searchFlag = 0;
+		u32 current_index_in_unit_list = 0;
+		CUnit *current_unit = unit_list[current_index_in_unit_list];
+		while(current_unit != NULL)
+		{
+			u32 currentFlag = getUnitSearchFlag(current_unit);
+			if(currentFlag > searchFlag)
+			{
+				searchFlag = currentFlag;
+			}
+			current_unit = unit_list[++current_index_in_unit_list];
+		}
+		return searchFlag;
+	}
+
+	bool unitMatchSearchFlag(CUnit *unit, u32 flag)
+	{
+		return flag == getUnitSearchFlag(unit);
+	}
+
 } //unnamed namespace
 
 namespace hooks {
@@ -110,6 +142,8 @@ namespace hooks {
 	u32 SortAllUnits(CUnit* ref_unit, CUnit** unit_list, CUnit** units_in_bounds) {
 		CUnit* backup_current_unit = NULL;
 		u32 current_index_in_unit_list;
+
+		u32 searchFlag = getUnitListSearchFlag(units_in_bounds);
 
 		bool bKeepForEmptyListCase = false;
 
@@ -128,7 +162,7 @@ namespace hooks {
 		int units_in_bounds_index = 0;
 		CUnit* current_unit = units_in_bounds[units_in_bounds_index];
 
-		/// Fill unit_list from 0 to SELECTION_ARRAY_LENGTH-1
+		/// Fill unit_list from 0 to SELECTION_ARRAY_LENGTH -1
 		while(current_unit != NULL)
 		{
 			bKeepForEmptyListCase = false;
@@ -171,7 +205,11 @@ namespace hooks {
 							bKeepForEmptyListCase = true; //skip the ref_unit for the list, unless it's the only available
 						else
 						{
-							if(unitsMatchMultiselection(ref_unit, current_unit))
+							if( (ref_unit != NULL
+								&& unitsMatchMultiselection(ref_unit, current_unit) )
+								|| ( ref_unit == NULL
+									&& unitMatchSearchFlag(current_unit, searchFlag) )
+								)
 							{
 								if(current_index_in_unit_list >= SELECTION_ARRAY_LENGTH) //action when unit_list is full
 									function_0046F040(current_unit, unit_list, ref_unit, current_index_in_unit_list);
@@ -199,18 +237,21 @@ namespace hooks {
 
 		if(current_index_in_unit_list == 0)
 		{
-			if(backup_current_unit == NULL) {
+			if(backup_current_unit == NULL)
+			{
 				if(ref_unit != NULL)
 				{
 					unit_list[0] = ref_unit;
 					current_index_in_unit_list = 1; //return 1 (the clicked ref_unit alone)
 				}
-				else {
+				else
+				{
 					current_index_in_unit_list = 0; //return 0 (no list)
 				}
 
 			} //if(backup_current_unit == NULL)
-			else {
+			else
+			{
 				if(ref_unit != NULL)
 				{
 					unit_list[0] = ref_unit;
@@ -226,7 +267,6 @@ namespace hooks {
 		}
 
 		return current_index_in_unit_list;
-
 	} //u32 SortAllUnits(CUnit* ref_unit,CUnit** unit_list,CUnit* units_in_bounds)
 
 	///
@@ -793,12 +833,18 @@ namespace {
 	{
 		bool bIsMultiselectable = true;
 
-		if((unit->status & UnitStatus::GroundedBuilding)
-			|| (units_dat::BaseProperty[unit->id] & UnitProperty::NeutralAccessories))
+/*
+		if(activePlayerSelection->unit[0] != NULL)
 		{
-			bIsMultiselectable = false;
+			const CUnit *selectedUnit = activePlayerSelection->unit[0];
+			u32 mixed_flags = getMixedStatusFlags(selectedUnit, unit);
+			if(isFlagOn(mixed_flags, UnitStatus::GroundedBuilding)
+				|| (units_dat::BaseProperty[unit->id] ^ units_dat::BaseProperty[selectedUnit->id]) & UnitProperty::NeutralAccessories)
+			{
+				bIsMultiselectable = false;
+			}
 		}
-
+*/
 		if(isStunned(unit)) //Should be CUnit::isFrozen()?
 		{
 			bIsMultiselectable = false;
