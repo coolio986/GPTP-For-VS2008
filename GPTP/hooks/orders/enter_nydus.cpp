@@ -4,6 +4,21 @@
 //helper functions def
 
 namespace {
+	const u32 Func_Sub466F50 = 0x00466F50;
+	void orderNewUnitToRally(CUnit* unit, CUnit* factory) {
+
+		__asm {
+			PUSHAD
+			MOV EAX, unit
+			MOV ECX, factory
+			CALL Func_Sub466F50
+			POPAD
+		}
+
+	}
+
+	;
+
 	bool orderToMoveToTarget(CUnit* unit, CUnit* target);	//0x004EB980
 
 	///   Checks whether the @p resource unit can be harvested by \p playerId.
@@ -25,34 +40,6 @@ namespace {
 	  }
 
 	  return false;
-	}
-
-	//KYSXD helper
-	void manageRally(CUnit *unit, CUnit *factory) {
-	  using units_dat::BaseProperty;
-	  //Do nothing if the rally target is the factory itself or the rally target position is 0
-	  if (factory == NULL || factory->rally.unit == factory || !(factory->rally.pt.x)) return;
-
-	  //If unit is a worker and the factory has a worker rally set, use it.
-	  if (BaseProperty[unit->id] & UnitProperty::Worker
-	      && canBeHarvestedBy(factory->moveTarget.unit, unit->playerId)){
-	      unit->orderTo(OrderId::Harvest1, factory->moveTarget.unit);
-	      return;
-	  }
-
-	  //Enter to bunkers/transports
-	  if (factory->rally.unit && scbw::canBeEnteredBy(factory->rally.unit, unit)) {
-	    unit->orderTo(OrderId::EnterTransport, factory->rally.unit);
-	    return;
-	  }
-
-	  //Following should be allowed only on friendly units
-	  if (factory->rally.unit && factory->rally.unit->playerId == unit->playerId)
-	    unit->orderTo(OrderId::Follow, factory->rally.unit);
-	  else
-	    unit->orderTo(OrderId::Move, factory->rally.pt.x, factory->rally.pt.y);
-
-	  return; 
 	}
 
 } //unnamed namespace
@@ -121,7 +108,7 @@ namespace hooks {
 
 			}
 
-			manageRally(unit, nydusCanal->building.nydusExit);
+			orderNewUnitToRally(unit, nydusCanal->building.nydusExit);
 		}
 		else {	//collision detected, restore old position
 			scbw::setUnitPosition(unit,oldPos.x,oldPos.y);
