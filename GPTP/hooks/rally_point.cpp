@@ -55,7 +55,8 @@ namespace {
   //KYSD moves the unit to the original factory
   void moveReactorCreation(CUnit* unit, CUnit* addon) {
     using units_dat::BaseProperty;
-    if(BaseProperty[addon->id] & UnitProperty::Addon
+    if(addon != NULL
+      && BaseProperty[addon->id] & UnitProperty::Addon
       && addon->connectedUnit != NULL) {
       CUnit *factory = addon->connectedUnit;
       scbw::moveUnit(unit, factory->getX(), factory->getY() + 1);
@@ -66,7 +67,7 @@ namespace {
   void manageRally(CUnit *unit, CUnit *factory) {
     using units_dat::BaseProperty;
     //Do nothing if the rally target is the factory itself or the rally target position is 0
-    if (factory->rally.unit == factory || !(factory->rally.pt.x)) return;
+    if (factory == NULL || factory->rally.unit == factory || !(factory->rally.pt.x)) return;
 
     //If unit is a worker and the factory has a worker rally set, use it.
     if (BaseProperty[unit->id] & UnitProperty::Worker

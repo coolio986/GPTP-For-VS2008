@@ -27,11 +27,11 @@ namespace {
 	  return false;
 	}
 
-	//KYSXD herlper
+	//KYSXD helper
 	void manageRally(CUnit *unit, CUnit *factory) {
 	  using units_dat::BaseProperty;
 	  //Do nothing if the rally target is the factory itself or the rally target position is 0
-	  if (factory->rally.unit == factory || !(factory->rally.pt.x)) return;
+	  if (factory == NULL || factory->rally.unit == factory || !(factory->rally.pt.x)) return;
 
 	  //If unit is a worker and the factory has a worker rally set, use it.
 	  if (BaseProperty[unit->id] & UnitProperty::Worker
