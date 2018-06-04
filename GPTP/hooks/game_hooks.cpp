@@ -634,6 +634,13 @@ namespace plugins {
 			graphics::TEAL, graphics::ON_MAP);
 		}
 
+		if(unit->id == UnitId::ZergNydusCanal
+			&& unit->building.nydusExit != NULL) {
+			graphics::drawLine(unit->getX(), unit->getY(),
+				unit->building.nydusExit->getX(), unit->building.nydusExit->getY(),
+				graphics::ORANGE, graphics::ON_MAP);
+		}
+
 		//Display rally points for factories selected
 		if(unit->status & UnitStatus::GroundedBuilding
 			&& unit->rally.pt.x
