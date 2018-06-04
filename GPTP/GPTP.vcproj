@@ -250,6 +250,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\hooks\recv_commands\CMDRECV_Cancel.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\recv_commands\CMDRECV_Cancel_inject.cpp"
+				>
+			</File>			
+			<File
 				RelativePath=".\hooks\recv_commands\CMDRECV_MergeArchon.cpp"
 				>
 			</File>
@@ -271,6 +279,14 @@
 			</File>
 			<File
 				RelativePath=".\hooks\recv_commands\CMDRECV_SiegeTank_inject.cpp"
+				>
+			</File>	
+			<File
+				RelativePath=".\hooks\recv_commands\CMDRECV_Stop.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\recv_commands\CMDRECV_Stop_inject.cpp"
 				>
 			</File>			
 			<File
@@ -447,6 +463,14 @@
 			</File>
 			<File
 				RelativePath=".\hooks\orders\research_upgrade_orders_inject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\interface\select_larva.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\interface\select_larva_inject.cpp"
 				>
 			</File>			
 			<File
@@ -964,6 +988,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\hooks\recv_commands\CMDRECV_Cancel.h"
+				>
+			</File>			
+			<File
 				RelativePath=".\hooks\recv_commands\CMDRECV_MergeArchon.h"
 				>
 			</File>
@@ -973,6 +1001,10 @@
 			</File>			
 			<File
 				RelativePath=".\hooks\recv_commands\CMDRECV_SiegeTank.h"
+				>
+			</File>	
+			<File
+				RelativePath=".\hooks\recv_commands\CMDRECV_Stop.h"
 				>
 			</File>			
 			<File
@@ -1073,6 +1105,10 @@
 			</File>			
 			<File
 				RelativePath=".\hooks\orders\research_upgrade_orders.h"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\interface\select_larva.h"
 				>
 			</File>			
 			<File

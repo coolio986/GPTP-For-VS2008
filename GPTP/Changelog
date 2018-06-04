@@ -1,3 +1,43 @@
+Version 4.026
+-Fixed some minor (no effects on testing) mistakes in hooks/interface/selection_inject.cpp
+-added the select_larva hooks
+-Minor cosmetics changes
+
+---------------------------------------
+
+Version 4.025
+-Fixed another mistake in hooks/orders/infestation.cpp (caused Issue #30)
+-Minor changes in helper functions for the same hook
+
+---------------------------------------
+
+Version 4.024
+-Fixed a major mistake in hooks/orders/infestation.cpp (caused Issue #29)
+-Various minor fix in hooks/orders/infestation.cpp
+
+---------------------------------------
+
+Version 4.023
+
+Fixed an error in CUnit.cpp reduceDefensiveMatrixHp function causing
+defensive matrix overlay to never disappear
+
+---------------------------------------
+
+Version 4.022
+Fixed lots of error in Recharge Shields hook, making it working properly
+
+---------------------------------------
+
+Version 4.021
+-minor change in hooks\orders\building_making\building_terran_inject.cpp
+-improvement in hooks\orders\building_making\make_nydus_exit.cpp (identification of code)
+-minor change in hooks\recv_commands\burrow_tech.cpp
+-fixed the broken Cloak Nearby Units hook
+-added the CMDRECV_Stop hooks
+-added the CMDRECV_Cancel hooks
+
+---------------------------------------
 
 Version 4.020
 -fix mistakes that caused a crash in hooks/orders/unit_making/unit_train.cpp
