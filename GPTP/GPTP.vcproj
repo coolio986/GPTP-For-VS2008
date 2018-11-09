@@ -250,6 +250,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\hooks\recv_commands\CMDRECV_Build.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\recv_commands\CMDRECV_Build_inject.cpp"
+				>
+			</File>			
+			<File
 				RelativePath=".\hooks\recv_commands\CMDRECV_Cancel.cpp"
 				>
 			</File>
@@ -416,7 +424,15 @@
 			<File
 				RelativePath=".\hooks\orders\merge_units_inject.cpp"
 				>
-			</File>	
+			</File>
+			<File
+				RelativePath=".\hooks\orders\spells\mindcontrol_spell.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\spells\mindcontrol_spell_inject.cpp"
+				>
+			</File>			
 			<File
 				RelativePath=".\hooks\orders\spells\nuke_orders.cpp"
 				>
@@ -456,7 +472,15 @@
 			<File
 				RelativePath=".\hooks\recv_commands\receive_command_inject.cpp"
 				>
-			</File>			
+			</File>
+			<File
+				RelativePath=".\hooks\orders\repair_order.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\repair_order_inject.cpp"
+				>
+			</File>
 			<File
 				RelativePath=".\hooks\orders\research_upgrade_orders.cpp"
 				>
@@ -488,7 +512,15 @@
 			<File
 				RelativePath=".\hooks\orders\siege_transform_inject.cpp"
 				>
-			</File>	
+			</File>
+			<File
+				RelativePath=".\hooks\interface\stats_panel_display.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\interface\stats_panel_display_inject.cpp"
+				>
+			</File>			
 			<File
 				RelativePath=".\hooks\orders\base_orders\stopholdpos_orders.cpp"
 				>
@@ -521,6 +553,14 @@
 				RelativePath=".\hooks\orders\unit_making\unit_train_inject.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\hooks\utils\utils.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\utils\utils_inject.cpp"
+				>
+			</File>		
 			<File
 				RelativePath=".\hooks\interface\wireframe.cpp"
 				>
@@ -988,6 +1028,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\hooks\recv_commands\CMDRECV_Build.h"
+				>
+			</File>			
+			<File
 				RelativePath=".\hooks\recv_commands\CMDRECV_Cancel.h"
 				>
 			</File>			
@@ -1082,6 +1126,10 @@
 			<File
 				RelativePath=".\hooks\orders\merge_units.h"
 			>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\spells\mindcontrol_spell.h"
+				>
 			</File>			
 			<File
 				RelativePath=".\MPQDraftPlugin.h"
@@ -1101,6 +1149,10 @@
 			</File>
 			<File
 				RelativePath=".\hooks\recv_commands\receive_command.h"
+				>
+			</File>
+			<File
+				RelativePath=".\hooks\orders\repair_order.h"
 				>
 			</File>			
 			<File
@@ -1126,7 +1178,11 @@
 			<File
 				RelativePath=".\SCBW\enumerations\SpriteId.h"
 				>
-			</File>	
+			</File>
+			<File
+				RelativePath=".\hooks\interface\stats_panel_display.h"
+				>
+			</File>			
 			<File
 				RelativePath=".\hooks\orders\base_orders\stopholdpos_orders.h"
 				>
@@ -1145,6 +1201,10 @@
 			</File>
 			<File
 				RelativePath=".\hooks\orders\unit_making\unit_train.h"
+				>
+			</File>	
+			<File
+				RelativePath=".\hooks\utils\utils.h"
 				>
 			</File>			
 			<File

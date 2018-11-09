@@ -44,6 +44,7 @@
 #include "hooks/orders/building_making/building_terran.h"
 #include "hooks/recv_commands/burrow_tech.h"
 #include "hooks/orders/spells/cast_order.h"
+#include "hooks/recv_commands/CMDRECV_Build.h"
 #include "hooks/recv_commands/CMDRECV_Cancel.h"
 #include "hooks/recv_commands/CMDRECV_MergeArchon.h"
 #include "hooks/recv_commands/CMDRECV_Morph.h"
@@ -63,16 +64,21 @@
 #include "hooks/orders/building_making/make_nydus_exit.h"
 #include "hooks/orders/medic_orders.h"
 #include "hooks/orders/merge_units.h"
+#include "hooks/orders/spells/mindcontrol_spell.h"
 #include "hooks/orders/spells/nuke_orders.h"
 #include "hooks/orders/spells/recall_spell.h"
 #include "hooks/recv_commands/receive_command.h"
+#include "hooks/orders/repair_order.h"
 #include "hooks/orders/research_upgrade_orders.h"
+#include "hooks/interface/select_larva.h"
 #include "hooks/interface/selection.h"
 #include "hooks/orders/siege_transform.h"
+#include "hooks/interface/stats_panel_display.h"
 #include "hooks/orders/base_orders/stopholdpos_orders.h"
 #include "hooks/recv_commands/train_cmd_receive.h"
 #include "hooks/orders/unit_making/unit_morph.h"
 #include "hooks/orders/unit_making/unit_train.h"
+#include "hooks/utils/utils.h"
 #include "hooks/interface/wireframe.h"
 #include "hooks/weapons/wpnspellhit.h"
 
@@ -156,7 +162,13 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
 	hooks::injectCMDRECV_MergeArchonHooks();
 	hooks::injectCMDRECV_MorphHooks();
 	hooks::injectCMDRECV_StopHooks();
-	hooks::injectCMDRECV_CancelHooks();	
+	hooks::injectCMDRECV_CancelHooks();
+	hooks::injectSelectLarvaHooks();
+	hooks::injectRepairOrderHook();
+	hooks::injectStatsPanelDisplayHook();
+	hooks::injectUtilsHooks();
+	hooks::injectMindControlSpellHook();
+	hooks::injectCMDRECV_BuildHooks();
 
 	hooks::injectApplyUpgradeFlags();
 	hooks::injectAttackPriorityHooks();

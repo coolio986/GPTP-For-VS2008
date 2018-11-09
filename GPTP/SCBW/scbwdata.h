@@ -185,7 +185,7 @@ SCBW_DATA(u16*,		SoundAnnoyedLast,		unitsDat[33].address);	//00661EE8
 SCBW_DATA(u16*,		SoundYesFirst,			unitsDat[34].address);	//00663C10
 SCBW_DATA(u16*,		SoundYesLast,			unitsDat[35].address);	//00661440
 SCBW_DATA(Point16*,	BuildingDimensions,		unitsDat[36].address);	//00662860
-//SCBW_DATA(u16*,	???,					unitsDat[37].address);	//006626E0 //"Addon Placement" according to EUDDB
+SCBW_DATA(Point16*,	AddonPlacement,			unitsDat[37].address);	//006626E0
 SCBW_DATA(Box16*,	UnitBounds,				unitsDat[38].address);	//006617C8
 //SCBW_DATA(u16*,	???,					unitsDat[39].address);	//00662F88 //Portrait according to EUDDB
 SCBW_DATA(u16*,		MineralCost,			unitsDat[40].address);	//00663888
@@ -283,22 +283,22 @@ SCBW_DATA(const DatLoad*, ordersDat, 0x00513EC8);
 
 SCBW_DATA(u16*,		Label,              ordersDat[0].address);	//00665280
 SCBW_DATA(u8*,		UseWeaponTargeting, ordersDat[1].address);	//00664B00
-//SCBW_DATA(u8*,	???,				ordersDat[2].address);	//00665940 //"Order goes in bSecondaryOrderID instead of bMainOrderID." according to EUDDB
-//SCBW_DATA(u8*,	???,				ordersDat[3].address);	//00665A00
+//SCBW_DATA(u8*,	???,				ordersDat[2].address);	//00665940 //May be "secondary order" used for debug/assert only / "Order goes in bSecondaryOrderID instead of bMainOrderID." according to EUDDB
+//SCBW_DATA(u8*,	???,				ordersDat[3].address);	//00665A00 //May be "Non-subunit" used for debug only
 //SCBW_DATA(u8*,	???,				ordersDat[4].address);	//00664A40
-//SCBW_DATA(u8*,	???,				ordersDat[5].address);	//006657C0
+//SCBW_DATA(u8*,	???,				ordersDat[5].address);	//006657C0 //May be "Subunit can use" used for debug only
 SCBW_DATA(Bool8*,	CanBeInterrupted,	ordersDat[6].address);	//00665040
 //SCBW_DATA(u8*,	???,				ordersDat[7].address);	//00665100
 //SCBW_DATA(u8*,	???,				ordersDat[8].address);	//00665700 //"Can Be Queued" according to EUDDB
 //SCBW_DATA(u8*,	???,				ordersDat[9].address);	//006651C0
 SCBW_DATA(u8*,		CanBeObstructed,	ordersDat[10].address);	//006654C0 //"Can Be Obstructed?" according to EUDDB
 //SCBW_DATA(u8*,	???,				ordersDat[11].address);	//00664C80
-//SCBW_DATA(u8*,	???,				ordersDat[12].address);	//00664BC0
+//SCBW_DATA(u8*,	???,				ordersDat[12].address);	//00664BC0 ////May be "Order requires moving"
 SCBW_DATA(u8*,		OrderWeaponId,		ordersDat[13].address);	//00665880
 SCBW_DATA(u8*,		TechUsed,           ordersDat[14].address);	//00664E00
 SCBW_DATA(u8*,		OrderIscriptAnim,	ordersDat[15].address);	//00664D40 //Animation (IscriptAnimation) according to EUDDB
 SCBW_DATA(u16*,		ButtonIcon,			ordersDat[16].address);	//00664EC0
-//SCBW_DATA(u16*,	???,				ordersDat[17].address);	//00665580
+SCBW_DATA(u16*,		RequirementsOffset,	ordersDat[17].address);	//00665580 //based on context
 //SCBW_DATA(u8*,	???,				ordersDat[18].address);	//00665400 //"Obscured Order" according to EUDDB
 } //orders_dat (last entry at 0x00513FA0)
 
@@ -345,6 +345,10 @@ SCBW_DATA(u8*,          selectionIndexStart,    0x006284B6);
 SCBW_DATA(const UnitsSel*, activePlayerSelection, 0x006284B8);
 typedef CUnit* (__cdecl *GetActivePlayerNextSelectionFunc)();
 SCBW_DATA(GetActivePlayerNextSelectionFunc, getActivePlayerNextSelection, 0x0049A850);
+
+/// Selections of all players
+struct PlayersSel { CUnit* unit[PLAYABLE_PLAYER_COUNT][SELECTION_ARRAY_LENGTH]; };
+SCBW_DATA(const PlayersSel*, playersSelections, 0x006284E8);
 
 typedef void (__fastcall *PrepareForNextOrderFunc)(CUnit*);
 SCBW_DATA(PrepareForNextOrderFunc, prepareForNextOrder, 0x00475000);
