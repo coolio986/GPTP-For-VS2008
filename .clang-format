@@ -1,9 +1,17 @@
 BasedOnStyle: Google
 IndentWidth: 4
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignEscapedNewlines: Left
+AlignOperands: true
 AlignTrailingComments: true
 AllowAllParametersOfDeclarationOnNextLine: false
+AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
+ColumnLimit: 80
+ExperimentalAutoDetectBinPacking: false
 ReflowComments: true
 SpacesBeforeTrailingComments: 2
+Standard: Cpp03
 UseTab: Never
