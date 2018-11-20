@@ -356,7 +356,7 @@ struct IMPQDraftPlugin {
        succeed.
     */
     virtual BOOL WINAPI GetModules(MPQDRAFTPLUGINMODULE *lpPluginModules,
-                                   LPDWORD lpnNumModules) = 0;
+                                   LPDWORD               lpnNumModules) = 0;
 
     /*
             IMPQDraftPlugin::InitializePlugin

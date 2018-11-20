@@ -5,7 +5,7 @@ namespace {
 
 void __declspec(naked) BTNSCOND_NoNydusExit_Wrapper() {
     static CUnit* unit;
-    static s32 button_state;
+    static s32    button_state;
 
     __asm {
 		PUSH EBP
@@ -29,7 +29,7 @@ void __declspec(naked) BTNSCOND_NoNydusExit_Wrapper() {
 
 void __declspec(naked) BTNSCOND_Movement_Wrapper() {
     static CUnit* unit;
-    static s32 button_state;
+    static s32    button_state;
 
     __asm {
 		PUSH EBP
@@ -53,7 +53,7 @@ void __declspec(naked) BTNSCOND_Movement_Wrapper() {
 
 void __declspec(naked) BTNSCOND_HasScarabs_Wrapper() {
     static CUnit* unit;
-    static s32 button_state;
+    static s32    button_state;
 
     __asm {
 		PUSH EBP

@@ -8,7 +8,7 @@ namespace AI {
 class EnsnareTargetFinderProc : public scbw::UnitFinderCallbackMatchInterface {
    private:
     CUnit* caster;
-    bool isUnderAttack;
+    bool   isUnderAttack;
 
    public:
     EnsnareTargetFinderProc(CUnit* caster, bool isUnderAttack)

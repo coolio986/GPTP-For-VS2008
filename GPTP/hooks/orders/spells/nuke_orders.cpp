@@ -5,16 +5,16 @@
 
 namespace {
 
-void setAllOverlayDirectionsGeneric(CUnit* unit, u32 unk);        // 01140
-void AI_orderUnitCloaking(CUnit* unit);                           // 3B970
-u32 function_0043DB50(CUnit* unit);                               // 3DB50
-void actUnitReturnToIdle(CUnit* unit);                            // 75420
-bool setThingyVisibilityFlags(CThingy* thingy);                   // 878F0
+void     setAllOverlayDirectionsGeneric(CUnit* unit, u32 unk);    // 01140
+void     AI_orderUnitCloaking(CUnit* unit);                       // 3B970
+u32      function_0043DB50(CUnit* unit);                          // 3DB50
+void     actUnitReturnToIdle(CUnit* unit);                        // 75420
+bool     setThingyVisibilityFlags(CThingy* thingy);               // 878F0
 CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId);  // 88210
-void changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 unitId);      // E5D60
-void showAndEnableUnit(CUnit* unit);                              // E6490
-void setNextWaypoint_Sub4EB290(CUnit* unit);                      // EB290
-bool SetMoveTarget_xy(CUnit* unit, int x, int y);                 // EB820
+void     changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 unitId);  // E5D60
+void     showAndEnableUnit(CUnit* unit);                          // E6490
+void     setNextWaypoint_Sub4EB290(CUnit* unit);                  // EB290
+bool     SetMoveTarget_xy(CUnit* unit, int x, int y);             // EB820
 
 }  // unnamed namespace
 
@@ -116,7 +116,7 @@ void orders_NukeGround(CUnit* unit) {
 
     } else {  // 792AE
 
-        s32 direction;
+        s32  direction;
         bool bEndThere = false;
 
         setNextWaypoint_Sub4EB290(unit);
@@ -134,7 +134,7 @@ void orders_NukeGround(CUnit* unit) {
 
         // 792F9
         if (!bEndThere) {
-            bool bLoopEnd = false;
+            bool   bLoopEnd     = false;
             CUnit* current_unit = firstPlayerUnit->unit[unit->playerId];
 
             while (!bLoopEnd) {
@@ -153,7 +153,7 @@ void orders_NukeGround(CUnit* unit) {
 
                 CUnit* nuke = current_unit->building.silo.nuke;
 
-                current_unit->building.silo.nuke = NULL;
+                current_unit->building.silo.nuke    = NULL;
                 current_unit->building.silo.isReady = false;
 
                 scbw::playSound(SoundId::Terran_GHOST_TGhLas00_wav, unit);
@@ -196,7 +196,7 @@ void orders_NukeGround(CUnit* unit) {
 namespace {
 
 const u32 Func_setAllOverlayDirectionsGeneric = 0x00401140;
-void setAllOverlayDirectionsGeneric(CUnit* unit, u32 unk){
+void      setAllOverlayDirectionsGeneric(CUnit* unit, u32 unk){
 
     __asm {PUSHAD MOV EAX,
            unit PUSH unk CALL Func_setAllOverlayDirectionsGeneric POPAD}
@@ -206,7 +206,7 @@ void setAllOverlayDirectionsGeneric(CUnit* unit, u32 unk){
 ;
 
 const u32 Func_AI_orderUnitCloaking = 0x0043B970;
-void AI_orderUnitCloaking(CUnit* unit){
+void      AI_orderUnitCloaking(CUnit* unit){
 
     __asm {PUSHAD MOV ESI, unit CALL Func_AI_orderUnitCloaking POPAD}
 
@@ -215,7 +215,7 @@ void AI_orderUnitCloaking(CUnit* unit){
 ;
 
 const u32 Func_Sub43DB50 = 0x0043DB50;
-u32 function_0043DB50(CUnit* unit) {
+u32       function_0043DB50(CUnit* unit) {
     static u32 return_value;
 
     __asm {
@@ -232,7 +232,7 @@ u32 function_0043DB50(CUnit* unit) {
 ;
 
 const u32 Func_ActUnitReturnToIdle = 0x00475420;
-void actUnitReturnToIdle(CUnit* unit){
+void      actUnitReturnToIdle(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_ActUnitReturnToIdle POPAD}
 
@@ -243,7 +243,7 @@ void actUnitReturnToIdle(CUnit* unit){
 // original referenced name was sub_4878F0, but using
 // the name from bunker_hooks.cpp since it got meaning
 const u32 Func_SetThingyVisibilityFlags = 0x004878F0;
-bool setThingyVisibilityFlags(CThingy* thingy) {
+bool      setThingyVisibilityFlags(CThingy* thingy) {
     static Bool32 bPreResult;
 
     __asm {
@@ -262,9 +262,9 @@ bool setThingyVisibilityFlags(CThingy* thingy) {
 // original referenced name was replaceSprite (but this one is probably
 // more accurate since it does create something rather than replacing)
 const u32 Func_CreateThingy = 0x00488210;
-CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId) {
+CThingy*  createThingy(u32 spriteId, s16 x, s16 y, u32 playerId) {
     static CThingy* thingy;
-    s32 x_ = x;
+    s32             x_ = x;
 
     __asm {
 		PUSHAD
@@ -283,7 +283,7 @@ CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId) {
 ;
 
 const u32 Func_Sub4E5D60 = 0x004E5D60;
-void changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 buttonSetId){
+void      changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 buttonSetId){
 
     __asm {PUSHAD MOV EAX, unit MOV CX, buttonSetId CALL Func_Sub4E5D60 POPAD}
 
@@ -292,7 +292,7 @@ void changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 buttonSetId){
 ;
 
 const u32 Func_InitUnitTrapDoodad = 0x004E6490;
-void showAndEnableUnit(CUnit* unit){
+void      showAndEnableUnit(CUnit* unit){
 
     __asm {PUSHAD MOV EDI, unit CALL Func_InitUnitTrapDoodad POPAD}}
 
@@ -300,14 +300,14 @@ void showAndEnableUnit(CUnit* unit){
 
 // Related to path/movement decision
 const u32 Func_sub_4EB290 = 0x004EB290;
-void setNextWaypoint_Sub4EB290(CUnit* unit){
+void      setNextWaypoint_Sub4EB290(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_sub_4EB290 POPAD}}
 
 ;
 
 const u32 Func_SetMoveTarget_xy = 0x004EB820;
-bool SetMoveTarget_xy(CUnit* unit, int x, int y) {
+bool      SetMoveTarget_xy(CUnit* unit, int x, int y) {
     static Bool32 bPreResult;
 
     __asm {

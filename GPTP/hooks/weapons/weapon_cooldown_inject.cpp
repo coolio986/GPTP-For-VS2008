@@ -5,8 +5,8 @@ namespace {
 
 void __declspec(naked) getModifiedWeaponCooldownWrapper() {
     static CUnit* unit;
-    static u8 weaponId;
-    static u32 cooldown;
+    static u8     weaponId;
+    static u32    cooldown;
 
     __asm {
 		MOV unit, ESI

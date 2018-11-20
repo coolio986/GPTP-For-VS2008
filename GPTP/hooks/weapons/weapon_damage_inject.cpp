@@ -9,11 +9,11 @@ namespace {
 void __declspec(naked) weaponDamageWrapper() {
     static CUnit* target;
     static CUnit* attacker;
-    static s32 damage;
-    static s32 direction;
-    static u32 weaponId;
-    static u32 damageDivisor;
-    static u32 attackingPlayerId;
+    static s32    damage;
+    static s32    direction;
+    static u32    weaponId;
+    static u32    damageDivisor;
+    static u32    attackingPlayerId;
 
     __asm {
 		PUSH EBP

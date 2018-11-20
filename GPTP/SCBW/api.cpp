@@ -17,7 +17,7 @@ namespace scbw {
 //-------- Output functions --------//
 
 const u32 Func_PlaySound = 0x0048ED50;
-void playSound(u32 sfxId, CUnit* sourceUnit) {
+void      playSound(u32 sfxId, CUnit* sourceUnit) {
     __asm {
 		PUSHAD
 		PUSH 0
@@ -30,7 +30,7 @@ void playSound(u32 sfxId, CUnit* sourceUnit) {
 }
 
 const u32 Func_PrintText = 0x0048CD30;
-void printText(const char* text, u32 color) {
+void      printText(const char* text, u32 color) {
     if (!text) return;
 
     DWORD gtc = GetTickCount() + 7000;
@@ -47,7 +47,7 @@ void printText(const char* text, u32 color) {
 }
 
 const u32 Func_ShowErrorMessageWithSfx = 0x0048EE30;
-void showErrorMessageWithSfx(u32 playerId, u32 statTxtId, u32 sfxId) {
+void      showErrorMessageWithSfx(u32 playerId, u32 statTxtId, u32 sfxId) {
     __asm {
 		PUSHAD
 		MOV ESI, sfxId
@@ -61,7 +61,7 @@ void showErrorMessageWithSfx(u32 playerId, u32 statTxtId, u32 sfxId) {
 //-------- Unit checks --------//
 
 const u32 Func_CanBeEnteredBy = 0x004E6E00;  // AKA CanEnterTransport()
-bool canBeEnteredBy(CUnit* transport, CUnit* unit) {
+bool      canBeEnteredBy(CUnit* transport, CUnit* unit) {
     static u32 result;
 
     __asm {
@@ -84,8 +84,8 @@ bool canWeaponTargetUnit(u8 weaponId, CUnit* target, CUnit* attacker) {
 
     if (target->status & UnitStatus::Invincible) return false;
 
-    const TargetFlag tf = weapons_dat::TargetFlags[weaponId];
-    const u32 targetProps = units_dat::BaseProperty[target->id];
+    const TargetFlag tf          = weapons_dat::TargetFlags[weaponId];
+    const u32        targetProps = units_dat::BaseProperty[target->id];
 
     if ((target->status & UnitStatus::InAir) ? !tf.air : !tf.ground)
         return false;
@@ -170,7 +170,7 @@ int arctangent(int slope) {
 
     if (slope < 0) {
         isNegative = true;
-        slope = -slope;
+        slope      = -slope;
     }
 
     int min = 0, max = 64, angle = 32;
@@ -277,7 +277,7 @@ void setUpgradeLevel(u8 playerId, u8 upgradeId, u8 level) {
 //-------- Map information --------//
 
 const u32 Func_GetGroundHeightAtPos = 0x004BD0F0;
-u32 getGroundHeightAtPos(s32 x, s32 y) {
+u32       getGroundHeightAtPos(s32 x, s32 y) {
     static u32 height;
 
     __asm {
@@ -314,7 +314,7 @@ bool moveUnit(CUnit* unit, s16 x, s16 y) {
 }
 
 const u32 Func_PrepareUnitMoveClearRefs = 0x00493CA0;
-void prepareUnitMove(CUnit* unit, bool hideUnit) {
+void      prepareUnitMove(CUnit* unit, bool hideUnit) {
     assert(unit);
 
     static Bool32 _hideUnit;
@@ -331,12 +331,12 @@ void prepareUnitMove(CUnit* unit, bool hideUnit) {
 }
 
 const u32 Func_CheckUnitCollisionPos = 0x0049D3E0;
-bool checkUnitCollisionPos(CUnit* unit,
-                           const Point16* inPos,
-                           Point16* outPos,
-                           Box16* moveArea,
-                           bool hideErrorMsg,
-                           u32 someFlag) {
+bool      checkUnitCollisionPos(CUnit*         unit,
+                                const Point16* inPos,
+                                Point16*       outPos,
+                                Box16*         moveArea,
+                                bool           hideErrorMsg,
+                                u32            someFlag) {
     assert(unit);
     assert(inPos);
     assert(outPos);
@@ -363,7 +363,7 @@ bool checkUnitCollisionPos(CUnit* unit,
 }
 
 const u32 Func_SetUnitPosition = 0x004EB9F0;
-void setUnitPosition(CUnit* unit, u16 x, u16 y) {
+void      setUnitPosition(CUnit* unit, u16 x, u16 y) {
     assert(unit);
 
     __asm {
@@ -377,7 +377,7 @@ void setUnitPosition(CUnit* unit, u16 x, u16 y) {
 }
 
 const u32 Func_RefreshRevealUnitAfterMove = 0x00494160;
-void refreshUnitAfterMove(CUnit* unit) {
+void      refreshUnitAfterMove(CUnit* unit) {
     assert(unit);
 
     __asm {
@@ -391,7 +391,7 @@ void refreshUnitAfterMove(CUnit* unit) {
 //-------- Utility functions --------//
 
 const u32 Func_CreateUnitAtPos = 0x004CD360;  // AKA createUnitXY()
-CUnit* createUnitAtPos(u16 unitType, u16 playerId, u32 x, u32 y) {
+CUnit*    createUnitAtPos(u16 unitType, u16 playerId, u32 x, u32 y) {
     if (unitType >= UNIT_TYPE_COUNT) return NULL;
 
     static CUnit* unit;
@@ -431,9 +431,9 @@ void refreshScreen(int left, int top, int right, int bottom) {
     // Rect out of bounds
     if (left >= 40 || right < 0 || top >= 30 || bottom < 0) return;
 
-    left = std::max(left, 0);
-    right = std::min(right, 40 - 1);
-    top = std::max(top, 0);
+    left   = std::max(left, 0);
+    right  = std::min(right, 40 - 1);
+    top    = std::max(top, 0);
     bottom = std::min(bottom, 30 - 1);
 
     for (int y = top; y <= bottom; ++y)
@@ -464,17 +464,17 @@ u16 random() {
 
 // Logically equivalent to function @ 0x004C36C0
 void refreshConsole() {
-    static u32* const bCanUpdateCurrentButtonSet = (u32*)0x0068C1B0;
-    static u8* const bCanUpdateSelectedUnitPortrait = (u8*)0x0068AC74;
-    static u8* const bCanUpdateStatDataDialog = (u8*)0x0068C1F8;
-    static BinDlg** const someDialogUnknown = (BinDlg**)0x0068C1E8;
-    static BinDlg** const someDialogUnknownUser = (BinDlg**)0x0068C1EC;
+    static u32* const     bCanUpdateCurrentButtonSet     = (u32*)0x0068C1B0;
+    static u8* const      bCanUpdateSelectedUnitPortrait = (u8*)0x0068AC74;
+    static u8* const      bCanUpdateStatDataDialog       = (u8*)0x0068C1F8;
+    static BinDlg** const someDialogUnknown              = (BinDlg**)0x0068C1E8;
+    static BinDlg** const someDialogUnknownUser          = (BinDlg**)0x0068C1EC;
 
-    *bCanUpdateCurrentButtonSet = 1;
+    *bCanUpdateCurrentButtonSet     = 1;
     *bCanUpdateSelectedUnitPortrait = 1;
-    *bCanUpdateStatDataDialog = 1;
-    *someDialogUnknown = NULL;
-    *someDialogUnknownUser = NULL;
+    *bCanUpdateStatDataDialog       = 1;
+    *someDialogUnknown              = NULL;
+    *someDialogUnknownUser          = NULL;
 }
 
 const u32 Func_MoveScreen = 0x0049C440;

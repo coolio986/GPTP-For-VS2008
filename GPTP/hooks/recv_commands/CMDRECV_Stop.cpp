@@ -6,20 +6,20 @@
 namespace {
 
 void parseOrdersDatReqs();  // 6D450
-int parseRequirementOpcodes(CUnit* unit,
-                            u32 orderId,
-                            u32 playerId,
-                            u32 address,
-                            u32 req_offset);                // 6D610
+int  parseRequirementOpcodes(CUnit* unit,
+                             u32    orderId,
+                             u32    playerId,
+                             u32    address,
+                             u32    req_offset);               // 6D610
 void removeOrderFromUnitQueue(CUnit* unit, COrder* order);  // 742D0
 void function_004754F0(CUnit* unit,
-                       u32 unitId,
-                       u32 unk1,
-                       u32 unk2,
-                       u32 orderId,
-                       u32 unk3,
-                       u32 bCommandType,
-                       u32 unk5);  // 754F0
+                       u32    unitId,
+                       u32    unk1,
+                       u32    unk2,
+                       u32    orderId,
+                       u32    unk3,
+                       u32    bCommandType,
+                       u32    unk5);  // 754F0
 
 }  // unnamed namespace
 
@@ -30,7 +30,7 @@ namespace hooks {
 // CMDRECV_Stop, and the orders id
 
 void CMDRECV_ReaverStop() {
-    CUnit* current_unit;
+    CUnit*      current_unit;
     static u32* u32_0066FF60 = (u32*)0x0066FF60;
 
     *selectionIndexStart = 0;
@@ -112,7 +112,7 @@ void CMDRECV_ReaverStop() {
 ;
 
 void CMDRECV_CarrierStop() {
-    CUnit* current_unit;
+    CUnit*      current_unit;
     static u32* u32_0066FF60 = (u32*)0x0066FF60;
 
     *selectionIndexStart = 0;
@@ -194,7 +194,7 @@ void CMDRECV_CarrierStop() {
 ;
 
 void CMDRECV_Stop(u8 bCommandType) {
-    CUnit* current_unit;
+    CUnit*      current_unit;
     static u32* u32_0066FF60 = (u32*)0x0066FF60;
 
     *selectionIndexStart = 0;
@@ -262,7 +262,7 @@ void CMDRECV_Stop(u8 bCommandType) {
 namespace {
 
 const u32 Func_parseOrdersDatReqs = 0x0046D450;
-void parseOrdersDatReqs(){
+void      parseOrdersDatReqs(){
 
     __asm {PUSHAD CALL Func_parseOrdersDatReqs POPAD}
 
@@ -271,11 +271,11 @@ void parseOrdersDatReqs(){
 ;
 
 const u32 Func_parseRequirementOpcodes = 0x0046D610;
-int parseRequirementOpcodes(CUnit* unit,
-                            u32 orderId,
-                            u32 playerId,
-                            u32 address,
-                            u32 req_offset) {
+int       parseRequirementOpcodes(CUnit* unit,
+                                  u32    orderId,
+                                  u32    playerId,
+                                  u32    address,
+                                  u32    req_offset) {
     static int return_value;
 
     __asm {
@@ -296,7 +296,7 @@ int parseRequirementOpcodes(CUnit* unit,
 ;
 
 const u32 Func_removeOrderFromUnitQueue = 0x004742D0;
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
+void      removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 
     __asm {PUSHAD MOV ECX,
            unit MOV EAX,
@@ -311,18 +311,18 @@ void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 // not.
 // Basically, used elsewhere, the function would be implemented differently
 const u32 Func_Sub_4754F0 = 0x004754F0;
-void function_004754F0(CUnit* unit,
-                       u32 unitId,
-                       u32 unk1,
-                       u32 unk2,
-                       u32 orderId,
-                       u32 unk3,
-                       u32 bCommandType,
-                       u32 unk5){
+void      function_004754F0(CUnit* unit,
+                            u32    unitId,
+                            u32    unk1,
+                            u32    unk2,
+                            u32    orderId,
+                            u32    unk3,
+                            u32    bCommandType,
+                            u32    unk5){
 
     __asm {PUSHAD MOV EAX,
-           0 MOV EDX,
-           0 MOV EBX,
+           0 MOV      EDX,
+           0 MOV      EBX,
            unitId MOV ESI,
            unit PUSH unk1 PUSH unk2 PUSH unk3 PUSH orderId PUSH bCommandType
                PUSH unk5 CALL Func_Sub_4754F0 POPAD}

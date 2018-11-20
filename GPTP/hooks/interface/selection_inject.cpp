@@ -43,10 +43,10 @@ void __declspec(naked) function_0046FB40_Wrapper() {
 ;
 
 void __declspec(naked) SortAllUnits_Wrapper() {
-    static CUnit* unit;
+    static CUnit*  unit;
     static CUnit** unit_list;
     static CUnit** units_in_bounds;
-    static u32 result;
+    static u32     result;
 
     __asm {
 			PUSH EBP

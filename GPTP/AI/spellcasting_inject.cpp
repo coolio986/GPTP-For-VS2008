@@ -18,7 +18,7 @@ void __declspec(naked) AI_spellcasterWrapper() {
     }
 
     if (AI::AI_spellcasterHook(unit, isUnderAttack != 0)) result = 1;
-    else result = 0;
+    else result                                                  = 0;
 
     __asm {
     POPAD

@@ -5,14 +5,14 @@
 
 namespace {
 
-bool setThingyVisibilityFlags(CThingy* thingy);                   // 0x004878F0
+bool     setThingyVisibilityFlags(CThingy* thingy);               // 0x004878F0
 CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId);  // 0x00488210
-void setUnitStatTxtErrorMsg(char* message);                       // 0x0048CCB0
+void     setUnitStatTxtErrorMsg(char* message);                   // 0x0048CCB0
 void playUnitSFX(u32 soundId, u16 x, u16 y, u32 unk1, u32 unk2);  // 0x0048EC10
-u32 RandomizeShort(u32 unknown_index);                            // 0x004DC4A0
-u32 IterateUnitsAtLocationTargetProc_RecallTargets(
-    CUnit* unit,
-    Box16* coords);                                 // 0x004E8280
+u32  RandomizeShort(u32 unknown_index);                           // 0x004DC4A0
+u32  IterateUnitsAtLocationTargetProc_RecallTargets(
+     CUnit* unit,
+     Box16* coords);                                // 0x004E8280
 void function_004EBAE0(CUnit* unit, s32 x, s32 y);  // 0x004EBAE0
 
 }  // unnamed namespace
@@ -73,7 +73,7 @@ void spells_Recall_ActionOnValidTargetForRecall(CUnit* target, CUnit* caster) {
             if (target->connectedUnit != NULL &&
                 target->connectedUnit->id == UnitId::TerranNuclearMissile) {
                 (target->connectedUnit)->connectedUnit = NULL;
-                target->connectedUnit = NULL;
+                target->connectedUnit                  = NULL;
             }
         }
 
@@ -114,9 +114,9 @@ void orders_Recall(CUnit* unit) {
         if (unit->mainOrderTimer == 0) {
             Box16 spell_location;
 
-            spell_location.left = unit->orderTarget.pt.x - 64;
-            spell_location.top = unit->orderTarget.pt.y - 64;
-            spell_location.right = unit->orderTarget.pt.x + 64;
+            spell_location.left   = unit->orderTarget.pt.x - 64;
+            spell_location.top    = unit->orderTarget.pt.y - 64;
+            spell_location.right  = unit->orderTarget.pt.x + 64;
             spell_location.bottom = unit->orderTarget.pt.y + 64;
 
             *bAtLeast1UnitWasRecalled = 0;
@@ -148,7 +148,7 @@ void orders_Recall(CUnit* unit) {
 
         if (!scbw::isCheatEnabled(CheatFlags::TheGathering) &&
             unit->energy < techdata_dat::EnergyCost[TechId::Recall] * 256) {
-            u8 raceId;
+            u8    raceId;
             char* message;
 
             if (units_dat::GroupFlags[unit->id].isZerg)
@@ -172,7 +172,7 @@ void orders_Recall(CUnit* unit) {
         } else {  // 945B9
 
             CThingy* recall_effect_sprite;
-            u32 random_value;
+            u32      random_value;
 
             if (!scbw::isCheatEnabled(CheatFlags::TheGathering))
                 unit->energy -= techdata_dat::EnergyCost[TechId::Recall] * 256;
@@ -203,8 +203,8 @@ void orders_Recall(CUnit* unit) {
                 static u32* const u32_0051C654 = (u32*)0x0051C654;
                 static u32* const u32_0051CA18 = (u32*)0x0051CA18;
 
-                *u32_0051C654 = *u32_0051C654 + 1;
-                *u32_0051CA18 = *u32_0051CA18 + 1;
+                *u32_0051C654     = *u32_0051C654 + 1;
+                *u32_0051CA18     = *u32_0051CA18 + 1;
                 *lastRandomNumber = (*lastRandomNumber * 0x015A4E35) + 1;
 
                 random_value = ((*lastRandomNumber) / 65536) & 0x7FFF;
@@ -214,9 +214,9 @@ void orders_Recall(CUnit* unit) {
 
             // original code added (random_value & 1) to the base sound
             // id Protoss_ARBITER_PAbFol00_WAV then called the playSound
-            // function using that value, but since there are only 2 sounds, it's
-            // easier to see what sound is used that way. The compiler may make
-            // it back like the original anyway.
+            // function using that value, but since there are only 2 sounds,
+            // it's easier to see what sound is used that way. The compiler may
+            // make it back like the original anyway.
 
             if ((random_value & 1) == 0)
                 playUnitSFX(SoundId::Protoss_ARBITER_PAbFol00_WAV,
@@ -251,7 +251,7 @@ namespace {
 // original referenced name was sub_4878F0, but using
 // the name from bunker_hooks.cpp since it got meaning
 const u32 Func_SetThingyVisibilityFlags = 0x004878F0;
-bool setThingyVisibilityFlags(CThingy* thingy) {
+bool      setThingyVisibilityFlags(CThingy* thingy) {
     static Bool32 bPreResult;
 
     __asm {
@@ -270,9 +270,9 @@ bool setThingyVisibilityFlags(CThingy* thingy) {
 // original referenced name was replaceSprite (but this one is probably
 // more accurate since it does create something rather than replacing)
 const u32 Func_CreateThingy = 0x00488210;
-CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId) {
+CThingy*  createThingy(u32 spriteId, s16 x, s16 y, u32 playerId) {
     static CThingy* thingy;
-    s32 x_ = x;
+    s32             x_ = x;
 
     __asm {
 			PUSHAD
@@ -291,7 +291,7 @@ CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId) {
 ;
 
 const u32 Func_playUnitSFX = 0x0048EC10;
-void playUnitSFX(u32 soundId, u16 x, u16 y, u32 unk1, u32 unk2) {
+void      playUnitSFX(u32 soundId, u16 x, u16 y, u32 unk1, u32 unk2) {
     static Point16 pos;
 
     pos.x = x;
@@ -311,7 +311,7 @@ void playUnitSFX(u32 soundId, u16 x, u16 y, u32 unk1, u32 unk2) {
 ;
 
 const u32 Func_RandomizeShort = 0x004DC4A0;
-u32 RandomizeShort(u32 unknown_index) {
+u32       RandomizeShort(u32 unknown_index) {
     static u32 return_value;
 
     __asm {
@@ -348,7 +348,7 @@ u32 IterateUnitsAtLocationTargetProc_RecallTargets(CUnit* unit, Box16* coords) {
 ;
 
 const u32 Func_setUnitStatTxtErrorMsg = 0x0048CCB0;
-void setUnitStatTxtErrorMsg(char* message){
+void      setUnitStatTxtErrorMsg(char* message){
 
     __asm {PUSHAD MOV EAX, message CALL Func_setUnitStatTxtErrorMsg POPAD}
 
@@ -357,7 +357,7 @@ void setUnitStatTxtErrorMsg(char* message){
 ;
 
 const u32 Func_Sub4EBAE0 = 0x004EBAE0;
-void function_004EBAE0(CUnit* unit, s32 x, s32 y){
+void      function_004EBAE0(CUnit* unit, s32 x, s32 y){
 
     __asm {PUSHAD MOV EDX, unit MOV EAX, x MOV ECX, y CALL Func_Sub4EBAE0 POPAD}
 

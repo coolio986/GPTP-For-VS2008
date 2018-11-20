@@ -5,12 +5,12 @@
 
 namespace {
 
-u32 getUpgradedWpnCooldown(CUnit* unit, u8 weaponId);  // 75DC0
-void IgnoreAllScriptAndGotoIdle(CUnit* unit);          // 76550
-void hideAndDisableUnit(CUnit* unit);                  // E6340
-u32 function_004E76C0(CUnit* transport,
-                      CUnit* loaded_unit,
-                      Point16* pos);           // E76C0
+u32  getUpgradedWpnCooldown(CUnit* unit, u8 weaponId);  // 75DC0
+void IgnoreAllScriptAndGotoIdle(CUnit* unit);           // 76550
+void hideAndDisableUnit(CUnit* unit);                   // E6340
+u32  function_004E76C0(CUnit*   transport,
+                       CUnit*   loaded_unit,
+                       Point16* pos);          // E76C0
 void function_004E7E10(CUnit* unit, u32 unk);  // E7E10
 
 }  // unnamed namespace
@@ -20,14 +20,14 @@ namespace hooks {
 // initial name was sub_4E78E0
 // the transport is "unit", the target is "unitToLoad"
 void loadUnitProc(CUnit* unit, CUnit* unitToLoad) {
-    u8 unitRaceId;
+    u8  unitRaceId;
     u32 loaded_index;
     int counter = 0;
 
     static const CUnit* unitTable_0059CB58 = (CUnit*)0x0059CB58;
     static const CUnit* unitTable_0059CB64 = (CUnit*)0x0059CB64;
-    static u32* u32_0x006BEE84 = (u32*)(0x006BEE84);
-    static u32* u32_0x006BEE8C = (u32*)(0x006BEE8C);
+    static u32*         u32_0x006BEE84     = (u32*)(0x006BEE84);
+    static u32*         u32_0x006BEE8C     = (u32*)(0x006BEE8C);
 
     if (units_dat::SpaceProvided[unit->id] != 0) {
         bool bEndLoop = false;
@@ -104,10 +104,10 @@ void loadUnitProc(CUnit* unit, CUnit* unitToLoad) {
     unitToLoad->connectedUnit = unit;
 
     if (loaded_index < UNIT_ARRAY_LENGTH) {
-        unit->loadedUnit[counter].index = loaded_index;
+        unit->loadedUnit[counter].index  = loaded_index;
         unit->loadedUnit[counter].unitId = unitToLoad->targetOrderSpecial;
     } else {
-        unit->loadedUnit[counter].index = 0;
+        unit->loadedUnit[counter].index  = 0;
         unit->loadedUnit[counter].unitId = 0;
     }
 
@@ -133,7 +133,7 @@ void loadUnitProc(CUnit* unit, CUnit* unitToLoad) {
                 unitToLoad->path =
                     (void*)((*u32_0x006BEE84 - *u32_0x006BEE8C) / 128 + 1);
 
-            *u32_0x006BEE84 = (u32)unitToLoad->path;
+            *u32_0x006BEE84  = (u32)unitToLoad->path;
             unitToLoad->path = NULL;
         }
 
@@ -168,7 +168,7 @@ void loadUnitProc(CUnit* unit, CUnit* unitToLoad) {
                         (void*)((*u32_0x006BEE84 - *u32_0x006BEE8C) / 128 + 1);
 
                 *u32_0x006BEE84 = (u32)subUnit->path;
-                subUnit->path = NULL;
+                subUnit->path   = NULL;
             }
 
             // E7B25
@@ -227,7 +227,8 @@ Bool32 unloadUnitProc(CUnit* unit) {
 
                 return_value = 1;
 
-                if (transport->status & UnitStatus::GroundedBuilding) {  // E806B
+                if (transport->status &
+                    UnitStatus::GroundedBuilding) {  // E806B
 
                     if (unit->id != UnitId::ProtossReaver) {
                         u8 weaponId = unit->getGroundWeapon();
@@ -265,7 +266,7 @@ Bool32 unloadUnitProc(CUnit* unit) {
 namespace {
 
 const u32 Func_getUpgradedWpnCooldown = 0x00475DC0;
-u32 getUpgradedWpnCooldown(CUnit* unit, u8 weaponId) {
+u32       getUpgradedWpnCooldown(CUnit* unit, u8 weaponId) {
     static u32 return_value;
 
     __asm {
@@ -283,7 +284,7 @@ u32 getUpgradedWpnCooldown(CUnit* unit, u8 weaponId) {
 ;
 
 const u32 Func_IgnoreAllScriptAndGotoIdle = 0x00476550;
-void IgnoreAllScriptAndGotoIdle(CUnit* unit){
+void      IgnoreAllScriptAndGotoIdle(CUnit* unit){
 
     __asm {PUSHAD MOV ESI, unit CALL Func_IgnoreAllScriptAndGotoIdle POPAD}
 
@@ -292,7 +293,7 @@ void IgnoreAllScriptAndGotoIdle(CUnit* unit){
 ;
 
 const u32 Func_unitDeathSomething_0 = 0x004E6340;
-void hideAndDisableUnit(CUnit* unit){
+void      hideAndDisableUnit(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_unitDeathSomething_0 POPAD}
 
@@ -320,7 +321,7 @@ u32 function_004E76C0(CUnit* transport, CUnit* loaded_unit, Point16* pos) {
 ;
 
 const u32 Func_Sub4E7E10 = 0x004E7E10;
-void function_004E7E10(CUnit* unit, u32 unk){
+void      function_004E7E10(CUnit* unit, u32 unk){
 
     __asm {PUSHAD MOV EAX, unit PUSH unk CALL Func_Sub4E7E10 POPAD}
 

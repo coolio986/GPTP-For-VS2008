@@ -5,13 +5,13 @@
 //-------- Helper function declarations. Do NOT modify! --------//
 namespace {
 
-bool canCastSpellOrder(CUnit* unit, u8 techId, u8 orderId);
-bool aiCastSpellOrder(CUnit* unit,
-                      CUnit* target,
-                      u8 orderId,
-                      u8 aiActionFlag = 1);
-u16 getOrderEnergyCost(u8 orderId);
-bool isNukeTimerReady(u8 playerId);
+bool   canCastSpellOrder(CUnit* unit, u8 techId, u8 orderId);
+bool   aiCastSpellOrder(CUnit* unit,
+                        CUnit* target,
+                        u8     orderId,
+                        u8     aiActionFlag = 1);
+u16    getOrderEnergyCost(u8 orderId);
+bool   isNukeTimerReady(u8 playerId);
 CUnit* getLoadedSilo(CUnit* ghost, Bool32 checkNukeAvailableForGhost = 1);
 
 }  // unnamed namespace

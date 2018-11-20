@@ -3,13 +3,13 @@
 
 namespace hooks {
 
-void weaponDamageHook(s32 damage,
+void weaponDamageHook(s32    damage,
                       CUnit* target,
-                      u8 weaponId,
+                      u8     weaponId,
                       CUnit* attacker,
-                      u8 attackingPlayerId,
-                      s8 direction,
-                      u8 dmgDivisor);
+                      u8     attackingPlayerId,
+                      s8     direction,
+                      u8     dmgDivisor);
 
 void injectWeaponDamageHook();
 

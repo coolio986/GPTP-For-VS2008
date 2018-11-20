@@ -56,7 +56,7 @@ BOOL WINAPI Plugin::ReadyForPatch() {
 }
 
 BOOL WINAPI Plugin::GetModules(MPQDRAFTPLUGINMODULE *lpPluginModules,
-                               LPDWORD lpnNumModules) {
+                               LPDWORD               lpnNumModules) {
     if (lpnNumModules == NULL) {
         MessageBox(NULL, "Cannot assign number of modules", NULL, MB_OK);
         return FALSE;
@@ -79,9 +79,9 @@ BOOL WINAPI Plugin::TerminatePlugin() {
 // If the version is correct, returns TRUE. Otherwise, this displays appropriate
 // error messages and returns FALSE.
 BOOL Plugin::checkStarCraftExeVersion(LPCSTR exePath) const {
-    BOOL result = FALSE;
+    BOOL  result = FALSE;
     DWORD dummy;
-    char errorMessage[500];
+    char  errorMessage[500];
 
     const DWORD fileVersionInfoBufferSize =
         GetFileVersionInfoSize(exePath, &dummy);
@@ -89,7 +89,7 @@ BOOL Plugin::checkStarCraftExeVersion(LPCSTR exePath) const {
     if (fileVersionInfoBufferSize > 0) {
         VOID *fileVersionInfoBuffer = new BYTE[fileVersionInfoBufferSize];
         VS_FIXEDFILEINFO *fileInfo;
-        UINT fileInfoSize;
+        UINT              fileInfoSize;
 
         if (GetFileVersionInfo(exePath,
                                NULL,
@@ -101,7 +101,7 @@ BOOL Plugin::checkStarCraftExeVersion(LPCSTR exePath) const {
                           &fileInfoSize)) {
             // The FileVersion of StarCraft.exe must be 1.16.1.1
             const WORD requiredVersion[4] = {1, 16, 1, 1};
-            const WORD currentVersion[4] = {HIWORD(fileInfo->dwFileVersionMS),
+            const WORD currentVersion[4]  = {HIWORD(fileInfo->dwFileVersionMS),
                                             LOWORD(fileInfo->dwFileVersionMS),
                                             HIWORD(fileInfo->dwFileVersionLS),
                                             LOWORD(fileInfo->dwFileVersionLS)};

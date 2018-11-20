@@ -5,25 +5,25 @@
 
 namespace {
 
-CUnit* MedicHeal_TargetAcquire(CUnit* medic);                  // 422A0
-Bool32 AI_OrderHeal(CUnit* unit, CUnit* target);               // 63530
-u32 doMedicHeal(CUnit* unit, CUnit* target);                   // 63C40
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order);     // 742D0
-void function_4748E0(CUnit* unit, int x, int y, u8 orderId);   // 748E0
-void function_474940(CUnit* unit, CUnit* target, u8 orderId);  // 74940
-void orderImmediate(CUnit* unit, u8 order);                    // 74B40
-void orderInterrupt(CUnit* unit,
-                    CUnit* target,
-                    u16 x,
-                    u16 y,
-                    u32 orderId);                            // 74C30
-void actUnitReturnToIdle(CUnit* unit);                       // 75420
-void unitOrderMoveToTargetUnit(CUnit* unit, CUnit* target);  // 79FE0
-Bool32 AI_CastSpellBehaviour(CUnit* unit, u32 unknown);      // A13C0
-void setNextWaypoint_Sub4EB290(CUnit* unit);                 // EB290
-bool moveToTarget(CUnit* unit, CUnit* target);               // EB720
-bool SetMoveTarget_xy(CUnit* unit, int x, int y);            // EB820
-bool function_004EB900(CUnit* unit, CUnit* target);          // EB900
+CUnit* MedicHeal_TargetAcquire(CUnit* medic);                    // 422A0
+Bool32 AI_OrderHeal(CUnit* unit, CUnit* target);                 // 63530
+u32    doMedicHeal(CUnit* unit, CUnit* target);                  // 63C40
+void   removeOrderFromUnitQueue(CUnit* unit, COrder* order);     // 742D0
+void   function_4748E0(CUnit* unit, int x, int y, u8 orderId);   // 748E0
+void   function_474940(CUnit* unit, CUnit* target, u8 orderId);  // 74940
+void   orderImmediate(CUnit* unit, u8 order);                    // 74B40
+void   orderInterrupt(CUnit* unit,
+                      CUnit* target,
+                      u16    x,
+                      u16    y,
+                      u32    orderId);                            // 74C30
+void   actUnitReturnToIdle(CUnit* unit);                       // 75420
+void   unitOrderMoveToTargetUnit(CUnit* unit, CUnit* target);  // 79FE0
+Bool32 AI_CastSpellBehaviour(CUnit* unit, u32 unknown);        // A13C0
+void   setNextWaypoint_Sub4EB290(CUnit* unit);                 // EB290
+bool   moveToTarget(CUnit* unit, CUnit* target);               // EB720
+bool   SetMoveTarget_xy(CUnit* unit, int x, int y);            // EB820
+bool   function_004EB900(CUnit* unit, CUnit* target);          // EB900
 
 }  // unnamed namespace
 
@@ -45,9 +45,9 @@ void orders_MedicHeal2(CUnit* unit) {
 ;
 
 void orders_HealMove(CUnit* unit) {
-    bool bStopThere = false;
-    CUnit* target = unit->orderTarget.unit;
-    CUnit* oldTarget = unit->orderTarget.unit;
+    bool   bStopThere = false;
+    CUnit* target     = unit->orderTarget.unit;
+    CUnit* oldTarget  = unit->orderTarget.unit;
 
     if (target != NULL) {
         if (AI_OrderHeal(unit, target) != 0) {
@@ -77,7 +77,7 @@ void orders_HealMove(CUnit* unit) {
                 unit->moveTarget.pt.y == unit->sprite->position.y)
                 unit->orderToIdle();
             else if (unit->mainOrderTimer == 0) {
-                CUnit* newTarget;
+                CUnit*  newTarget;
                 Point16 oldPos;
 
                 unit->mainOrderTimer = 15;
@@ -176,7 +176,7 @@ void orders_Medic(CUnit* unit) {
 
 void orders_MedicHeal1(CUnit* unit) {
     CUnit* target = unit->orderTarget.unit;
-    u32 doMedicHeal_result;
+    u32    doMedicHeal_result;
 
     doMedicHeal_result = doMedicHeal(unit, target);
 
@@ -247,7 +247,7 @@ void orders_MedicHeal1(CUnit* unit) {
 namespace {
 
 const u32 Func_MedicHeal_TargetAcquire = 0x004422A0;
-CUnit* MedicHeal_TargetAcquire(CUnit* medic) {
+CUnit*    MedicHeal_TargetAcquire(CUnit* medic) {
     static CUnit* target;
 
     __asm {
@@ -264,7 +264,7 @@ CUnit* MedicHeal_TargetAcquire(CUnit* medic) {
 ;
 
 const u32 Func_AI_OrderHeal = 0x00463530;
-Bool32 AI_OrderHeal(CUnit* unit, CUnit* target) {
+Bool32    AI_OrderHeal(CUnit* unit, CUnit* target) {
     static Bool32 result;
 
     __asm {
@@ -282,7 +282,7 @@ Bool32 AI_OrderHeal(CUnit* unit, CUnit* target) {
 ;
 
 const u32 Func_doMedicHeal = 0x00463C40;
-u32 doMedicHeal(CUnit* unit, CUnit* target) {
+u32       doMedicHeal(CUnit* unit, CUnit* target) {
     static u32 return_value;
 
     __asm {
@@ -300,7 +300,7 @@ u32 doMedicHeal(CUnit* unit, CUnit* target) {
 ;
 
 const u32 Func_removeOrderFromUnitQueue = 0x004742D0;
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
+void      removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 
     __asm {PUSHAD MOV ECX,
            unit MOV EAX,
@@ -311,7 +311,7 @@ void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 ;
 
 const u32 Func_sub4748E0 = 0x004748E0;
-void function_4748E0(CUnit* unit, int x, int y, u8 orderId){
+void      function_4748E0(CUnit* unit, int x, int y, u8 orderId){
 
     __asm {PUSHAD MOV BL,
            orderId MOV ESI,
@@ -323,7 +323,7 @@ void function_4748E0(CUnit* unit, int x, int y, u8 orderId){
 ;
 
 const u32 Func_sub474940 = 0x00474940;
-void function_474940(CUnit* unit, CUnit* target, u8 orderId){
+void      function_474940(CUnit* unit, CUnit* target, u8 orderId){
 
     __asm {PUSHAD MOV BL,
            orderId MOV ESI,
@@ -336,7 +336,7 @@ void function_474940(CUnit* unit, CUnit* target, u8 orderId){
 ;
 
 const u32 Func_OrderImmediate = 0x00474B40;
-void orderImmediate(CUnit* unit, u8 order){
+void      orderImmediate(CUnit* unit, u8 order){
 
     __asm {PUSHAD MOV ECX, unit MOV AL, order CALL Func_OrderImmediate POPAD}
 
@@ -365,7 +365,7 @@ void orderInterrupt(CUnit* unit, CUnit* target, u16 x, u16 y, u32 orderId) {
 ;
 
 const u32 Func_ActUnitReturnToIdle = 0x00475420;
-void actUnitReturnToIdle(CUnit* unit){
+void      actUnitReturnToIdle(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_ActUnitReturnToIdle POPAD}
 
@@ -374,7 +374,7 @@ void actUnitReturnToIdle(CUnit* unit){
 ;
 
 const u32 Func_unitOrderMoveToTargetUnit = 0x00479FE0;
-void unitOrderMoveToTargetUnit(CUnit* unit, CUnit* target){
+void      unitOrderMoveToTargetUnit(CUnit* unit, CUnit* target){
 
     __asm {PUSHAD MOV EAX,
            unit MOV ECX,
@@ -385,7 +385,7 @@ void unitOrderMoveToTargetUnit(CUnit* unit, CUnit* target){
 ;
 
 const u32 Func_AI_CastSpellBehaviour = 0x004A13C0;
-Bool32 AI_CastSpellBehaviour(CUnit* unit, u32 unknown) {
+Bool32    AI_CastSpellBehaviour(CUnit* unit, u32 unknown) {
     static Bool32 result;
 
     __asm {
@@ -404,14 +404,14 @@ Bool32 AI_CastSpellBehaviour(CUnit* unit, u32 unknown) {
 
 // Related to path/movement decision
 const u32 Func_sub_4EB290 = 0x004EB290;
-void setNextWaypoint_Sub4EB290(CUnit* unit){
+void      setNextWaypoint_Sub4EB290(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_sub_4EB290 POPAD}}
 
 ;
 
 const u32 Func_moveToTarget = 0x004EB720;
-bool moveToTarget(CUnit* unit, CUnit* target) {
+bool      moveToTarget(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {
@@ -429,7 +429,7 @@ bool moveToTarget(CUnit* unit, CUnit* target) {
 ;
 
 const u32 Func_SetMoveTarget_xy = 0x004EB820;
-bool SetMoveTarget_xy(CUnit* unit, int x, int y) {
+bool      SetMoveTarget_xy(CUnit* unit, int x, int y) {
     static Bool32 bPreResult;
 
     __asm {
@@ -448,7 +448,7 @@ bool SetMoveTarget_xy(CUnit* unit, int x, int y) {
 ;
 
 const u32 Func_Sub4EB900 = 0x004EB900;
-bool function_004EB900(CUnit* unit, CUnit* target) {
+bool      function_004EB900(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {

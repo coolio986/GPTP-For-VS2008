@@ -6,20 +6,20 @@
 namespace {
 
 Bool32 OrderAllowed(CUnit* unit, u16 orderId, u32 nationID);  // 0x0046DC20
-void function_004756B0(CUnit* unit,
-                       u8 orderId,
-                       u32 unk1,
-                       u32 unk2,
-                       u32 bCommandType);  // 0x004756B0
-void function_004756E0(CUnit* unit,
-                       CUnit* target,
-                       u32 orderId,
-                       u32 bCommandType);                // 0x004756E0
-u32 function_0049A410(CUnit* unit, u8 orderId);          // 0x0049A410
-bool CanTargetSelf(CUnit* unit, u8 orderId);             // 0x0049A480
-void function_0049A500(CUnit* unit, u8* array_of_data);  // 0x0049A500
-void function_0049A8C0(u8* array_of_data,
-                       Bool32 bCanBeObstructed);  // 0x0049A8C0
+void   function_004756B0(CUnit* unit,
+                         u8     orderId,
+                         u32    unk1,
+                         u32    unk2,
+                         u32    bCommandType);  // 0x004756B0
+void   function_004756E0(CUnit* unit,
+                         CUnit* target,
+                         u32    orderId,
+                         u32    bCommandType);                // 0x004756E0
+u32    function_0049A410(CUnit* unit, u8 orderId);         // 0x0049A410
+bool   CanTargetSelf(CUnit* unit, u8 orderId);             // 0x0049A480
+void   function_0049A500(CUnit* unit, u8* array_of_data);  // 0x0049A500
+void   function_0049A8C0(u8*    array_of_data,
+                         Bool32 bCanBeObstructed);  // 0x0049A8C0
 
 }  // unnamed namespace
 
@@ -27,27 +27,27 @@ namespace hooks {
 
 // this function receives the Attack/Attack Move commands and
 // the spells commands, maybe more
-void receive_command(int x,
-                     int y,
+void receive_command(int    x,
+                     int    y,
                      CUnit* unitParam,
-                     u32 wUnitType,
-                     u32 bActionOrder,
-                     u32 bCommandType) {
-    u8 array_of_data[0x30];
-    u16* saved_x = (u16*)&array_of_data[0];                //[EBP-0x30]
-    u16* saved_y = (u16*)&array_of_data[2];                //[EBP-0x2E]
-    u32* saved_unknown_1 = (u32*)&array_of_data[0];        //[EBP-0x30]
-    u32* saved_unknown_2 = (u32*)&array_of_data[4];        //[EBP-0x2C]
-    u32* saved_bCommandType = (u32*)&array_of_data[0x1C];  //[EBP-0x14]
-    u32* saved_order = (u32*)&array_of_data[0x20];         //[EBP-0x10]
-    u32* saved_order_2 = (u32*)&array_of_data[0x24];       //[EBP-0x0C]
-    u32* saved_order_3 = (u32*)&array_of_data[0x28];       //[EBP-0x08]
-    CUnit** saved_unit = (CUnit**)&array_of_data[0x2C];    //[EBP-0x04]
+                     u32    wUnitType,
+                     u32    bActionOrder,
+                     u32    bCommandType) {
+    u8      array_of_data[0x30];
+    u16*    saved_x            = (u16*)&array_of_data[0];        //[EBP-0x30]
+    u16*    saved_y            = (u16*)&array_of_data[2];        //[EBP-0x2E]
+    u32*    saved_unknown_1    = (u32*)&array_of_data[0];        //[EBP-0x30]
+    u32*    saved_unknown_2    = (u32*)&array_of_data[4];        //[EBP-0x2C]
+    u32*    saved_bCommandType = (u32*)&array_of_data[0x1C];     //[EBP-0x14]
+    u32*    saved_order        = (u32*)&array_of_data[0x20];     //[EBP-0x10]
+    u32*    saved_order_2      = (u32*)&array_of_data[0x24];     //[EBP-0x0C]
+    u32*    saved_order_3      = (u32*)&array_of_data[0x28];     //[EBP-0x08]
+    CUnit** saved_unit         = (CUnit**)&array_of_data[0x2C];  //[EBP-0x04]
 
     u8* switch_value = (u8*)0x0049ADA0;
 
-    *saved_x = x;
-    *saved_y = y;
+    *saved_x     = x;
+    *saved_y     = y;
     *saved_order = bActionOrder;
 
     function_0049A8C0((u8*)&array_of_data[0],
@@ -55,10 +55,10 @@ void receive_command(int x,
 
     if (bActionOrder > OrderId::CTFCOP2 || switch_value[bActionOrder] == 1) {
         CUnit* current_unit;
-        u32 current_order = bActionOrder;  // EBX
+        u32    current_order = bActionOrder;  // EBX
 
         *selectionIndexStart = 0;
-        current_unit = getActivePlayerNextSelection();
+        current_unit         = getActivePlayerNextSelection();
 
         *saved_unit = current_unit;
 
@@ -259,11 +259,11 @@ void receive_command(int x,
             // 9AD7E (use next unit in selection):
             if (jump_to_9AD7E) {
                 jump_to_9AD7E = false;
-                *saved_unit = getActivePlayerNextSelection();
+                *saved_unit   = getActivePlayerNextSelection();
             }
 
             // 9AB62:
-            current_unit = *saved_unit;
+            current_unit  = *saved_unit;
             current_order = *saved_order;
         }
     }
@@ -276,7 +276,7 @@ void receive_command(int x,
 namespace {
 
 const u32 Func_OrderAllowed = 0x0046DC20;
-Bool32 OrderAllowed(CUnit* unit, u16 orderId, u32 nationID) {
+Bool32    OrderAllowed(CUnit* unit, u16 orderId, u32 nationID) {
     static Bool32 bResult;
 
     __asm {
@@ -295,11 +295,11 @@ Bool32 OrderAllowed(CUnit* unit, u16 orderId, u32 nationID) {
 ;
 
 const u32 Func_Sub4756B0 = 0x004756B0;
-void function_004756B0(CUnit* unit,
-                       u8 orderId,
-                       u32 unk1,
-                       u32 unk2,
-                       u32 bCommandType){
+void      function_004756B0(CUnit* unit,
+                            u8     orderId,
+                            u32    unk1,
+                            u32    unk2,
+                            u32    bCommandType){
 
     __asm {PUSHAD MOV DL,
            orderId MOV ESI,
@@ -310,10 +310,10 @@ void function_004756B0(CUnit* unit,
 ;
 
 const u32 Func_Sub4756E0 = 0x004756E0;
-void function_004756E0(CUnit* unit,
-                       CUnit* target,
-                       u32 orderId,
-                       u32 bCommandType){
+void      function_004756E0(CUnit* unit,
+                            CUnit* target,
+                            u32    orderId,
+                            u32    bCommandType){
 
     __asm {PUSHAD MOV EDX,
            target MOV ESI,
@@ -324,7 +324,7 @@ void function_004756E0(CUnit* unit,
 ;
 
 const u32 Func_Sub49A410 = 0x0049A410;
-u32 function_0049A410(CUnit* unit, u8 orderId) {
+u32       function_0049A410(CUnit* unit, u8 orderId) {
     static u32 result;
 
     __asm {
@@ -371,7 +371,7 @@ bool CanTargetSelf(CUnit* unit, u8 orderId) {
 ;
 
 const u32 Func_Sub49A500 = 0x0049A500;
-void function_0049A500(CUnit* unit, u8* array_of_data){
+void      function_0049A500(CUnit* unit, u8* array_of_data){
 
     __asm {PUSHAD PUSH array_of_data PUSH unit CALL Func_Sub49A500 POPAD}
 
@@ -380,7 +380,7 @@ void function_0049A500(CUnit* unit, u8* array_of_data){
 ;
 
 const u32 Func_Sub49A8C0 = 0x0049A8C0;
-void function_0049A8C0(u8* array_of_data, Bool32 bCanBeObstructed){
+void      function_0049A8C0(u8* array_of_data, Bool32 bCanBeObstructed){
 
     __asm {PUSHAD PUSH bCanBeObstructed MOV EDI,
            array_of_data CALL Func_Sub49A8C0 POPAD}

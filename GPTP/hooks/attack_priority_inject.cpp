@@ -7,7 +7,7 @@ const u32 Hook_GetAttackPriority = 0x00442160;
 // Inject with jmpPatch()
 void __declspec(naked) getAttackPriorityWrapper() {
     static CUnit *target, *attacker;
-    static u32 result;
+    static u32    result;
 
     __asm {
 		MOV target, EDI

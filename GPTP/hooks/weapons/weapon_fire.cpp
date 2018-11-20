@@ -10,12 +10,12 @@
 namespace {
 typedef void(__stdcall* GetWeaponHitPosFunc)(CUnit* unit, s32* x, s32* y);
 GetWeaponHitPosFunc const getWeaponHitPos = (GetWeaponHitPosFunc)0x004762C0;
-void createBullet(u8 weaponId,
-                  CUnit* source,
-                  s16 x,
-                  s16 y,
-                  u8 attackingPlayer,
-                  u8 direction);
+void                      createBullet(u8     weaponId,
+                                       CUnit* source,
+                                       s16    x,
+                                       s16    y,
+                                       u8     attackingPlayer,
+                                       u8     direction);
 }  // unnamed namespace
 
 //-------- Actual hook functions --------//
@@ -62,21 +62,21 @@ void fireWeaponHook(CUnit* unit, u8 weaponId) {
 namespace {
 
 const u32 Helper_CreateBullet = 0x0048C260;
-void createBullet(u8 weaponId,
-                  CUnit* source,
-                  s16 x,
-                  s16 y,
-                  u8 attackingPlayer,
-                  u8 direction) {
+void      createBullet(u8     weaponId,
+                       CUnit* source,
+                       s16    x,
+                       s16    y,
+                       u8     attackingPlayer,
+                       u8     direction) {
     static u32 attackingPlayer_;
     static u32 direction_;
     static s32 x_;
     static s32 y_;
 
     attackingPlayer_ = attackingPlayer;
-    direction_ = direction;
-    x_ = x;
-    y_ = y;
+    direction_       = direction;
+    x_               = x;
+    y_               = y;
 
     __asm {
 		PUSHAD

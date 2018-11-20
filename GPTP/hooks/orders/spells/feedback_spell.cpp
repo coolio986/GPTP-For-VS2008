@@ -5,12 +5,12 @@
 
 namespace {
 
-u8 hasOverlay(CUnit* unit);  // 7B720
+u8   hasOverlay(CUnit* unit);  // 7B720
 bool ordersSpell_Sub_4926D0(CUnit* unit,
-                            u32 techId,
-                            u16* techEnergyCost,
-                            u32 sightRange,
-                            u32 error_message_index);   // 926D0
+                            u32    techId,
+                            u16*   techEnergyCost,
+                            u32    sightRange,
+                            u32    error_message_index);   // 926D0
 void replaceFeedbackSprite(CUnit* unit, u32 spriteId);  // F6350
 
 }  // unnamed namespace
@@ -98,7 +98,7 @@ void orders_Feedback(CUnit* unit) {
 namespace {
 
 const u32 Func_hasOverlay = 0x0047B720;
-u8 hasOverlay(CUnit* unit) {
+u8        hasOverlay(CUnit* unit) {
     static u8 result;
 
     __asm {
@@ -115,11 +115,11 @@ u8 hasOverlay(CUnit* unit) {
 ;
 
 const u32 Func_Sub_4926D0 = 0x004926D0;
-bool ordersSpell_Sub_4926D0(CUnit* unit,
-                            u32 techId,
-                            u16* techEnergyCost,
-                            u32 sightRange,
-                            u32 error_message_index) {
+bool      ordersSpell_Sub_4926D0(CUnit* unit,
+                                 u32    techId,
+                                 u16*   techEnergyCost,
+                                 u32    sightRange,
+                                 u32    error_message_index) {
     static Bool32 bPreResult;
 
     __asm {
@@ -140,7 +140,7 @@ bool ordersSpell_Sub_4926D0(CUnit* unit,
 ;
 
 const u32 Func_replaceFeedbackSprite = 0x004F6350;
-void replaceFeedbackSprite(CUnit* unit, u32 spriteId){
+void      replaceFeedbackSprite(CUnit* unit, u32 spriteId){
 
     __asm {PUSHAD MOV EBX,
            unit PUSH spriteId CALL Func_replaceFeedbackSprite POPAD}

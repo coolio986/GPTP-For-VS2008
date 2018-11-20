@@ -114,7 +114,7 @@ void updateStatusEffects(CUnit* unit) {
         if (unit->irradiateTimer == 0) {
             unit->removeOverlay(ImageId::Irradiate_Small,
                                 ImageId::Irradiate_Large);
-            unit->irradiatedBy = NULL;
+            unit->irradiatedBy      = NULL;
             unit->irradiatePlayerId = 8;
         }
     }

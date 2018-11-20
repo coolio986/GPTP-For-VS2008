@@ -5,29 +5,29 @@
 
 namespace {
 
-bool unitIsOwnedByCurrentPlayer(CUnit* unit);      // 0x00401170
-bool isUnitBurrowed(CUnit* unit);                  // 0x00402A70
-void SC_memcpy_0(u32 dest, u32 src, u32 memsize);  // 0x00408FD0
-CUnit** getAllUnitsInBounds(Box16* coords);        // 0x0042FF80
-void function_00468670(CUnit* unit);               // 0x00468670
-bool unit_isUnselectable(u16 unitId);              // 00x046ED80
-void function_0046F040(CUnit* current_unit,
-                       CUnit** unit_list,
-                       CUnit* clicked_unit,
-                       u32 list_length);  // 00x046F040
-u32 combineLists_Sub_6F290(CUnit* unit,
-                           CUnit** unit_list_1,
-                           CUnit** unit_list_2,
-                           u32 list_length);  // 0x0046F290
-void applyNewSelect_Sub_6FA00(CUnit** unit_list,
-                              u32 unit_list_length);  // 0x0046FA00
-u32 CUnitToUnitID(CUnit* unit);                       // 0x0047B1D0
-bool unit_IsStandardAndMovable(CUnit* unit);          // 0x0047B770
-void selectBuildingSFX(CUnit* unit);                  // 0x0048F910
-Bool32 selectSingleUnitFromID(u32 unitIndex);         // 0x00496D30
-void CreateNewUnitSelectionsFromList(CUnit** unit_list,
-                                     u32 unit_list_length);   // 0x0049AE40
-void CMDACT_Select(CUnit** unit_list, u32 unit_list_length);  // 0x004C0860
+bool    unitIsOwnedByCurrentPlayer(CUnit* unit);      // 0x00401170
+bool    isUnitBurrowed(CUnit* unit);                  // 0x00402A70
+void    SC_memcpy_0(u32 dest, u32 src, u32 memsize);  // 0x00408FD0
+CUnit** getAllUnitsInBounds(Box16* coords);           // 0x0042FF80
+void    function_00468670(CUnit* unit);               // 0x00468670
+bool    unit_isUnselectable(u16 unitId);              // 00x046ED80
+void    function_0046F040(CUnit*  current_unit,
+                          CUnit** unit_list,
+                          CUnit*  clicked_unit,
+                          u32     list_length);  // 00x046F040
+u32     combineLists_Sub_6F290(CUnit*  unit,
+                               CUnit** unit_list_1,
+                               CUnit** unit_list_2,
+                               u32     list_length);  // 0x0046F290
+void    applyNewSelect_Sub_6FA00(CUnit** unit_list,
+                                 u32     unit_list_length);  // 0x0046FA00
+u32     CUnitToUnitID(CUnit* unit);                      // 0x0047B1D0
+bool    unit_IsStandardAndMovable(CUnit* unit);          // 0x0047B770
+void    selectBuildingSFX(CUnit* unit);                  // 0x0048F910
+Bool32  selectSingleUnitFromID(u32 unitIndex);           // 0x00496D30
+void    CreateNewUnitSelectionsFromList(CUnit** unit_list,
+                                        u32     unit_list_length);   // 0x0049AE40
+void    CMDACT_Select(CUnit** unit_list, u32 unit_list_length);  // 0x004C0860
 
 }  // unnamed namespace
 
@@ -41,18 +41,18 @@ u32 SortAllUnits(CUnit* unit, CUnit** unit_list, CUnit** units_in_bounds) {
 
     CUnit* current_unit;
     CUnit* backup_current_unit;
-    u32 current_index_in_unit_list;
+    u32    current_index_in_unit_list;
 
     bool bStopBigLoop = false;
 
     bool bKeepForEmptyListCase = false;
-    bool bDontAddToList = false;
+    bool bDontAddToList        = false;
 
     backup_current_unit = NULL;
 
     // if unit not null, become first entry of unit_list
     if (unit != NULL) {
-        unit_list[0] = unit;
+        unit_list[0]               = unit;
         current_index_in_unit_list = 1;
     } else
         current_index_in_unit_list = 0;
@@ -220,7 +220,7 @@ u32 SortAllUnits(CUnit* unit, CUnit** unit_list, CUnit** units_in_bounds) {
         current_unit = *units_in_bounds;
 
         bKeepForEmptyListCase = false;
-        bDontAddToList = false;
+        bDontAddToList        = false;
 
         // continue until current_unit is NULL
         if (current_unit == NULL) bStopBigLoop = true;
@@ -271,12 +271,12 @@ u32 SortAllUnits(CUnit* unit, CUnit** unit_list, CUnit** units_in_bounds) {
 void function_0046FB40(CUnit* clicked_unit) {
     Bool32* const IS_DOUBLE_CLICKING = (Bool32*)0x0066FF58;
 
-    Bool8* const bCanUpdateSelectedUnitData = (Bool8*)0x0059723C;
-    Bool8* const bCanUpdateSelectedUnitPortrait = (Bool8*)0x0068AC74;
-    Bool32* const bCanUpdateCurrentButtonSet = (Bool32*)0x0068C1B0;
+    Bool8* const   bCanUpdateSelectedUnitData     = (Bool8*)0x0059723C;
+    Bool8* const   bCanUpdateSelectedUnitPortrait = (Bool8*)0x0068AC74;
+    Bool32* const  bCanUpdateCurrentButtonSet     = (Bool32*)0x0068C1B0;
     BinDlg** const someDialogUnknown =
         (BinDlg**)0x0068C1E8;  // related to MouseOver?
-    Bool8* const bCanUpdateStatDataDialog = (Bool8*)0x0068C1F8;
+    Bool8* const   bCanUpdateStatDataDialog = (Bool8*)0x0068C1F8;
     BinDlg** const someDialogUnknownUser =
         (BinDlg**)0x0068C1EC;  // related to MouseOver? Usually
                                // someDialogUnknown->user if not 0 or -1
@@ -312,12 +312,12 @@ void function_0046FB40(CUnit* clicked_unit) {
                 //		selection
 
                 CUnit** units_in_bounds;
-                u32 sorted_list_length;
+                u32     sorted_list_length;
 
                 // locate surrounding units for selection
-                local_temp_box16_structure.left = *MoveToX;
-                local_temp_box16_structure.top = *MoveToY;
-                local_temp_box16_structure.right = *MoveToX + 640;
+                local_temp_box16_structure.left   = *MoveToX;
+                local_temp_box16_structure.top    = *MoveToY;
+                local_temp_box16_structure.right  = *MoveToX + 640;
                 local_temp_box16_structure.bottom = *MoveToY + 400;
                 units_in_bounds =
                     getAllUnitsInBounds(&local_temp_box16_structure);
@@ -360,12 +360,12 @@ void function_0046FB40(CUnit* clicked_unit) {
                 //		active selection
 
                 CUnit** units_in_bounds;
-                u32 sorted_list_length;
+                u32     sorted_list_length;
 
                 // prepare to locate surrounding units for selection
-                local_temp_box16_structure.left = *MoveToX;
-                local_temp_box16_structure.top = *MoveToY;
-                local_temp_box16_structure.right = *MoveToX + 640;
+                local_temp_box16_structure.left   = *MoveToX;
+                local_temp_box16_structure.top    = *MoveToY;
+                local_temp_box16_structure.right  = *MoveToX + 640;
                 local_temp_box16_structure.bottom = *MoveToY + 400;
 
                 // save existing selection to a temporary array
@@ -448,7 +448,7 @@ void function_0046FB40(CUnit* clicked_unit) {
 
                     // unit already selected, remove it from selection
 
-                    u32 memcpy_size;
+                    u32  memcpy_size;
                     bool bUpdateSelection = true;
 
                     // decrease it so it's equal to the index of last element
@@ -475,8 +475,8 @@ void function_0046FB40(CUnit* clicked_unit) {
                         if (*IS_HOLDING_ALT) {
                             // It seems you can unselect things with Shift+Alt
                             // like with shift alone, UNTIL you have 2 units
-                            // selected. It is the code below that is causing the
-                            // deselection to fail where simple shift+click
+                            // selected. It is the code below that is causing
+                            // the deselection to fail where simple shift+click
                             // would continue to deselect.
 
                             u32 unitIndex =
@@ -495,12 +495,12 @@ void function_0046FB40(CUnit* clicked_unit) {
                         CMDACT_Select(local_temp_array_1, arrayIndex);
 
                         // tell the GUI to update stuff
-                        *someDialogUnknown = NULL;
-                        *someDialogUnknownUser = NULL;
-                        *bCanUpdateSelectedUnitData = 1;
-                        *bCanUpdateCurrentButtonSet = 1;
+                        *someDialogUnknown              = NULL;
+                        *someDialogUnknownUser          = NULL;
+                        *bCanUpdateSelectedUnitData     = 1;
+                        *bCanUpdateCurrentButtonSet     = 1;
                         *bCanUpdateSelectedUnitPortrait = 1;
-                        *bCanUpdateStatDataDialog = 1;
+                        *bCanUpdateStatDataDialog       = 1;
                     }
 
                 }  // if (clicked_unit->sprite->flags & CSprite_Flags::Selected)
@@ -541,12 +541,12 @@ void function_0046FB40(CUnit* clicked_unit) {
             CMDACT_Select(&clicked_unit, 1);
 
             // tell the GUI to update stuff
-            *bCanUpdateSelectedUnitData = 1;
-            *bCanUpdateCurrentButtonSet = 1;
+            *bCanUpdateSelectedUnitData     = 1;
+            *bCanUpdateCurrentButtonSet     = 1;
             *bCanUpdateSelectedUnitPortrait = 1;
-            *bCanUpdateStatDataDialog = 1;
-            *someDialogUnknown = NULL;
-            *someDialogUnknownUser = NULL;
+            *bCanUpdateStatDataDialog       = 1;
+            *someDialogUnknown              = NULL;
+            *someDialogUnknownUser          = NULL;
         }
 
         // 6FC2C
@@ -589,7 +589,7 @@ bool isUnitBurrowed(CUnit* unit) {
 ;
 
 const u32 Func_memcpy_0 = 0x00408FD0;
-void SC_memcpy_0(u32 dest, u32 src, u32 memsize){
+void      SC_memcpy_0(u32 dest, u32 src, u32 memsize){
 
     __asm {PUSHAD PUSH memsize PUSH src PUSH dest CALL Func_memcpy_0 ADD ESP,
            0x0C POPAD}
@@ -599,7 +599,7 @@ void SC_memcpy_0(u32 dest, u32 src, u32 memsize){
 ;
 
 const u32 Func_GetAllUnitsInBounds = 0x0042FF80;
-CUnit** getAllUnitsInBounds(Box16* coords) {
+CUnit**   getAllUnitsInBounds(Box16* coords) {
     static CUnit** units_in_bounds;
 
     __asm {
@@ -616,7 +616,7 @@ CUnit** getAllUnitsInBounds(Box16* coords) {
 ;
 
 const u32 Func_Sub_468670 = 0x00468670;
-void function_00468670(CUnit* unit){
+void      function_00468670(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub_468670 POPAD}
 
@@ -625,7 +625,7 @@ void function_00468670(CUnit* unit){
 ;
 
 const u32 Func_Unit_isUnselectable = 0x0046ED80;
-bool unit_isUnselectable(u16 unitId) {
+bool      unit_isUnselectable(u16 unitId) {
     Bool32 bHalfReturnValue;
 
     __asm {
@@ -644,10 +644,10 @@ bool unit_isUnselectable(u16 unitId) {
 ;
 
 const u32 Func_Sub_6F040 = 0x0046F040;
-void function_0046F040(CUnit* current_unit,
-                       CUnit** unit_list,
-                       CUnit* clicked_unit,
-                       u32 list_length){
+void      function_0046F040(CUnit*  current_unit,
+                            CUnit** unit_list,
+                            CUnit*  clicked_unit,
+                            u32     list_length){
     //
 
     __asm {PUSHAD PUSH clicked_unit PUSH current_unit MOV ECX,
@@ -659,10 +659,10 @@ void function_0046F040(CUnit* current_unit,
 ;
 
 const u32 Func_Sub_46F290 = 0x0046F290;
-u32 combineLists_Sub_6F290(CUnit* unit,
-                           CUnit** unit_list_1,
-                           CUnit** unit_list_2,
-                           u32 list_length) {
+u32       combineLists_Sub_6F290(CUnit*  unit,
+                                 CUnit** unit_list_1,
+                                 CUnit** unit_list_2,
+                                 u32     list_length) {
     u32 return_value;
 
     __asm {
@@ -682,10 +682,10 @@ u32 combineLists_Sub_6F290(CUnit* unit,
 ;
 
 const u32 Func_Sub_46FA00 = 0x0046FA00;
-void applyNewSelect_Sub_6FA00(CUnit** unit_list, u32 unit_list_length){
+void      applyNewSelect_Sub_6FA00(CUnit** unit_list, u32 unit_list_length){
 
     __asm {PUSHAD PUSH 0x01 PUSH 0x01 MOV EBX,
-           unit_list MOV EDI,
+           unit_list MOV    EDI,
            unit_list_length CALL Func_Sub_46FA00 POPAD}
 
 }
@@ -693,7 +693,7 @@ void applyNewSelect_Sub_6FA00(CUnit** unit_list, u32 unit_list_length){
 ;
 
 const u32 Func_CUnitToUnitID = 0x0047B1D0;
-u32 CUnitToUnitID(CUnit* unit) {
+u32       CUnitToUnitID(CUnit* unit) {
     static u32 return_value;
 
     __asm {
@@ -710,7 +710,7 @@ u32 CUnitToUnitID(CUnit* unit) {
 ;
 
 const u32 Func_Unit_IsStandardAndMovable = 0x0047B770;
-bool unit_IsStandardAndMovable(CUnit* unit) {
+bool      unit_IsStandardAndMovable(CUnit* unit) {
     Bool32 return_value_unconverted;
 
     __asm {
@@ -727,7 +727,7 @@ bool unit_IsStandardAndMovable(CUnit* unit) {
 ;
 
 const u32 Func_SelectBuildingSFX = 0x0048F910;
-void selectBuildingSFX(CUnit* unit){
+void      selectBuildingSFX(CUnit* unit){
 
     __asm {PUSHAD PUSH unit CALL Func_SelectBuildingSFX POPAD}
 
@@ -736,7 +736,7 @@ void selectBuildingSFX(CUnit* unit){
 ;
 
 const u32 Func_SelectSingleUnitFromID = 0x00496D30;
-Bool32 selectSingleUnitFromID(u32 unitIndex) {
+Bool32    selectSingleUnitFromID(u32 unitIndex) {
     Bool32 bReturnedValue;
 
     __asm {
@@ -763,10 +763,10 @@ void CreateNewUnitSelectionsFromList(CUnit** unit_list, u32 unit_list_length){
 ;
 
 const u32 Func_CMDACT_Select = 0x004C0860;
-void CMDACT_Select(CUnit** unit_list, u32 unit_list_length){
+void      CMDACT_Select(CUnit** unit_list, u32 unit_list_length){
 
     __asm {PUSHAD PUSH unit_list PUSH unit_list_length CALL Func_CMDACT_Select
-               POPAD}
+                                                            POPAD}
 
 }
 

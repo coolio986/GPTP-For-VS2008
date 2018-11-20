@@ -97,7 +97,7 @@ void __declspec(naked) packUnitData_PsiProvider() {
     static const u32 packUnitData_PsiProvider_Return = 0x004E3961;
 
     static CUnit* unit;
-    static u16 unitId;
+    static u16    unitId;
 
     __asm {
 		MOV unitId, CX
@@ -121,7 +121,7 @@ void __declspec(naked) unpackUnitData_PsiProvider() {
     static const u32 unpackUnitData_PsiProvider_Return = 0x004E31A3;
 
     static CUnit* unit;
-    static u16 unitId;
+    static u16    unitId;
 
     __asm {
 		MOV unitId, CX

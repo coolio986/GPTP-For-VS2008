@@ -31,7 +31,7 @@ void __declspec(naked) function_0049D660_Wrapper() {
 void __declspec(naked) function_004E8C80_Wrapper() {
     static CUnit* main_building;
     static CUnit* unit;
-    static bool bResult;
+    static bool   bResult;
 
     __asm {
 		MOV unit, ECX

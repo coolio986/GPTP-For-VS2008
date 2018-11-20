@@ -5,25 +5,25 @@
 
 namespace {
 
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order);  // 742D0
-CUnit* templarMergePartner(CUnit* unit,
+void   removeOrderFromUnitQueue(CUnit* unit, COrder* order);  // 742D0
+CUnit* templarMergePartner(CUnit*  unit,
                            CUnit** units_list,
-                           u32 units_list_length);  // BFA80
+                           u32     units_list_length);  // BFA80
 
 }  // unnamed namespace
 
 namespace hooks {
 
 void CMDRECV_MergeDarkArchon() {
-    CUnit* current_unit;
-    CUnit* templar_stored;
-    CUnit* templar_merge_partner;
-    CUnit* templars_stored[SELECTION_ARRAY_LENGTH];
+    CUnit*  current_unit;
+    CUnit*  templar_stored;
+    CUnit*  templar_merge_partner;
+    CUnit*  templars_stored[SELECTION_ARRAY_LENGTH];
     CUnit** templars_stored_iterator;
-    int templars_stored_count;
+    int     templars_stored_count;
 
     *selectionIndexStart = 0;
-    current_unit = getActivePlayerNextSelection();
+    current_unit         = getActivePlayerNextSelection();
 
     if (current_unit != NULL &&
         current_unit->canUseTech(TechId::DarkArchonMeld, *ACTIVE_NATION_ID) ==
@@ -131,15 +131,15 @@ void CMDRECV_MergeDarkArchon() {
 ;
 
 void CMDRECV_MergeArchon() {
-    CUnit* current_unit;
-    CUnit* templar_stored;
-    CUnit* templar_merge_partner;
-    CUnit* templars_stored[SELECTION_ARRAY_LENGTH];
+    CUnit*  current_unit;
+    CUnit*  templar_stored;
+    CUnit*  templar_merge_partner;
+    CUnit*  templars_stored[SELECTION_ARRAY_LENGTH];
     CUnit** templars_stored_iterator;
-    int templars_stored_count;
+    int     templars_stored_count;
 
     *selectionIndexStart = 0;
-    current_unit = getActivePlayerNextSelection();
+    current_unit         = getActivePlayerNextSelection();
 
     if (current_unit != NULL &&
         current_unit->canUseTech(TechId::ArchonWarp, *ACTIVE_NATION_ID) == 1) {
@@ -252,7 +252,7 @@ void CMDRECV_MergeArchon() {
 namespace {
 
 const u32 Func_removeOrderFromUnitQueue = 0x004742D0;
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
+void      removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 
     __asm {PUSHAD MOV ECX,
            unit MOV EAX,
@@ -263,9 +263,9 @@ void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 ;
 
 const u32 Func_templarMergePartner = 0x004BFA80;
-CUnit* templarMergePartner(CUnit* unit,
-                           CUnit** units_list,
-                           u32 units_list_length) {
+CUnit*    templarMergePartner(CUnit*  unit,
+                              CUnit** units_list,
+                              u32     units_list_length) {
     static CUnit* return_value;
 
     __asm {

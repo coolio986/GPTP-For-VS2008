@@ -9,7 +9,7 @@ class SpawnBroodlingsTargetFinderProc
     : public scbw::UnitFinderCallbackMatchInterface {
    private:
     CUnit* caster;
-    bool isUnderAttack;
+    bool   isUnderAttack;
 
    public:
     SpawnBroodlingsTargetFinderProc(CUnit* caster, bool isUnderAttack)

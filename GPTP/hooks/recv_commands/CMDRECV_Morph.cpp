@@ -98,7 +98,7 @@ void CMDRECV_UnitMorph(u16 wUnitType) {
 namespace {
 
 const u32 Func_HasMoneyCanMake = 0x00467250;
-bool HasMoneyCanMake(CUnit* builder, u32 unitToBuild) {
+bool      HasMoneyCanMake(CUnit* builder, u32 unitToBuild) {
     static Bool32 bPreResult;
 
     __asm {
@@ -116,7 +116,7 @@ bool HasMoneyCanMake(CUnit* builder, u32 unitToBuild) {
 ;
 
 const u32 Func_removeOrderFromUnitQueue = 0x004742D0;
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
+void      removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 
     __asm {PUSHAD MOV ECX,
            unit MOV EAX,

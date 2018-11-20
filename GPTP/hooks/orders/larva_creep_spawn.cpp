@@ -5,15 +5,15 @@
 
 namespace {
 
-u8 function_00414680(u32 unitId, int x, int y);                // 0x00414680
-void AI_TrainingOverlord(CUnit* main_building, CUnit* larva);  // 0x00435770
-void updateUnitStrength(CUnit* unit);                          // 0x0049FA40
-void function_004A01F0(CUnit* unit);                           // 0x004A01F0
-CUnit* CreateUnit(u32 unitId, int x, int y, u32 playerId);     // 0x004A09D0
-u32 IterateUnitsAtLocationTargetProc_LarvaCount(CUnit* unit,
-                                                Box16* coords);  // 0x004E8280
-void function_004E8DA0(CUnit* unit);                             // 0x004E8DA0
-bool function_004E8E10(CUnit* unit, Point32* coords);            // 0x004E8E10
+u8     function_00414680(u32 unitId, int x, int y);              // 0x00414680
+void   AI_TrainingOverlord(CUnit* main_building, CUnit* larva);  // 0x00435770
+void   updateUnitStrength(CUnit* unit);                          // 0x0049FA40
+void   function_004A01F0(CUnit* unit);                           // 0x004A01F0
+CUnit* CreateUnit(u32 unitId, int x, int y, u32 playerId);       // 0x004A09D0
+u32    IterateUnitsAtLocationTargetProc_LarvaCount(CUnit* unit,
+                                                   Box16* coords);  // 0x004E8280
+void   function_004E8DA0(CUnit* unit);                   // 0x004E8DA0
+bool   function_004E8E10(CUnit* unit, Point32* coords);  // 0x004E8E10
 
 }  // unnamed namespace
 
@@ -93,9 +93,9 @@ void secondaryOrd_SpawningLarva(CUnit* unit) {
 
         *LARVA_COUNTER = 0;
 
-        coords.left = unit->sprite->position.x - 256;
-        coords.top = unit->sprite->position.y - 256;
-        coords.right = unit->sprite->position.x + 256;
+        coords.left   = unit->sprite->position.x - 256;
+        coords.top    = unit->sprite->position.y - 256;
+        coords.right  = unit->sprite->position.x + 256;
         coords.bottom = unit->sprite->position.y + 256;
 
         // Count existing larvas in LARVA_COUNTER
@@ -187,10 +187,10 @@ void secondaryOrd_SpreadCreepSpawningLarva(CUnit* unit) {
                 orderId = OrderId::Nothing2;
 
             if (unit->secondaryOrderId != orderId) {
-                unit->secondaryOrderId = orderId;
+                unit->secondaryOrderId    = orderId;
                 unit->secondaryOrderPos.y = 0;
                 unit->secondaryOrderPos.x = 0;
-                unit->currentBuildUnit = NULL;
+                unit->currentBuildUnit    = NULL;
                 unit->secondaryOrderState = 0;
             }
         }
@@ -207,7 +207,7 @@ void secondaryOrd_SpreadCreepSpawningLarva(CUnit* unit) {
 namespace {
 
 const u32 Func_Sub414680 = 0x00414680;
-u8 function_00414680(u32 unitId, int x, int y) {
+u8        function_00414680(u32 unitId, int x, int y) {
     static u8 return_value;
 
     __asm {
@@ -226,10 +226,10 @@ u8 function_00414680(u32 unitId, int x, int y) {
 ;
 
 const u32 Func_AI_TrainingOverlord = 0x00435770;
-void AI_TrainingOverlord(CUnit* main_building, CUnit* larva){
+void      AI_TrainingOverlord(CUnit* main_building, CUnit* larva){
 
     __asm {PUSHAD MOV EAX,
-           larva MOV ECX,
+           larva MOV     ECX,
            main_building CALL Func_AI_TrainingOverlord POPAD}
 
 }
@@ -237,7 +237,7 @@ void AI_TrainingOverlord(CUnit* main_building, CUnit* larva){
 ;
 
 const u32 Func_UpdateUnitStrength = 0x0049FA40;
-void updateUnitStrength(CUnit* unit){
+void      updateUnitStrength(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_UpdateUnitStrength POPAD}
 
@@ -246,7 +246,7 @@ void updateUnitStrength(CUnit* unit){
 ;
 
 const u32 Func_Sub4A01F0 = 0x004A01F0;
-void function_004A01F0(CUnit* unit){
+void      function_004A01F0(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub4A01F0 POPAD}
 
@@ -255,7 +255,7 @@ void function_004A01F0(CUnit* unit){
 ;
 
 const u32 Func_CreateUnit = 0x004A09D0;
-CUnit* CreateUnit(u32 unitId, int x, int y, u32 playerId) {
+CUnit*    CreateUnit(u32 unitId, int x, int y, u32 playerId) {
     static CUnit* unit_created;
 
     __asm {
@@ -296,7 +296,7 @@ u32 IterateUnitsAtLocationTargetProc_LarvaCount(CUnit* unit, Box16* coords) {
 ;
 
 const u32 Func_Sub4E8DA0 = 0x004E8DA0;
-void function_004E8DA0(CUnit* unit){
+void      function_004E8DA0(CUnit* unit){
 
     __asm {PUSHAD MOV EDI, unit CALL Func_Sub4E8DA0 POPAD}
 
@@ -305,7 +305,7 @@ void function_004E8DA0(CUnit* unit){
 ;
 
 const u32 Func_Sub4E8E10 = 0x004E8E10;
-bool function_004E8E10(CUnit* unit, Point32* coords) {
+bool      function_004E8E10(CUnit* unit, Point32* coords) {
     static Bool32 return_pre_value;
 
     __asm {

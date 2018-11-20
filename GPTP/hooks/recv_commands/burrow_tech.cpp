@@ -8,13 +8,13 @@ namespace {
 void removeOrderFromUnitQueue(CUnit* unit, COrder* order);  // 742D0
 void actUnitReturnToIdle(CUnit* unit);                      // 75420
 void function_004754F0(CUnit* unit,
-                       u32 unitId,
-                       u32 unk1,
-                       u32 unk2,
-                       u32 orderId,
-                       u32 unk3,
-                       u32 unk4,
-                       u32 unk5);     // 754F0
+                       u32    unitId,
+                       u32    unk1,
+                       u32    unk2,
+                       u32    orderId,
+                       u32    unk3,
+                       u32    unk4,
+                       u32    unk5);     // 754F0
 void function_004E97C0(CUnit* unit);  // E97C0
 
 }  // unnamed namespace
@@ -25,7 +25,7 @@ void CMDRECV_Unburrow() {
     CUnit* selected_unit;
 
     *selectionIndexStart = 0;
-    selected_unit = getActivePlayerNextSelection();
+    selected_unit        = getActivePlayerNextSelection();
 
     while (selected_unit != NULL) {
         if (units_dat::BaseProperty[selected_unit->id] &
@@ -44,7 +44,7 @@ void CMDRECV_Burrow(u8 bCommandType) {
     CUnit* selected_unit;
 
     *selectionIndexStart = 0;
-    selected_unit = getActivePlayerNextSelection();
+    selected_unit        = getActivePlayerNextSelection();
 
     while (selected_unit != NULL) {
         if (units_dat::BaseProperty[selected_unit->id] &
@@ -115,7 +115,7 @@ void Unburrow_Proc(CUnit* unit) {
 namespace {
 
 const u32 Func_removeOrderFromUnitQueue = 0x004742D0;
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
+void      removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 
     __asm {PUSHAD MOV ECX,
            unit MOV EAX,
@@ -126,7 +126,7 @@ void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 ;
 
 const u32 Func_ActUnitReturnToIdle = 0x00475420;
-void actUnitReturnToIdle(CUnit* unit){
+void      actUnitReturnToIdle(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_ActUnitReturnToIdle POPAD}
 
@@ -135,7 +135,7 @@ void actUnitReturnToIdle(CUnit* unit){
 ;
 
 const u32 Func_Sub_4E97C0 = 0x004E97C0;
-void function_004E97C0(CUnit* unit){
+void      function_004E97C0(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub_4E97C0 POPAD}
 
@@ -148,18 +148,18 @@ void function_004E97C0(CUnit* unit){
 // not.
 // Basically, used elsewhere, the function would be implemented differently
 const u32 Func_Sub_4754F0 = 0x004754F0;
-void function_004754F0(CUnit* unit,
-                       u32 unitId,
-                       u32 unk1,
-                       u32 unk2,
-                       u32 orderId,
-                       u32 unk3,
-                       u32 unk4,
-                       u32 unk5){
+void      function_004754F0(CUnit* unit,
+                            u32    unitId,
+                            u32    unk1,
+                            u32    unk2,
+                            u32    orderId,
+                            u32    unk3,
+                            u32    unk4,
+                            u32    unk5){
 
     __asm {PUSHAD MOV EAX,
-           0 MOV EDX,
-           0 MOV EBX,
+           0 MOV      EDX,
+           0 MOV      EBX,
            unitId MOV ESI,
            unit PUSH unk1 PUSH unk2 PUSH unk3 PUSH orderId PUSH unk4 PUSH unk5
                CALL Func_Sub_4754F0 POPAD}

@@ -21,9 +21,9 @@
 /// @param  target    The address of the function to jump to.
 /// @param  position  The part of memory where the JMP instruction is injected.
 /// @param  nops      Optional. The number of additional bytes to write NOPs.
-void jmpPatch(const void* target, void* position, unsigned int nops = 0);
-inline void jmpPatch(const void* target,
-                     DWORD position,
+void        jmpPatch(const void* target, void* position, unsigned int nops = 0);
+inline void jmpPatch(const void*  target,
+                     DWORD        position,
                      unsigned int nops = 0) {
     jmpPatch(target, (void*)position, nops);
 }
@@ -45,8 +45,8 @@ inline void jmpPatch(const void* target,
 /// @param  position  The part of memory where the CALL instruction is injected.
 /// @param  nops      Optional. The number of additional bytes to write NOPs.
 void callPatch(const void* target, void* position, unsigned int nops = 0);
-inline void callPatch(const void* target,
-                      DWORD position,
+inline void callPatch(const void*  target,
+                      DWORD        position,
                       unsigned int nops = 0) {
     callPatch(target, (void*)position, nops);
 }
@@ -58,7 +58,7 @@ void memoryPatch(const u32 address, const T& data) {
 }
 
 /// Inject an array of bytes, using the given size.
-void memoryPatch(void* const address, const u8* data, const size_t size);
+void        memoryPatch(void* const address, const u8* data, const size_t size);
 inline void memoryPatch(const u32 address, const u8* data, const size_t size) {
     memoryPatch((void*)address, data, size);
 }

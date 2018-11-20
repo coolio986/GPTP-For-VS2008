@@ -6,11 +6,11 @@
 namespace {
 
 Bool32 spreadsCreep(u32 unitId, Bool32 defaultReturn);      // 13870
-void function_004148F0(int x, int y, u32 unitId);           // 148F0
-void CreateBuildingLarva(CUnit* main_building);             // 9D660
+void   function_004148F0(int x, int y, u32 unitId);         // 148F0
+void   CreateBuildingLarva(CUnit* main_building);           // 9D660
 Bool32 function_0049EC30(CUnit* unit);                      // 9EC30
-void updateUnitStrength(CUnit* unit);                       // 9FA40
-void function_004A01F0(CUnit* unit);                        // A01F0
+void   updateUnitStrength(CUnit* unit);                     // 9FA40
+void   function_004A01F0(CUnit* unit);                      // A01F0
 CUnit* createUnit(u32 unitId, int x, int y, u32 playerId);  // A09D0
 CUnit* FindBestUnit(Box16* coords, u32 searchProc);         // E8830
 
@@ -19,9 +19,9 @@ CUnit* FindBestUnit(Box16* coords, u32 searchProc);         // E8830
 namespace hooks {
 
 void CreateInitialMeleeBuildings(u8 raceId, u32 playerId) {
-    u8 buildingId;
-    s32 buildingSizeX, buildingSizeY;
-    Box16 searchBox;
+    u8     buildingId;
+    s32    buildingSizeX, buildingSizeY;
+    Box16  searchBox;
     CUnit* created_unit;
 
     if (raceId == RaceId::Zerg)
@@ -87,7 +87,7 @@ void CreateInitialMeleeUnits() {
     u32 playerId;
     u8* raceIdOffset;
 
-    playerId = 8;
+    playerId     = 8;
     raceIdOffset = (u8*)0x0057F009;
 
     while (raceIdOffset != (u8*)0x0057EEE9) {
@@ -99,8 +99,8 @@ void CreateInitialMeleeUnits() {
             u8 startingUnits = (u8)(*(u16*)(0x00596871));
 
             static u8* victory_conditions = (u8*)0x0059686D;
-            static u8* tournament_mode = (u8*)0x00596877;
-            static u8* user_select_slots = (u8*)0x0059BDA8;
+            static u8* tournament_mode    = (u8*)0x00596877;
+            static u8* user_select_slots  = (u8*)0x0059BDA8;
 
             if (*victory_conditions == 0 &&  // check triggers for conditions
                 startingUnits == 0 &&        // use map units
@@ -119,7 +119,7 @@ void CreateInitialMeleeUnits() {
             }
 
             if (startingUnits == 1 || startingUnits == 2) {
-                u8 unitId;
+                u8     unitId;
                 CUnit* created_unit;
 
                 if (*raceIdOffset == RaceId::Zerg)
@@ -213,10 +213,10 @@ void CreateInitialMeleeUnits() {
 ;
 
 void CreateInitialOverlord(u8 playerId) {
-    static u16* const maxBoxRightValue = (u16*)0x00628450;
+    static u16* const maxBoxRightValue  = (u16*)0x00628450;
     static u16* const maxBoxBottomValue = (u16*)0x006284B4;
 
-    int overlordStartX, overlordStartY;
+    int    overlordStartX, overlordStartY;
     CUnit* created_unit;
 
     if (startPositions[playerId].x < *maxBoxRightValue / 2)
@@ -259,7 +259,7 @@ void CreateInitialOverlord(u8 playerId) {
 namespace {
 
 const u32 Func_spreadsCreep = 0x00413870;
-Bool32 spreadsCreep(u32 unitId, Bool32 defaultReturn) {
+Bool32    spreadsCreep(u32 unitId, Bool32 defaultReturn) {
     Bool32 bReturnValue;
 
     __asm {
@@ -277,7 +277,7 @@ Bool32 spreadsCreep(u32 unitId, Bool32 defaultReturn) {
 ;
 
 const u32 Func_Sub4148F0 = 0x004148F0;
-void function_004148F0(int x, int y, u32 unitId){
+void      function_004148F0(int x, int y, u32 unitId){
 
     __asm {PUSHAD PUSH y PUSH x PUSH unitId CALL Func_Sub4148F0 POPAD}
 
@@ -286,7 +286,7 @@ void function_004148F0(int x, int y, u32 unitId){
 ;
 
 const u32 Func_Sub49D660 = 0x0049D660;
-void CreateBuildingLarva(CUnit* main_building){
+void      CreateBuildingLarva(CUnit* main_building){
 
     __asm {PUSHAD MOV ESI, main_building CALL Func_Sub49D660 POPAD}
 
@@ -295,7 +295,7 @@ void CreateBuildingLarva(CUnit* main_building){
 ;
 
 const u32 Func_Sub49EC30 = 0x0049EC30;
-Bool32 function_0049EC30(CUnit* unit) {
+Bool32    function_0049EC30(CUnit* unit) {
     Bool32 bResult;
 
     __asm {
@@ -312,7 +312,7 @@ Bool32 function_0049EC30(CUnit* unit) {
 ;
 
 const u32 Func_UpdateUnitStrength = 0x0049FA40;
-void updateUnitStrength(CUnit* unit){
+void      updateUnitStrength(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_UpdateUnitStrength POPAD}
 
@@ -321,7 +321,7 @@ void updateUnitStrength(CUnit* unit){
 ;
 
 const u32 Func_Sub4A01F0 = 0x004A01F0;
-void function_004A01F0(CUnit* unit){
+void      function_004A01F0(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub4A01F0 POPAD}
 
@@ -330,7 +330,7 @@ void function_004A01F0(CUnit* unit){
 ;
 
 const u32 Func_CreateUnit = 0x004A09D0;
-CUnit* createUnit(u32 unitId, int x, int y, u32 playerId) {
+CUnit*    createUnit(u32 unitId, int x, int y, u32 playerId) {
     static CUnit* unit_created;
 
     __asm {
@@ -350,7 +350,7 @@ CUnit* createUnit(u32 unitId, int x, int y, u32 playerId) {
 ;
 
 const u32 Func_FindBestUnit = 0x004E8830;
-CUnit* FindBestUnit(Box16* coords, u32 searchProc) {
+CUnit*    FindBestUnit(Box16* coords, u32 searchProc) {
     static CUnit* unit;
 
     __asm {

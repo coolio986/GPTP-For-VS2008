@@ -6,8 +6,8 @@ namespace {
 
 void __declspec(naked) CMDRECV_PlaceBuildingAllowed_Wrapper() {
     static CUnit* builder;
-    static u8 orderId;
-    static u16 builtUnitId;
+    static u8     orderId;
+    static u16    builtUnitId;
     static Bool32 bReturnValue;
 
     __asm {
@@ -110,7 +110,7 @@ void __declspec(naked) cmdRECV_PlaceBuildingAddon_Wrapper() {
 ;
 
 void __declspec(naked) CMDRECV_Build_Wrapper() {
-    static u8 orderId;
+    static u8  orderId;
     static s16 x;
     static s16 y;
     static u16 builtUnitId;

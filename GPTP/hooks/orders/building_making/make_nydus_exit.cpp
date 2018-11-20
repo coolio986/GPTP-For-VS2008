@@ -5,20 +5,20 @@
 
 namespace {
 
-u32 function_00473FB0(CUnit* unit,
-                      u8 playerId,
-                      int x,
-                      int y,
-                      u16 unitId,
-                      u8 unk1,
-                      u8 unk2,
-                      u8 unk3,
-                      u8 unk4);                              // 73FB0
-void function_0047D770(CUnit* unit);                         // 7D770
-void playWorkerErrorSound(CUnit* unit, u32 errorTextIndex);  // 8F6C0
-void displayLastNetErrForPlayer(u32 playerId);               // 9E530
-CUnit* createUnit(u32 unitId, int x, int y, u32 playerId);   // A09D0
-void function_004E65E0(CUnit* unit, Bool32 flag);            // E65E0
+u32    function_00473FB0(CUnit* unit,
+                         u8     playerId,
+                         int    x,
+                         int    y,
+                         u16    unitId,
+                         u8     unk1,
+                         u8     unk2,
+                         u8     unk3,
+                         u8     unk4);                             // 73FB0
+void   function_0047D770(CUnit* unit);                         // 7D770
+void   playWorkerErrorSound(CUnit* unit, u32 errorTextIndex);  // 8F6C0
+void   displayLastNetErrForPlayer(u32 playerId);               // 9E530
+CUnit* createUnit(u32 unitId, int x, int y, u32 playerId);     // A09D0
+void   function_004E65E0(CUnit* unit, Bool32 flag);            // E65E0
 
 }  // unnamed namespace
 
@@ -90,7 +90,7 @@ void orders_Build5(CUnit* nydus_canal) {
             function_0047D770(nydusExit);
 
             nydus_canal->building.nydusExit = nydusExit;
-            nydusExit->building.nydusExit = nydus_canal;
+            nydusExit->building.nydusExit   = nydus_canal;
 
             nydus_canal->orderToIdle();
         }
@@ -108,15 +108,15 @@ void orders_Build5(CUnit* nydus_canal) {
 namespace {
 
 const u32 Func_Sub473FB0 = 0x00473FB0;
-u32 function_00473FB0(CUnit* unit,
-                      u8 playerId,
-                      int x,
-                      int y,
-                      u16 unitId,
-                      u8 unk1,
-                      u8 unk2,
-                      u8 unk3,
-                      u8 unk4) {
+u32       function_00473FB0(CUnit* unit,
+                            u8     playerId,
+                            int    x,
+                            int    y,
+                            u16    unitId,
+                            u8     unk1,
+                            u8     unk2,
+                            u8     unk3,
+                            u8     unk4) {
     u32 return_value;
 
     __asm {
@@ -147,7 +147,7 @@ u32 function_00473FB0(CUnit* unit,
 ;
 
 const u32 Func_Sub47D770 = 0x0047D770;
-void function_0047D770(CUnit* unit){
+void      function_0047D770(CUnit* unit){
 
     __asm {PUSHAD PUSH unit CALL Func_Sub47D770 POPAD}
 
@@ -156,7 +156,7 @@ void function_0047D770(CUnit* unit){
 ;
 
 const u32 Func_PlayWorkerErrorSound = 0x0048F6C0;
-void playWorkerErrorSound(CUnit* unit, u32 errorTextIndex){
+void      playWorkerErrorSound(CUnit* unit, u32 errorTextIndex){
 
     __asm {PUSHAD MOV EAX,
            unit PUSH errorTextIndex CALL Func_PlayWorkerErrorSound POPAD}
@@ -166,13 +166,13 @@ void playWorkerErrorSound(CUnit* unit, u32 errorTextIndex){
 ;
 
 const u32 Func_displayLastNetErrForPlayer = 0x0049E530;
-void displayLastNetErrForPlayer(u32 playerId){
+void      displayLastNetErrForPlayer(u32 playerId){
     __asm {PUSHAD PUSH playerId CALL Func_displayLastNetErrForPlayer POPAD}}
 
 ;
 
 const u32 Func_CreateUnit = 0x004A09D0;
-CUnit* createUnit(u32 unitId, int x, int y, u32 playerId) {
+CUnit*    createUnit(u32 unitId, int x, int y, u32 playerId) {
     static CUnit* unit_created;
 
     __asm {
@@ -192,7 +192,7 @@ CUnit* createUnit(u32 unitId, int x, int y, u32 playerId) {
 ;
 
 const u32 Func_Sub4E65E0 = 0x004E65E0;
-void function_004E65E0(CUnit* unit, Bool32 flag){
+void      function_004E65E0(CUnit* unit, Bool32 flag){
 
     __asm {PUSHAD MOV EDI, unit PUSH flag CALL Func_Sub4E65E0 POPAD}
 

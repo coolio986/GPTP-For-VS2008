@@ -13,32 +13,32 @@
 
 namespace {
 
-bool isDistanceGreaterThanHaltDistance(CUnit* unit,
-                                       int x,
-                                       int y,
-                                       u32 distance);                // 01240
-void fixTargetLocation(Point16* coords, u32 unitId);                 // 01FA0
-bool isUnitPositions2Equal(CUnit* unit);                             // 02160
-void AI_TrainingOverlord(CUnit* main_unit, CUnit* created_unit);     // 35770
-bool function_00467030(CUnit* unit);                                 // 67030
+bool   isDistanceGreaterThanHaltDistance(CUnit* unit,
+                                         int    x,
+                                         int    y,
+                                         u32    distance);              // 01240
+void   fixTargetLocation(Point16* coords, u32 unitId);               // 01FA0
+bool   isUnitPositions2Equal(CUnit* unit);                           // 02160
+void   AI_TrainingOverlord(CUnit* main_unit, CUnit* created_unit);   // 35770
+bool   function_00467030(CUnit* unit);                               // 67030
 CUnit* function_004678A0(CUnit* unit, u32 unitId);                   // 678A0
 Bool32 buildingAddon(CUnit* unit, u32 hpGain, Bool32 canBeAborted);  // 679A0
-void function_00474760(CUnit* unit, COrder* order, u8 orderId);      // 74760
-void function_004749A0(CUnit* unit, COrder* order, u8 orderId);      // 749A0
-void refreshLayer3And4();                                            // 8D9A0
-bool function_0048DDA0();                                            // 8DDA0
-void function_0048E310();                                            // 8E310
-void playBuildingCompleteSound(CUnit* building);                     // 8F310
-void function_00494BB0(CUnit* unit, int x, int y);                   // 94BB0
-void displayLastNetErrForPlayer(u32 playerId);                       // 9E530
+void   function_00474760(CUnit* unit, COrder* order, u8 orderId);    // 74760
+void   function_004749A0(CUnit* unit, COrder* order, u8 orderId);    // 749A0
+void   refreshLayer3And4();                                          // 8D9A0
+bool   function_0048DDA0();                                          // 8DDA0
+void   function_0048E310();                                          // 8E310
+void   playBuildingCompleteSound(CUnit* building);                   // 8F310
+void   function_00494BB0(CUnit* unit, int x, int y);                 // 94BB0
+void   displayLastNetErrForPlayer(u32 playerId);                     // 9E530
 CUnit* createUnit(u32 unitId, int x, int y, u32 playerId);           // A09D0
-u32 RandomizeShort(u32 unknown_index);                               // DC4A0
-u32 RandBetween(u32 min, u32 max, u32 someIndex);                    // DC550
-void function_004E65E0(CUnit* unit, Bool32 flag);                    // E65E0
-void setNextWaypoint_Sub4EB290(CUnit* unit);                         // EB290
-bool SetMoveTarget_xy(CUnit* unit, int x, int y);                    // EB820
-bool orderToMoveToTarget(CUnit* unit, CUnit* target);                // EB980
-bool function_004EB9C0(CUnit* unit, int x, int y);                   // EB9C0
+u32    RandomizeShort(u32 unknown_index);                            // DC4A0
+u32    RandBetween(u32 min, u32 max, u32 someIndex);                 // DC550
+void   function_004E65E0(CUnit* unit, Bool32 flag);                  // E65E0
+void   setNextWaypoint_Sub4EB290(CUnit* unit);                       // EB290
+bool   SetMoveTarget_xy(CUnit* unit, int x, int y);                  // EB820
+bool   orderToMoveToTarget(CUnit* unit, CUnit* target);              // EB980
+bool   function_004EB9C0(CUnit* unit, int x, int y);                 // EB9C0
 Bool32 function_004F1870(CUnit* unit, int x, int y);                 // F1870
 
 }  // unnamed namespace
@@ -213,13 +213,13 @@ void orders_SCVBuild2(CUnit* unit) {
                                   unit->orderTarget.pt.x,
                                   unit->orderTarget.pt.y) != 0) {
                 unit->mainOrderState = 5;
-                jump_to_switch_1 = true;
+                jump_to_switch_1     = true;
             }
 
         }  // mainOrderState == 4
         else if (unit->mainOrderState == 5) {
             unit->mainOrderState = 6;
-            jump_to_switch_1 = true;
+            jump_to_switch_1     = true;
         } else if (unit->mainOrderState == 6) {
             if (!isDistanceGreaterThanHaltDistance(
                     unit, unit->orderTarget.pt.x, unit->orderTarget.pt.y, 20))
@@ -243,7 +243,7 @@ void orders_SCVBuild2(CUnit* unit) {
                 unit->orderTarget.pt.y = (angleDistance[angle].y * 20) / 256 +
                                          unit->sprite->position.y;
                 unit->mainOrderState = 7;
-                jump_to_switch_1 = true;
+                jump_to_switch_1     = true;
             }
 
         } else if (unit->mainOrderState == 7) {
@@ -261,7 +261,7 @@ void orders_SCVBuild2(CUnit* unit) {
                     jump_to_switch_1 = true;
                 else {  // 67E4A
 
-                    u8 rand_value = RandomizeShort(10);
+                    u8      rand_value    = RandomizeShort(10);
                     CImage* current_image = unit->sprite->images.head;
 
                     unit->mainOrderTimer = (rand_value & 63) + 30;
@@ -273,11 +273,11 @@ void orders_SCVBuild2(CUnit* unit) {
                     }
 
                     unit->mainOrderState = 8;
-                    jump_to_switch_1 = true;
+                    jump_to_switch_1     = true;
                 }
 
             } else {
-                u8 rand_value = RandomizeShort(10);
+                u8      rand_value    = RandomizeShort(10);
                 CImage* current_image = unit->sprite->images.head;
 
                 unit->mainOrderTimer = (rand_value & 63) + 30;
@@ -289,7 +289,7 @@ void orders_SCVBuild2(CUnit* unit) {
                 }
 
                 unit->mainOrderState = 8;
-                jump_to_switch_1 = true;
+                jump_to_switch_1     = true;
             }
 
         } else if (unit->mainOrderState == 8) {
@@ -319,7 +319,7 @@ void orders_SCVBuild2(CUnit* unit) {
 
             if (builtUnit->status & UnitStatus::Completed) {
                 CImage* current_image = unit->sprite->images.head;
-                bool bEndThere = false;
+                bool    bEndThere     = false;
 
                 while (current_image != NULL) {
                     current_image->playIscriptAnim(
@@ -372,7 +372,7 @@ void orders_SCVBuild2(CUnit* unit) {
     } else {  // 67ED0
 
         CImage* current_image = unit->sprite->images.head;
-        bool bEndThere = false;
+        bool    bEndThere     = false;
 
         while (current_image != NULL) {
             current_image->playIscriptAnim(IscriptAnimation::WalkingToIdle);
@@ -471,9 +471,9 @@ void orders_SCVBuild(CUnit* unit) {
                 } else {  // 68131
 
                     builtUnit->connectedUnit = unit;
-                    unit->mainOrderId = OrderId::ConstructingBuilding;
-                    unit->mainOrderState = 3;
-                    unit->orderTarget.unit = builtUnit;
+                    unit->mainOrderId        = OrderId::ConstructingBuilding;
+                    unit->mainOrderState     = 3;
+                    unit->orderTarget.unit   = builtUnit;
 
                     if (*IS_PLACING_BUILDING) {
                         if (!function_0048DDA0()) {
@@ -528,10 +528,10 @@ void orders_SCVBuild(CUnit* unit) {
 namespace {
 
 const u32 Func_isDistanceGreaterThanHaltDistance = 0x00401240;
-bool isDistanceGreaterThanHaltDistance(CUnit* unit,
-                                       int x,
-                                       int y,
-                                       u32 distance) {
+bool      isDistanceGreaterThanHaltDistance(CUnit* unit,
+                                            int    x,
+                                            int    y,
+                                            u32    distance) {
     static Bool32 bPreResult;
 
     __asm {
@@ -551,7 +551,7 @@ bool isDistanceGreaterThanHaltDistance(CUnit* unit,
 ;
 
 const u32 Func_fixTargetLocation = 0x00401FA0;
-void fixTargetLocation(Point16* coords, u32 unitId){
+void      fixTargetLocation(Point16* coords, u32 unitId){
 
     __asm {PUSHAD MOV EAX,
            unitId MOV EDX,
@@ -570,9 +570,9 @@ bool isUnitPositions2Equal(CUnit* unit) {
 ;
 
 const u32 Func_AI_TrainingOverlord = 0x00435770;
-void AI_TrainingOverlord(CUnit* main_unit, CUnit* created_unit){
+void      AI_TrainingOverlord(CUnit* main_unit, CUnit* created_unit){
 
-    __asm {PUSHAD MOV EAX,
+    __asm {PUSHAD MOV   EAX,
            created_unit MOV ECX,
            main_unit CALL Func_AI_TrainingOverlord POPAD}
 
@@ -581,7 +581,7 @@ void AI_TrainingOverlord(CUnit* main_unit, CUnit* created_unit){
 ;
 
 const u32 Func_Sub467030 = 0x00467030;
-bool function_00467030(CUnit* unit) {
+bool      function_00467030(CUnit* unit) {
     static Bool32 bPreResult;
 
     __asm {
@@ -598,7 +598,7 @@ bool function_00467030(CUnit* unit) {
 ;
 
 const u32 Func_Sub4678A0 = 0x004678A0;
-CUnit* function_004678A0(CUnit* unit, u32 unitId) {
+CUnit*    function_004678A0(CUnit* unit, u32 unitId) {
     static CUnit* newUnit;
 
     __asm {
@@ -637,7 +637,7 @@ Bool32 buildingAddon(CUnit* unit, u32 hpGain, Bool32 canBeAborted) {
 ;
 
 const u32 Func_Sub474760 = 0x00474760;
-void function_00474760(CUnit* unit, COrder* order, u8 orderId){
+void      function_00474760(CUnit* unit, COrder* order, u8 orderId){
 
     __asm {PUSHAD MOV ESI,
            unit MOV EDI,
@@ -649,7 +649,7 @@ void function_00474760(CUnit* unit, COrder* order, u8 orderId){
 ;
 
 const u32 Func_Sub4749A0 = 0x004749A0;
-void function_004749A0(CUnit* unit, COrder* order, u8 orderId){
+void      function_004749A0(CUnit* unit, COrder* order, u8 orderId){
 
     __asm {PUSHAD MOV BL,
            orderId MOV ESI,
@@ -661,7 +661,7 @@ void function_004749A0(CUnit* unit, COrder* order, u8 orderId){
 ;
 
 const u32 Func_RefreshLayer3And4 = 0x0048D9A0;
-void refreshLayer3And4(){
+void      refreshLayer3And4(){
 
     __asm {PUSHAD CALL Func_RefreshLayer3And4 POPAD}
 
@@ -670,7 +670,7 @@ void refreshLayer3And4(){
 ;
 
 const u32 Func_Sub48DDA0 = 0x0048DDA0;
-bool function_0048DDA0() {
+bool      function_0048DDA0() {
     Bool32 pre_return_value;
 
     __asm {
@@ -686,7 +686,7 @@ bool function_0048DDA0() {
 ;
 
 const u32 Func_Sub48E310 = 0x0048E310;
-void function_0048E310(){
+void      function_0048E310(){
 
     __asm {PUSHAD CALL Func_Sub48E310 POPAD}
 
@@ -695,7 +695,7 @@ void function_0048E310(){
 ;
 
 const u32 Func_PlayBuildingCompleteSound = 0x0048F310;
-void playBuildingCompleteSound(CUnit* building){
+void      playBuildingCompleteSound(CUnit* building){
 
     __asm {PUSHAD MOV EAX, building CALL Func_PlayBuildingCompleteSound POPAD}
 
@@ -704,7 +704,7 @@ void playBuildingCompleteSound(CUnit* building){
 ;
 
 const u32 Func_Sub494BB0 = 0x00494BB0;
-void function_00494BB0(CUnit* unit, int x, int y){
+void      function_00494BB0(CUnit* unit, int x, int y){
 
     __asm {PUSHAD MOV ECX, y MOV EDX, x MOV EAX, unit CALL Func_Sub494BB0 POPAD}
 
@@ -713,13 +713,13 @@ void function_00494BB0(CUnit* unit, int x, int y){
 ;
 
 const u32 Func_displayLastNetErrForPlayer = 0x0049E530;
-void displayLastNetErrForPlayer(u32 playerId){
+void      displayLastNetErrForPlayer(u32 playerId){
     __asm {PUSHAD PUSH playerId CALL Func_displayLastNetErrForPlayer POPAD}}
 
 ;
 
 const u32 Func_CreateUnit = 0x004A09D0;
-CUnit* createUnit(u32 unitId, int x, int y, u32 playerId) {
+CUnit*    createUnit(u32 unitId, int x, int y, u32 playerId) {
     static CUnit* unit_created;
 
     __asm {
@@ -739,7 +739,7 @@ CUnit* createUnit(u32 unitId, int x, int y, u32 playerId) {
 ;
 
 const u32 Func_RandomizeShort = 0x004DC4A0;
-u32 RandomizeShort(u32 unknown_index) {
+u32       RandomizeShort(u32 unknown_index) {
     static u32 return_value;
 
     __asm {
@@ -756,7 +756,7 @@ u32 RandomizeShort(u32 unknown_index) {
 ;
 
 const u32 Func_RandBetween = 0x004DC550;
-u32 RandBetween(u32 min, u32 max, u32 someIndex) {
+u32       RandBetween(u32 min, u32 max, u32 someIndex) {
     static u32 return_value;
 
     __asm {
@@ -775,7 +775,7 @@ u32 RandBetween(u32 min, u32 max, u32 someIndex) {
 ;
 
 const u32 Func_Sub4E65E0 = 0x004E65E0;
-void function_004E65E0(CUnit* unit, Bool32 flag){
+void      function_004E65E0(CUnit* unit, Bool32 flag){
 
     __asm {PUSHAD MOV EDI, unit PUSH flag CALL Func_Sub4E65E0 POPAD}
 
@@ -785,14 +785,14 @@ void function_004E65E0(CUnit* unit, Bool32 flag){
 
 // Related to path/movement decision
 const u32 Func_sub_4EB290 = 0x004EB290;
-void setNextWaypoint_Sub4EB290(CUnit* unit){
+void      setNextWaypoint_Sub4EB290(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_sub_4EB290 POPAD}}
 
 ;
 
 const u32 Func_SetMoveTarget_xy = 0x004EB820;
-bool SetMoveTarget_xy(CUnit* unit, int x, int y) {
+bool      SetMoveTarget_xy(CUnit* unit, int x, int y) {
     static Bool32 bPreResult;
 
     __asm {
@@ -811,7 +811,7 @@ bool SetMoveTarget_xy(CUnit* unit, int x, int y) {
 ;
 
 const u32 Func__moveToTarget = 0x004EB980;
-bool orderToMoveToTarget(CUnit* unit, CUnit* target) {
+bool      orderToMoveToTarget(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {
@@ -829,7 +829,7 @@ bool orderToMoveToTarget(CUnit* unit, CUnit* target) {
 ;
 
 const u32 Func_Sub4EB9C0 = 0x004EB9C0;
-bool function_004EB9C0(CUnit* unit, int x, int y) {
+bool      function_004EB9C0(CUnit* unit, int x, int y) {
     static Bool32 bPreResult;
 
     __asm {
@@ -848,7 +848,7 @@ bool function_004EB9C0(CUnit* unit, int x, int y) {
 ;
 
 const u32 Func_Sub4F1870 = 0x004F1870;
-Bool32 function_004F1870(CUnit* unit, int x, int y) {
+Bool32    function_004F1870(CUnit* unit, int x, int y) {
     static Bool32 rValue;
 
     __asm {

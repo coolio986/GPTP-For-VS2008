@@ -16,7 +16,7 @@ void __declspec(naked) canEnterNydusCanalWrapper() {
     }
 
     if (hooks::canEnterNydusCanal(unit, nydusCanal)) bReturnValue = 1;
-    else bReturnValue = 0;
+    else bReturnValue                                             = 0;
 
     __asm {
 			POPAD

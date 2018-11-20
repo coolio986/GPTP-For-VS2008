@@ -12,38 +12,38 @@
 
 namespace {
 
-bool unitCantSeeCloakedTarget(CUnit* unit, CUnit* target);       // 0x00401D60
-bool isInfestableUnit(CUnit* unit);                              // 0x00402210
-bool unitCanInfest(CUnit* unit);                                 // 0x00402750
-void AI_AttackUnit(CUnit* unit);                                 // 0x0043FFD0
-CUnit* findBestAttackTarget(CUnit* unit);                        // 0x00443080
-bool function_00462EA0(CUnit* unit, u8 unknownByteValue);        // 0x00462EA0
-void function_00465780(CUnit* unit);                             // 0x00465780
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order);       // 0x004742D0
-void function_00474A70(CUnit* unit, CUnit* target, u8 orderId);  // 0x00474A70
-bool isTargetWithinMinMovementRange(CUnit* unit,
-                                    CUnit* target,
-                                    u32 range);        // 0x004763D0
-bool function_00476610(CUnit* unit, int x, int y);     // 0x00476610
-bool isUnitInWeaponRange(CUnit* unit, CUnit* target);  // 0x00476870
-void getWeaponBeginIscript(CUnit* unit,
-                           IscriptAnimation::Enum anim);  // 0x00476ED0
-void function_00477510(CUnit* unit);                      // 0x00477510
-void function_00477820(CUnit* unit, u8 orderId);          // 0x00477820
-bool function_00478370(CUnit* unit, u8 orderId);          // 0x00478370
-bool function_00478540(CUnit* unit);                      // 0x00478540
-bool isUnitCritter(CUnit* unit);                          // 0x0047B450
-void function_00495400(CUnit* unit, CUnit* target);       // 0x00495400
-u16 SAI_GetRegionIdFromPxEx(s32 x, s32 y);                // 0x0049C9F0
-bool isUnitVisible(CUnit* unit);                          // 0x004E5DB0
-bool isTargetVisible(CUnit* unit, CUnit* target);         // 0x004E5E30
-u8 getRightClickActionOrder(CUnit* unit);                 // 0x004E5EA0
-void setNextWaypoint_Sub4EB290(CUnit* unit);              // 0x004EB290
-void makeToHoldPosition(CUnit* unit);                     // 0x004EB5B0
-bool moveToTarget(CUnit* unit, CUnit* target);            // 0x004EB720
-bool SetMoveTarget_xy(CUnit* unit, int x, int y);         // 0x004EB820
-bool function_004EB900(CUnit* unit, CUnit* target);       // 0x004EB900
-bool function_004EB9C0(CUnit* unit, int x, int y);        // 0x004EB9C0
+bool   unitCantSeeCloakedTarget(CUnit* unit, CUnit* target);       // 0x00401D60
+bool   isInfestableUnit(CUnit* unit);                              // 0x00402210
+bool   unitCanInfest(CUnit* unit);                                 // 0x00402750
+void   AI_AttackUnit(CUnit* unit);                                 // 0x0043FFD0
+CUnit* findBestAttackTarget(CUnit* unit);                          // 0x00443080
+bool   function_00462EA0(CUnit* unit, u8 unknownByteValue);        // 0x00462EA0
+void   function_00465780(CUnit* unit);                             // 0x00465780
+void   removeOrderFromUnitQueue(CUnit* unit, COrder* order);       // 0x004742D0
+void   function_00474A70(CUnit* unit, CUnit* target, u8 orderId);  // 0x00474A70
+bool   isTargetWithinMinMovementRange(CUnit* unit,
+                                      CUnit* target,
+                                      u32    range);        // 0x004763D0
+bool   function_00476610(CUnit* unit, int x, int y);     // 0x00476610
+bool   isUnitInWeaponRange(CUnit* unit, CUnit* target);  // 0x00476870
+void   getWeaponBeginIscript(CUnit*                 unit,
+                             IscriptAnimation::Enum anim);  // 0x00476ED0
+void   function_00477510(CUnit* unit);                      // 0x00477510
+void   function_00477820(CUnit* unit, u8 orderId);          // 0x00477820
+bool   function_00478370(CUnit* unit, u8 orderId);          // 0x00478370
+bool   function_00478540(CUnit* unit);                      // 0x00478540
+bool   isUnitCritter(CUnit* unit);                          // 0x0047B450
+void   function_00495400(CUnit* unit, CUnit* target);       // 0x00495400
+u16    SAI_GetRegionIdFromPxEx(s32 x, s32 y);               // 0x0049C9F0
+bool   isUnitVisible(CUnit* unit);                          // 0x004E5DB0
+bool   isTargetVisible(CUnit* unit, CUnit* target);         // 0x004E5E30
+u8     getRightClickActionOrder(CUnit* unit);               // 0x004E5EA0
+void   setNextWaypoint_Sub4EB290(CUnit* unit);              // 0x004EB290
+void   makeToHoldPosition(CUnit* unit);                     // 0x004EB5B0
+bool   moveToTarget(CUnit* unit, CUnit* target);            // 0x004EB720
+bool   SetMoveTarget_xy(CUnit* unit, int x, int y);         // 0x004EB820
+bool   function_004EB900(CUnit* unit, CUnit* target);       // 0x004EB900
+bool   function_004EB9C0(CUnit* unit, int x, int y);        // 0x004EB9C0
 
 }  // unnamed namespace
 
@@ -173,7 +173,7 @@ void orders_CarrierAttack1(CUnit* unit) {
 void orders_TurretAttack(CUnit* unit) {
     CUnit* target;
     CUnit* current_unit;
-    u8 current_unit_weaponId;
+    u8     current_unit_weaponId;
 
     bool jump_to_77A45 = false;
     bool jump_to_77A70 = false;
@@ -268,7 +268,7 @@ void orders_TurretAttack(CUnit* unit) {
                 if (isInfestableUnit(target))
                     jump_to_77AFE = true;
                 else {
-                    jump_to_77A45 = true;
+                    jump_to_77A45      = true;
                     bJumpToEarlierCode = true;
                 }
 
@@ -280,7 +280,7 @@ void orders_TurretAttack(CUnit* unit) {
 
         if (jump_to_77AB7) {
             if (unit->id == UnitId::ProtossArbiter && unit->pAI != NULL) {
-                jump_to_77A45 = true;
+                jump_to_77A45      = true;
                 bJumpToEarlierCode = true;
             } else {
                 // 77ACC
@@ -293,7 +293,7 @@ void orders_TurretAttack(CUnit* unit) {
 
                 // 77AF6
                 if (current_unit_weaponId == WeaponId::None) {
-                    jump_to_77A45 = true;
+                    jump_to_77A45      = true;
                     bJumpToEarlierCode = true;
                 } else
                     jump_to_77AFE = true;
@@ -305,12 +305,12 @@ void orders_TurretAttack(CUnit* unit) {
 
         if (jump_to_77AFE) {
             if (!isTargetVisible(unit, target)) {
-                jump_to_77A45 = true;
+                jump_to_77A45      = true;
                 bJumpToEarlierCode = true;
             } else {
                 // 77B0E
                 CUnit* current_subunit = unit->subunit;
-                bool jump_to_77BD7 = false;
+                bool   jump_to_77BD7   = false;
 
                 if (unit->id != UnitId::TerranSiegeTankTankModeTurret ||
                     current_subunit->pAI == NULL ||
@@ -502,7 +502,7 @@ void orders_AttackFixedRange(CUnit* unit) {
         jump_to_77E48 = true;
     else {
         CUnit* current_unit;
-        bool jump_to_77DEF = false;
+        bool   jump_to_77DEF = false;
 
         // 77DB4:
         if (unit->subunit->isSubunit())  // check if is not null AND is a
@@ -663,7 +663,7 @@ void orders_SapUnit(CUnit* unit) {
                     } else {  // 789F4
 
                         unit->orderTarget.unit = unit;
-                        CImage* current_image = unit->sprite->images.head;
+                        CImage* current_image  = unit->sprite->images.head;
 
                         while (current_image != NULL) {
                             current_image->playIscriptAnim(
@@ -870,7 +870,7 @@ void orders_AttackUnit(CUnit* unit) {
         !function_00462EA0(
             unit, 0)  // if unit controlled by AI, do lots of things and
                       // return true after/if validating a final order
-    ) {  // 79C05
+    ) {               // 79C05
 
         // perform lots of checks, possibly in an attempt to
         // auto-select a better target if the unit has choice
@@ -898,7 +898,7 @@ void orders_AttackUnit(CUnit* unit) {
 namespace {
 
 const u32 Func_unitCantSeeCloakedTarget = 0x00401D60;
-bool unitCantSeeCloakedTarget(CUnit* unit, CUnit* target) {
+bool      unitCantSeeCloakedTarget(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {
@@ -916,7 +916,7 @@ bool unitCantSeeCloakedTarget(CUnit* unit, CUnit* target) {
 ;
 
 const u32 Func_IsInfestable = 0x00402210;
-bool isInfestableUnit(CUnit* unit) {
+bool      isInfestableUnit(CUnit* unit) {
     static Bool32 bPreResult;
 
     __asm {
@@ -933,7 +933,7 @@ bool isInfestableUnit(CUnit* unit) {
 ;
 
 const u32 Func_CanInfest = 0x00402750;
-bool unitCanInfest(CUnit* unit) {
+bool      unitCanInfest(CUnit* unit) {
     static Bool32 bPreResult;
 
     __asm {
@@ -950,7 +950,7 @@ bool unitCanInfest(CUnit* unit) {
 ;
 
 const u32 Func_AI_AttackUnit = 0x0043FFD0;
-void AI_AttackUnit(CUnit* unit){
+void      AI_AttackUnit(CUnit* unit){
 
     __asm {PUSHAD PUSH unit CALL Func_AI_AttackUnit POPAD}
 
@@ -977,8 +977,8 @@ CUnit* findBestAttackTarget(CUnit* unit) {
 ;
 
 const u32 Func_Sub462EA0 = 0x00462EA0;
-bool function_00462EA0(CUnit* unit, u8 unknownByteValue) {
-    static u32 _unknownByteValue;
+bool      function_00462EA0(CUnit* unit, u8 unknownByteValue) {
+    static u32    _unknownByteValue;
     static Bool32 bPreResult;
 
     _unknownByteValue = unknownByteValue;
@@ -998,7 +998,7 @@ bool function_00462EA0(CUnit* unit, u8 unknownByteValue) {
 ;
 
 const u32 Func_Sub465780 = 0x00465780;
-void function_00465780(CUnit* unit){
+void      function_00465780(CUnit* unit){
 
     __asm {PUSHAD MOV EDI, unit CALL Func_Sub465780 POPAD}
 
@@ -1007,7 +1007,7 @@ void function_00465780(CUnit* unit){
 ;
 
 const u32 Func_removeOrderFromUnitQueue = 0x004742D0;
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
+void      removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 
     __asm {PUSHAD MOV ECX,
            unit MOV EAX,
@@ -1018,7 +1018,7 @@ void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 ;
 
 const u32 Func_Sub474A70 = 0x00474A70;
-void function_00474A70(CUnit* unit, CUnit* target, u8 orderId){
+void      function_00474A70(CUnit* unit, CUnit* target, u8 orderId){
 
     __asm {PUSHAD MOV CL,
            orderId MOV EDX,
@@ -1030,10 +1030,10 @@ void function_00474A70(CUnit* unit, CUnit* target, u8 orderId){
 ;
 
 const u32 Func_isTargetWithinMinMovementRange = 0x004763D0;
-bool isTargetWithinMinMovementRange(
-    CUnit* unit,
-    CUnit* target,
-    u32 range) {  // EDI = unit or subunit,ECX = MaxWpnRange,EAX = target
+bool      isTargetWithinMinMovementRange(
+         CUnit* unit,
+         CUnit* target,
+         u32    range) {  // EDI = unit or subunit,ECX = MaxWpnRange,EAX = target
 
     static Bool32 bPreResult;
 
@@ -1053,7 +1053,7 @@ bool isTargetWithinMinMovementRange(
 ;
 
 const u32 Func_Sub476610 = 0x00476610;
-bool function_00476610(CUnit* unit, int x, int y) {
+bool      function_00476610(CUnit* unit, int x, int y) {
     static Bool32 bPreResult;
 
     __asm {
@@ -1072,7 +1072,7 @@ bool function_00476610(CUnit* unit, int x, int y) {
 ;
 
 const u32 Func_isUnitInWeaponRange = 0x00476870;
-bool isUnitInWeaponRange(CUnit* unit, CUnit* target) {
+bool      isUnitInWeaponRange(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {
@@ -1090,7 +1090,7 @@ bool isUnitInWeaponRange(CUnit* unit, CUnit* target) {
 ;
 
 const u32 Func_getWeaponBeginIscript = 0x00476ED0;
-void getWeaponBeginIscript(CUnit* unit, IscriptAnimation::Enum anim){
+void      getWeaponBeginIscript(CUnit* unit, IscriptAnimation::Enum anim){
 
     __asm {PUSHAD MOV EAX,
            unit MOV DL,
@@ -1101,7 +1101,7 @@ void getWeaponBeginIscript(CUnit* unit, IscriptAnimation::Enum anim){
 ;
 
 const u32 Func_Sub477510 = 0x00477510;
-void function_00477510(CUnit* unit){
+void      function_00477510(CUnit* unit){
 
     __asm {PUSHAD PUSH unit CALL Func_Sub477510 POPAD}
 
@@ -1110,7 +1110,7 @@ void function_00477510(CUnit* unit){
 ;
 
 const u32 Func_Sub477820 = 0x00477820;
-void function_00477820(CUnit* unit, u8 orderId) {
+void      function_00477820(CUnit* unit, u8 orderId) {
     static u32 orderId_;
 
     orderId_ = orderId;
@@ -1127,9 +1127,9 @@ void function_00477820(CUnit* unit, u8 orderId) {
 ;
 
 const u32 Func_Sub478370 = 0x00478370;
-bool function_00478370(CUnit* unit, u8 orderId) {
+bool      function_00478370(CUnit* unit, u8 orderId) {
     static Bool32 bPreResult;
-    static u32 orderId_;
+    static u32    orderId_;
 
     orderId_ = orderId;
 
@@ -1148,7 +1148,7 @@ bool function_00478370(CUnit* unit, u8 orderId) {
 ;
 
 const u32 Func_Sub478540 = 0x00478540;
-bool function_00478540(CUnit* unit) {
+bool      function_00478540(CUnit* unit) {
     static Bool32 bPreResult;
 
     __asm {
@@ -1184,7 +1184,7 @@ bool isUnitCritter(CUnit* unit) {
 ;
 
 const u32 Func_Sub495400 = 0x00495400;
-void function_00495400(CUnit* unit, CUnit* target){
+void      function_00495400(CUnit* unit, CUnit* target){
 
     __asm {PUSHAD MOV EDI, unit MOV EAX, target CALL Func_Sub495400 POPAD}
 
@@ -1193,7 +1193,7 @@ void function_00495400(CUnit* unit, CUnit* target){
 ;
 
 const u32 Func_SAI_GetRegionIdFromPxEx = 0x0049C9F0;
-u16 SAI_GetRegionIdFromPxEx(s32 x, s32 y) {
+u16       SAI_GetRegionIdFromPxEx(s32 x, s32 y) {
     static u16 result;
 
     __asm {
@@ -1211,7 +1211,7 @@ u16 SAI_GetRegionIdFromPxEx(s32 x, s32 y) {
 ;
 
 const u32 Func_isUnitVisible = 0x004E5DB0;
-bool isUnitVisible(CUnit* unit) {
+bool      isUnitVisible(CUnit* unit) {
     static Bool32 bPreResult;
 
     __asm {
@@ -1228,7 +1228,7 @@ bool isUnitVisible(CUnit* unit) {
 ;
 
 const u32 Func_isTargetVisible = 0x004E5E30;
-bool isTargetVisible(CUnit* unit, CUnit* target) {
+bool      isTargetVisible(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {
@@ -1269,7 +1269,7 @@ u8 getRightClickActionOrder(CUnit* unit) {
 // not related with assigning orders, but only with
 // destinations of orders
 const u32 Func_OrdersHoldPositionSuicidal = 0x004EB5B0;
-void makeToHoldPosition(CUnit* unit){
+void      makeToHoldPosition(CUnit* unit){
 
     __asm {PUSHAD MOV ESI, unit CALL Func_OrdersHoldPositionSuicidal POPAD}
 
@@ -1278,7 +1278,7 @@ void makeToHoldPosition(CUnit* unit){
 ;
 
 const u32 Func_moveToTarget = 0x004EB720;
-bool moveToTarget(CUnit* unit, CUnit* target) {
+bool      moveToTarget(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {
@@ -1296,7 +1296,7 @@ bool moveToTarget(CUnit* unit, CUnit* target) {
 ;
 
 const u32 Func_SetMoveTarget_xy = 0x004EB820;
-bool SetMoveTarget_xy(CUnit* unit, int x, int y) {
+bool      SetMoveTarget_xy(CUnit* unit, int x, int y) {
     static Bool32 bPreResult;
 
     __asm {
@@ -1316,14 +1316,14 @@ bool SetMoveTarget_xy(CUnit* unit, int x, int y) {
 
 // Related to path/movement decision
 const u32 Func_sub_4EB290 = 0x004EB290;
-void setNextWaypoint_Sub4EB290(CUnit* unit){
+void      setNextWaypoint_Sub4EB290(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_sub_4EB290 POPAD}}
 
 ;
 
 const u32 Func_Sub4EB900 = 0x004EB900;
-bool function_004EB900(CUnit* unit, CUnit* target) {
+bool      function_004EB900(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {
@@ -1341,7 +1341,7 @@ bool function_004EB900(CUnit* unit, CUnit* target) {
 ;
 
 const u32 Func_Sub4EB9C0 = 0x004EB9C0;
-bool function_004EB9C0(CUnit* unit, int x, int y) {
+bool      function_004EB9C0(CUnit* unit, int x, int y) {
     static Bool32 bPreResult;
 
     __asm {

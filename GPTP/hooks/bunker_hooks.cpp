@@ -5,14 +5,14 @@
 // Helper function declarations. Do NOT modify!
 namespace {
 
-CUnit* findRandomAttackTarget(CUnit* unit);      // 0x00442FC0
-Bool32 attackApplyCooldown(CUnit* unit);         // 0x00478B40
-void setThingyVisibilityFlags(CThingy* thingy);  // 0x004878F0
+CUnit*   findRandomAttackTarget(CUnit* unit);        // 0x00442FC0
+Bool32   attackApplyCooldown(CUnit* unit);           // 0x00478B40
+void     setThingyVisibilityFlags(CThingy* thingy);  // 0x004878F0
 CThingy* createThingy(u16 spriteId,
                       s16 x,
                       s16 y,
-                      u8 playerId = 0);               // 0x00488210
-void setImageDirection(CImage* image, s8 direction);  // 0x004D5F80
+                      u8  playerId = 0);                   // 0x00488210
+void     setImageDirection(CImage* image, s8 direction);  // 0x004D5F80
 
 }  // unnamed namespace
 
@@ -75,15 +75,15 @@ void createBunkerAttackThingyHook(CUnit* unit) {
     if (bunkerImage->flags & CImage_Flags::Mirrored)  // Is inverted
         offset.x = -offset.x;
 
-    u8 frameAngle;
+    u8  frameAngle;
     u16 spriteId;
 
     if (unit->id == UnitId::firebat || unit->id == UnitId::gui_montag) {
         frameAngle = ((unit->currentDirection1 + 8) / 16 % 16) * 16;
-        spriteId = 378;  // Firebat flamethrower graphics
+        spriteId   = 378;  // Firebat flamethrower graphics
     } else {
         frameAngle = frameDirection * 32;
-        spriteId = 377;  // Bunker attack overlay
+        spriteId   = 377;  // Bunker attack overlay
     }
 
     CThingy* bunkerAttackEffect = createThingy(
@@ -95,7 +95,7 @@ void createBunkerAttackThingyHook(CUnit* unit) {
         unit->sprite->elevationLevel + 1;
 
     for (CImage* image = bunkerAttackEffect->sprite->images.head; image != NULL;
-         image = image->link.next) {
+         image         = image->link.next) {
         setImageDirection(image, frameAngle);
     }
 
@@ -109,7 +109,7 @@ void createBunkerAttackThingyHook(CUnit* unit) {
 namespace {
 
 const u32 Func_findRandomAttackTarget = 0x00442FC0;
-CUnit* findRandomAttackTarget(CUnit* unit) {
+CUnit*    findRandomAttackTarget(CUnit* unit) {
     static CUnit* target;
 
     __asm {
@@ -124,7 +124,7 @@ CUnit* findRandomAttackTarget(CUnit* unit) {
 }
 
 const u32 Func_attackApplyCooldown = 0x00478B40;
-Bool32 attackApplyCooldown(CUnit* unit) {
+Bool32    attackApplyCooldown(CUnit* unit) {
     static u32 result;
 
     __asm {
@@ -139,7 +139,7 @@ Bool32 attackApplyCooldown(CUnit* unit) {
 }
 
 const u32 Func_SetThingyVisibilityFlags = 0x004878F0;
-void setThingyVisibilityFlags(CThingy* thingy){
+void      setThingyVisibilityFlags(CThingy* thingy){
 
     __asm {PUSHAD MOV ESI, thingy CALL Func_SetThingyVisibilityFlags POPAD}
 
@@ -148,13 +148,13 @@ void setThingyVisibilityFlags(CThingy* thingy){
 ;
 
 const u32 Func_CreateThingy = 0x00488210;
-CThingy* createThingy(u16 spriteId, s16 x, s16 y, u8 playerId) {
+CThingy*  createThingy(u16 spriteId, s16 x, s16 y, u8 playerId) {
     static CThingy* thingy;
-    static s32 x_;
-    static s32 playerId_;
-    static u32 spriteId_;
+    static s32      x_;
+    static s32      playerId_;
+    static u32      spriteId_;
 
-    x_ = x;
+    x_        = x;
     playerId_ = playerId;
     spriteId_ = spriteId;
 
@@ -175,7 +175,7 @@ CThingy* createThingy(u16 spriteId, s16 x, s16 y, u8 playerId) {
 ;
 
 const u32 Func_SetImageDirection = 0x004D5F80;
-void setImageDirection(CImage* image, s8 direction) {
+void      setImageDirection(CImage* image, s8 direction) {
     static u32 direction_;
 
     direction_ = direction;

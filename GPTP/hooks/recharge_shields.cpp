@@ -6,7 +6,7 @@
 //-------- Helper function declarations. Do NOT modify! --------//
 namespace {
 void insertFirstOrder(CUnit* unit, u8 orderId);        // 0x004749D0
-u8 hasOverlay(CUnit* unit);                            // 0x0047B720
+u8   hasOverlay(CUnit* unit);                          // 0x0047B720
 void makeToHoldPosition(CUnit* unit);                  // 0x004EB5B0
 bool orderToMoveToTarget(CUnit* unit, CUnit* target);  // 0x004EB980
 bool isHangarUnit(CUnit* unit);
@@ -30,7 +30,7 @@ void rechargeShieldsProc(CUnit* target, CUnit* battery) {
 
     if (energySpent > battery->energy) {
         energySpent = battery->energy;
-        shieldGain = energySpent * 2;
+        shieldGain  = energySpent * 2;
     }
 
     target->shields = target->shields + shieldGain;
@@ -170,7 +170,7 @@ void orderRechargeShieldsHook(CUnit* unit) {
 namespace {
 
 const u32 Helper_InsertFirstOrder = 0x004749D0;
-void insertFirstOrder(CUnit* unit, u8 orderId){
+void      insertFirstOrder(CUnit* unit, u8 orderId){
 
     __asm {PUSHAD MOV AL,
            orderId MOV ECX,
@@ -199,7 +199,7 @@ u8 hasOverlay(CUnit* unit) {
 ;
 
 const u32 Func_Sub4934B0 = 0x004934B0;
-void function_004934B0(CUnit* unit, CUnit* battery){
+void      function_004934B0(CUnit* unit, CUnit* battery){
 
     __asm {PUSHAD MOV ECX, unit MOV EBX, battery CALL Func_Sub4934B0 POPAD}
 
@@ -208,7 +208,7 @@ void function_004934B0(CUnit* unit, CUnit* battery){
 ;
 
 const u32 Func__moveToTarget = 0x004EB980;
-bool orderToMoveToTarget(CUnit* unit, CUnit* target) {
+bool      orderToMoveToTarget(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {
@@ -226,7 +226,7 @@ bool orderToMoveToTarget(CUnit* unit, CUnit* target) {
 ;
 
 const u32 Func_OrdersHoldPositionSuicidal = 0x004EB5B0;
-void makeToHoldPosition(CUnit* unit){
+void      makeToHoldPosition(CUnit* unit){
 
     __asm {PUSHAD MOV ESI, unit CALL Func_OrdersHoldPositionSuicidal POPAD}}
 

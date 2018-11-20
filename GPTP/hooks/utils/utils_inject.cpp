@@ -6,7 +6,7 @@ namespace {
 
 void __declspec(naked) InitializeDialogWrapper() {
     static BinDlg* dialog;
-    static void* dlgFunc;
+    static void*   dlgFunc;
 
     __asm {
 		PUSH EBP
@@ -38,7 +38,7 @@ void __declspec(naked) unit_IsStandardAndMovableWrapper() {
     }
 
     if (hooks::unit_IsStandardAndMovable(unit)) result = 1;
-    else result = 0;
+    else result                                        = 0;
 
     __asm {
 		POPAD

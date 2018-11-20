@@ -148,10 +148,10 @@ struct CUnit : public CUnitLayout {
 
     /// Deals damage to this unit, using a specific weapons.dat ID.
     void damageWith(
-        s32 damage,              ///< Amount of damage dealt to this unit.
-        u8 weaponId,             ///< weapons.dat ID to use.
+        s32    damage,           ///< Amount of damage dealt to this unit.
+        u8     weaponId,         ///< weapons.dat ID to use.
         CUnit* attacker = NULL,  ///< Attacking unit (for increasing kill count)
-        u8 attackingPlayer =
+        u8     attackingPlayer =
             -1,            ///< Attacking player (for increasing kill score)
         s8 direction = 0,  ///< Attacked direction (for shield flicker overlays)
         u8 damageDivisor =
@@ -159,10 +159,10 @@ struct CUnit : public CUnitLayout {
     );
 
     /// Deals damage directly to unit HP, killing it if possible.
-    void damageHp(s32 damage,
-                  CUnit* attacker = NULL,
-                  s32 attackingPlayer = -1,
-                  bool notify = true);
+    void damageHp(s32    damage,
+                  CUnit* attacker        = NULL,
+                  s32    attackingPlayer = -1,
+                  bool   notify          = true);
 
     /// Reduces Defensive Matrix by @p amount, removing it if possible.
     void reduceDefensiveMatrixHp(s32 amount);
@@ -207,28 +207,28 @@ struct CUnit : public CUnitLayout {
 
     //  Issue the @p order to the unit, using the given @p target unit and
     //  specify if previous orders should be stopped
-    void issueQueuedOrderTarget(u8 orderId,
+    void issueQueuedOrderTarget(u8     orderId,
                                 CUnit* target,
-                                bool stopPreviousOrders);
+                                bool   stopPreviousOrders);
 
     /// Causes the unit to become idle.
     void orderToIdle();
 
     /// Issues a new order to the unit.
-    void order(u8 orderId,
-               u16 x,
-               u16 y,
+    void order(u8     orderId,
+               u16    x,
+               u16    y,
                CUnit* target,
-               u16 targetUnitId,
-               bool stopPreviousOrders);
+               u16    targetUnitId,
+               bool   stopPreviousOrders);
 
     /// Probably add the @p order to the orders queue
-    void performAnotherOrder(u8 orderId,
-                             s16 x,
-                             s16 y,
+    void performAnotherOrder(u8     orderId,
+                             s16    x,
+                             s16    y,
                              CUnit* target,
-                             u16 targetUnitId,
-                             u32 unk = NULL);
+                             u16    targetUnitId,
+                             u32    unk = NULL);
 
     /// Used by several hooks, details not completely understood.
     void setSecondaryOrder(u8 orderId);

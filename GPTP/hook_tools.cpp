@@ -5,8 +5,8 @@
 // Injects a relative CALL to [target] at the [position].
 // Original function from BWAPI by Kovarex; Modified by pastelmind
 void callPatch(const void* target, void* position, const unsigned int nops) {
-    u8* const data = new u8[5 + nops];
-    data[0] = 0xE8;  // Relative CALL instruction
+    u8* const data    = new u8[5 + nops];
+    data[0]           = 0xE8;  // Relative CALL instruction
     const u32 address = (u32)target - (u32)position - 5;  // Relative address
     *(u32*)(&data[1]) = address;
     for (unsigned int i = 0; i < nops; ++i)
@@ -18,8 +18,8 @@ void callPatch(const void* target, void* position, const unsigned int nops) {
 // Injects a relative JMP to [target] at the [position].
 // Original function from BWAPI by Kovarex; Modified by pastelmind
 void jmpPatch(const void* target, void* position, unsigned int nops) {
-    u8* const data = new u8[5 + nops];
-    data[0] = 0xE9;  // Relative JMP instruction
+    u8* const data    = new u8[5 + nops];
+    data[0]           = 0xE9;  // Relative JMP instruction
     const s32 address = (s32)target - (s32)position - 5;  // Relative address
     *(s32*)(&data[1]) = address;
     for (unsigned int i = 0; i < nops; ++i)

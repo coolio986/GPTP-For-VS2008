@@ -8,7 +8,7 @@ namespace {
 //-------- CMDRECV_UnitMorph --------//
 
 const u32 Func_AddUnitToBuildQueue = 0x00467250;
-bool addUnitToBuildQueue(CUnit* unit, u16 unitId) {
+bool      addUnitToBuildQueue(CUnit* unit, u16 unitId) {
     static u32 result;
     static u32 unitId_;
 
@@ -44,8 +44,8 @@ void __stdcall unitMorphWrapper_CMDRECV_UnitMorph(u8* commandData) {
 
 //-------- BTNSCOND_CanBuildUnit --------//
 
-s32 __fastcall unitMorphWrapper_BTNSCOND_CanBuildUnit(u16 buildUnitId,
-                                                      s32 playerId,
+s32 __fastcall unitMorphWrapper_BTNSCOND_CanBuildUnit(u16    buildUnitId,
+                                                      s32    playerId,
                                                       CUnit* unit) {
     if (*clientSelectionCount <= 1 ||
         hooks::getUnitMorphEggTypeHook(unit->id) != UnitId::None)
@@ -87,7 +87,7 @@ void __declspec(naked) unitMorphWrapper_Orders_Morph1_Check() {
 const u32 Hook_Orders_Morph1_EggType_Return = 0x0045E048;
 void __declspec(naked) unitMorphWrapper_Orders_Morph1_EggType() {
     static CUnit* unit;
-    static u32 morphEggType;
+    static u32    morphEggType;
 
     __asm {
 		PUSHAD
@@ -108,8 +108,8 @@ void __declspec(naked) unitMorphWrapper_Orders_Morph1_EggType() {
 
 //-------- hasSuppliesForUnit --------//
 
-Bool32 __stdcall hasSuppliesForUnitWrapper(u8 playerId,
-                                           u16 unitId,
+Bool32 __stdcall hasSuppliesForUnitWrapper(u8     playerId,
+                                           u16    unitId,
                                            Bool32 canShowErrorMessage) {
     if (hooks::hasSuppliesForUnitHook(
             playerId, unitId, canShowErrorMessage != 0))
@@ -124,7 +124,7 @@ typedef void(__stdcall* CancelZergBuildingFunc)(CUnit*);
 CancelZergBuildingFunc cancelZergBuilding = (CancelZergBuildingFunc)0x0045DA40;
 
 const u32 Func_ChangeUnitType = 0x0049FED0;
-void changeUnitType(CUnit* unit, u16 newUnitId) {
+void      changeUnitType(CUnit* unit, u16 newUnitId) {
     static u32 newUnitId_ = newUnitId;
 
     newUnitId_ = newUnitId;
@@ -139,11 +139,11 @@ void changeUnitType(CUnit* unit, u16 newUnitId) {
 }
 
 const u32 Func_ReplaceSpriteImages = 0x00499BB0;
-void replaceSpriteImages(CSprite* sprite, u16 imageId, u8 imageDirection) {
+void      replaceSpriteImages(CSprite* sprite, u16 imageId, u8 imageDirection) {
     static u32 imageId_;
     static u32 imageDirection_;
 
-    imageId_ = imageId;
+    imageId_        = imageId;
     imageDirection_ = imageDirection;
 
     __asm {
@@ -205,14 +205,14 @@ void __fastcall cancelUnitWrapper(CUnit* unit) {
             CUnit* silo = unit->connectedUnit;
             if (silo) {
                 silo->building.silo.nuke = NULL;
-                silo->mainOrderState = 0;
+                silo->mainOrderState     = 0;
             }
             scbw::refreshConsole();
         }
         unit->remove();
     } else {
         changeUnitType(unit, cancelChangeUnitId);
-        unit->remainingBuildTime = 0;
+        unit->remainingBuildTime               = 0;
         unit->buildQueue[unit->buildQueueSlot] = UnitId::None;
         replaceSpriteImages(
             unit->sprite,
@@ -241,7 +241,7 @@ s32 getRemainingBuildTimePctHook(CUnit* unit) {
 // Inject @ 0x004669E0
 void __declspec(naked) getRemainingBuildTimePctWrapper() {
     static CUnit* unit;
-    static s32 percentage;
+    static s32    percentage;
 
     __asm {
 		PUSHAD
@@ -264,7 +264,7 @@ void __declspec(naked) getRemainingBuildTimePctWrapper() {
 const u32 Hook_GetUnitVerticalOffsetOnBirth_Return = 0x0045DE2C;
 void __declspec(naked) getUnitVerticalOffsetOnBirthWrapper() {
     static CUnit* unit;
-    static s16 yOffset;
+    static s16    yOffset;
 
     __asm {
 		PUSHAD
@@ -282,7 +282,7 @@ void __declspec(naked) getUnitVerticalOffsetOnBirthWrapper() {
 
 // Inject @ 0x0045DE57
 const u32 Hook_IsRallyableEggUnit_Yes = 0x0045DE6C;
-const u32 Hook_IsRallyableEggUnit_No = 0x0045DE8B;
+const u32 Hook_IsRallyableEggUnit_No  = 0x0045DE8B;
 void __declspec(naked) isRallyableEggUnitWrapper() {
     static CUnit* unit;
 

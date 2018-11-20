@@ -37,15 +37,15 @@ void setMaxSightRange() {
     static SightStruct sightData[MAX_SIGHT_RANGE + 1] = {};
 
     for (unsigned int x = 0; x <= MAX_SIGHT_RANGE; ++x) {
-        sightData[x].tileSightWidth = x * 2 + 3;
+        sightData[x].tileSightWidth  = x * 2 + 3;
         sightData[x].tileSightHeight = x * 2 + 3;
-        sightData[x].unknown1 = 3;
-        sightData[x].unknown2 = 3;
+        sightData[x].unknown1        = 3;
+        sightData[x].unknown2        = 3;
     }
 
     memoryPatch(offsets::SightStructArrayRef, &sightData);
 
-    const u16 mapTileWidth = mapTileSize->width;
+    const u16 mapTileWidth    = mapTileSize->width;
     const u32 sightRangeParam = MAX_SIGHT_RANGE + 1;
     __asm {
     PUSHAD

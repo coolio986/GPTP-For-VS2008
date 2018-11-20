@@ -9,7 +9,7 @@ class StasisFieldTargetFinderProc
     : public scbw::UnitFinderCallbackMatchInterface {
    private:
     CUnit* caster;
-    bool isUnderAttack;
+    bool   isUnderAttack;
 
    public:
     StasisFieldTargetFinderProc(CUnit* caster, bool isUnderAttack)

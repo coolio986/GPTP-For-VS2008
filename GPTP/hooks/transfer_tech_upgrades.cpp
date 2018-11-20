@@ -75,8 +75,8 @@ const TechTransferData techTransferData[] = {
 
 struct UpgradeTransferData {
     u16 unitId;
-    u8 relatedUpgrades[4];  // Maximum number of tech (use UpgradeId::None to
-                            // mark a premature end-of-list)
+    u8  relatedUpgrades[4];  // Maximum number of tech (use UpgradeId::None to
+                             // mark a premature end-of-list)
 };
 
 const UpgradeTransferData upgradeTransferData[] = {
@@ -142,19 +142,19 @@ namespace hooks {
 
 // summon a function passed as parameter, having the same variables layout for
 // both upgrade and tech related functions.
-bool researchHelper(u32 researchTechFunc,
+bool researchHelper(u32    researchTechFunc,
                     CUnit* sourceUnit,
-                    u32 techId,
-                    u32 relativeVariable,
-                    u32 destPlayerId) {
+                    u32    techId,
+                    u32    relativeVariable,
+                    u32    destPlayerId) {
     static u32 bPreResult;
 
     __asm {
 		PUSHAD
 		PUSH destPlayerId  //[EBP+0x14]
 		PUSH relativeVariable  //[EBP+0x10] //this variable has different
-                                   //meaning depending on the caller (boolean or
-                                   //number) 
+                                   // meaning depending on the caller (boolean
+                                   // or number) 
 		PUSH techId  //[EBP+0x0C]
 		PUSH sourceUnit  //[EBP+0x08]
 		CALL researchTechFunc
@@ -172,13 +172,13 @@ bool researchHelper(u32 researchTechFunc,
 // Transfers all tech related to the @p source unit to @p targetPlayerId.
 // Originally researchAllTechsFromUnit @ 004E2C00
 void transferUnitTechToPlayerHook(CUnit* sourceUnit,
-                                  u8 targetPlayerId,
-                                  u32 researchTechFunc) {
+                                  u8     targetPlayerId,
+                                  u32    researchTechFunc) {
     const TechTransferData* techDataArrayPosBegin =
         &techTransferData[0];  // original was (TechTransferData*) 0x005011CA;
-    const TechTransferData* techDataArrayPosEnd = &techTransferData[ARRAY_SIZE(
+    const TechTransferData* techDataArrayPosEnd  = &techTransferData[ARRAY_SIZE(
         techTransferData)];  // original was (TechTransferData*) 0x005012DE;
-    const int relatedTechArraySize = 5;
+    const int               relatedTechArraySize = 5;
 
     // Stop if the source unit does not exist
     if (researchTechFunc == NULL || sourceUnit == NULL)
@@ -202,7 +202,7 @@ void transferUnitTechToPlayerHook(CUnit* sourceUnit,
 
                     // forced end of array, stop checking techs, but still check
                     // others TechTransferData (in case the unit is represented
-                    //several times?)
+                    // several times?)
                     if (techId == TechId::None)
                         bBreakSubLoop = true;
                     else {
@@ -227,7 +227,7 @@ void transferUnitTechToPlayerHook(CUnit* sourceUnit,
                                             techId,
                                             bIsResearched,
                                             targetPlayerId)) {
-                            bBreakSubLoop = true;
+                            bBreakSubLoop  = true;
                             bBreakMainLoop = true;
                         }
                     }
@@ -249,8 +249,8 @@ void transferUnitTechToPlayerHook(CUnit* sourceUnit,
 // Transfers all upgrades related to the @p source unit to @p targetPlayerId.
 // Originally upgradeAllUpgradesFromUnit @ 004E2B50
 void transferUnitUpgradesToPlayerHook(CUnit* sourceUnit,
-                                      u8 targetPlayerId,
-                                      u32 researchUpgradesFunc) {
+                                      u8     targetPlayerId,
+                                      u32    researchUpgradesFunc) {
     const UpgradeTransferData* upgradeDataArrayPosBegin =
         &upgradeTransferData[0];  // original was (UpgradeTransferData*)
                                   // 0x005012E2;
@@ -283,7 +283,7 @@ void transferUnitUpgradesToPlayerHook(CUnit* sourceUnit,
 
                     // forced end of array, stop checking upgrades, but still
                     // check others UpgradeTransferData (in case the unit is
-                    //represented several times?)
+                    // represented several times?)
                     if (upgradeId == UpgradeId::None)
                         bBreakSubLoop = true;
                     else {
@@ -309,7 +309,7 @@ void transferUnitUpgradesToPlayerHook(CUnit* sourceUnit,
                                             upgradeId,
                                             sourceUpgradeLevel,
                                             targetPlayerId)) {
-                            bBreakSubLoop = true;
+                            bBreakSubLoop  = true;
                             bBreakMainLoop = true;
                         }
                     }

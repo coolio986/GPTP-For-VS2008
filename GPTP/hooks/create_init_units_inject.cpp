@@ -6,7 +6,7 @@ namespace {
 
 void __declspec(naked) CreateInitialMeleeBuildingsWrapper() {
     static u32 playerId;
-    static u8 raceId;
+    static u8  raceId;
 
     __asm {
 

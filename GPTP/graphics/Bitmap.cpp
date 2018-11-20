@@ -50,25 +50,25 @@ u8 gbFontColors[24][8] = {{0xC0, 0x9B, 0x9A, 0x95, 0x43, 0x00, 0x00, 0x28},
                           {0x8A, 0x88, 0x84, 0x81, 0x60, 0x8A, 0x8A, 0x8A},
                           {0x8A, 0x80, 0x34, 0x31, 0x2E, 0x8A, 0x8A, 0x8A}};
 
-const HWND *hWndMainSC = (HWND *)0x0051BFB0;
-const int KOR_CHAR_MAX_WIDTH = 32;
-const int KOR_CHAR_MAX_HEIGHT = 32;
+const HWND *hWndMainSC          = (HWND *)0x0051BFB0;
+const int   KOR_CHAR_MAX_WIDTH  = 32;
+const int   KOR_CHAR_MAX_HEIGHT = 32;
 
 // Loosely based on writeWindowText() @ 0x0041F2B0
 void Bitmap::blitKoreanChar(const char *ch,
-                            int &x,
-                            int &y,
-                            u8 fontSize,
-                            u8 color) {
+                            int &       x,
+                            int &       y,
+                            u8          fontSize,
+                            u8          color) {
     static HFONT gulim_8pt = NULL, gulim_9pt = NULL, gulim_10pt = NULL,
-                 gulim_11pt = NULL;
-    static HDC bufferDc = NULL;
+                 gulim_11pt  = NULL;
+    static HDC     bufferDc  = NULL;
     static HBITMAP bufferBmp = NULL;  // Temporary bitmap to draw the character
 
     // Load Korean fonts
     if (!gulim_9pt) {
-        HDC screenDc = GetDC(NULL);
-        LOGFONT lFont = {};
+        HDC     screenDc = GetDC(NULL);
+        LOGFONT lFont    = {};
         strcpy_s(lFont.lfFaceName, "±¼¸²");
         lFont.lfCharSet = HANGUL_CHARSET;
 
@@ -77,15 +77,15 @@ void Bitmap::blitKoreanChar(const char *ch,
         gulim_8pt = CreateFontIndirect(&lFont);
 
         lFont.lfHeight = -MulDiv(9, GetDeviceCaps(screenDc, LOGPIXELSY), 72);
-        gulim_9pt = CreateFontIndirect(&lFont);
+        gulim_9pt      = CreateFontIndirect(&lFont);
 
         lFont.lfWeight = FW_BOLD;
         lFont.lfHeight = -MulDiv(10, GetDeviceCaps(screenDc, LOGPIXELSY), 72);
-        gulim_10pt = CreateFontIndirect(&lFont);
+        gulim_10pt     = CreateFontIndirect(&lFont);
 
         lFont.lfWeight = FW_BOLD;
         lFont.lfHeight = -MulDiv(11, GetDeviceCaps(screenDc, LOGPIXELSY), 72);
-        gulim_11pt = CreateFontIndirect(&lFont);
+        gulim_11pt     = CreateFontIndirect(&lFont);
 
         ReleaseDC(NULL, screenDc);
     }
@@ -129,7 +129,7 @@ void Bitmap::blitKoreanChar(const char *ch,
 
     char koreanChars[3];
     *(u16 *)koreanChars = *(u16 *)ch;
-    koreanChars[2] = '\0';
+    koreanChars[2]      = '\0';
 
     // Retrieve the size of the rectangular area to draw the character
     RECT chRect = {};
@@ -182,7 +182,7 @@ bool Bitmap::blitString(const char *pszStr, int x, int y, u8 size) {
     // Reference an unsigned character array
     const u8 *pbChars = (u8 *)pszStr;
 
-    u8 lastColor = 0, color = 0;
+    u8  lastColor = 0, color = 0;
     int Xoffset = x, Yoffset = y;
 
     // Iterate all characters in the message
@@ -221,7 +221,7 @@ bool Bitmap::blitString(const char *pszStr, int x, int y, u8 size) {
                     continue;
                 default:  // colour code
                     lastColor = color;
-                    color = gbColorTable[pbChars[c]];
+                    color     = gbColorTable[pbChars[c]];
                     continue;
             }
         }
@@ -301,7 +301,7 @@ void Bitmap::drawLine(int x1, int y1, int x2, int y2, ColorId color) {
     else {
         const int dx = abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
         const int dy = -abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
-        int err = dx + dy;
+        int       err = dx + dy;
 
         int x = x1, y = y1;
         this->drawDot(x, y, color);
@@ -364,10 +364,10 @@ void Bitmap::drawBox(int left, int top, int right, int bottom, ColorId color) {
         this->drawVerticalLineUnsafe(right, yMin, yMax, color);
 }
 
-void Bitmap::drawFilledBox(int left,
-                           int top,
-                           int right,
-                           int bottom,
+void Bitmap::drawFilledBox(int     left,
+                           int     top,
+                           int     right,
+                           int     bottom,
                            ColorId color) {
     if (left > right) std::swap(left, right);
     if (right < 0 || left >= this->getWidth()) return;
@@ -375,9 +375,9 @@ void Bitmap::drawFilledBox(int left,
     if (top > bottom) std::swap(top, bottom);
     if (bottom < 0 || top >= this->getHeight()) return;
 
-    left = std::max(left, 0);
-    right = std::min(right, this->getWidth() - 1);
-    top = std::max(top, 0);
+    left   = std::max(left, 0);
+    right  = std::min(right, this->getWidth() - 1);
+    top    = std::max(top, 0);
     bottom = std::min(bottom, this->getHeight() - 1);
 
     for (int y = top; y <= bottom; ++y)
@@ -424,10 +424,10 @@ void Bitmap::drawFilledCircle(int x, int y, int radius, ColorId color) {
 
 //-------- Ellipse drawing --------//
 
-void Bitmap::drawEllipse(int left,
-                         int top,
-                         int right,
-                         int bottom,
+void Bitmap::drawEllipse(int     left,
+                         int     top,
+                         int     right,
+                         int     bottom,
                          ColorId color) {
     if (left > right) std::swap(left, right);
     if (right <= 0 || left >= this->getWidth()) return;
@@ -444,8 +444,8 @@ void Bitmap::drawEllipse(int left,
     // Code taken from http://members.chello.at/easyfilter/bresenham.html
 
     int a = abs(x1 - x0), b = abs(y1 - y0), b1 = b & 1; /* values of diameter */
-    double dx = 4 * (1.0 - a) * b * b,
-           dy = 4 * (b1 + 1) * a * a;      /* error increment */
+    double dx  = 4 * (1.0 - a) * b * b,
+           dy  = 4 * (b1 + 1) * a * a;     /* error increment */
     double err = dx + dy + b1 * a * a, e2; /* error of 1.step */
 
     if (x0 > x1) {
@@ -455,7 +455,7 @@ void Bitmap::drawEllipse(int left,
     if (y0 > y1) y0 = y1; /* .. exchange them */
     y0 += (b + 1) / 2;
     y1 = y0 - b1; /* starting pixel */
-    a = 8 * a * a;
+    a  = 8 * a * a;
     b1 = 8 * b * b;
 
     do {
@@ -491,7 +491,7 @@ void Bitmap::drawDottedLine(int x1, int y1, int x2, int y2, ColorId color) {
 
     const int dx = abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
     const int dy = -abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
-    int err = dx + dy;
+    int       err = dx + dy;
 
     int x = x1, y = y1;
     if (nIgnoreHalf % 20 < 5) this->drawDot(x, y, color);
@@ -513,10 +513,10 @@ void Bitmap::drawDottedLine(int x1, int y1, int x2, int y2, ColorId color) {
 
 //-------- Dotted Ellipse drawing --------//
 
-void Bitmap::drawDottedEllipse(int left,
-                               int top,
-                               int right,
-                               int bottom,
+void Bitmap::drawDottedEllipse(int     left,
+                               int     top,
+                               int     right,
+                               int     bottom,
                                ColorId color) {
     int nIgnoreHalf = 0;
 
@@ -535,8 +535,8 @@ void Bitmap::drawDottedEllipse(int left,
     // Code taken from http://members.chello.at/easyfilter/bresenham.html
 
     int a = abs(x1 - x0), b = abs(y1 - y0), b1 = b & 1; /* values of diameter */
-    double dx = 4 * (1.0 - a) * b * b,
-           dy = 4 * (b1 + 1) * a * a;      /* error increment */
+    double dx  = 4 * (1.0 - a) * b * b,
+           dy  = 4 * (b1 + 1) * a * a;     /* error increment */
     double err = dx + dy + b1 * a * a, e2; /* error of 1.step */
 
     if (x0 > x1) {
@@ -546,7 +546,7 @@ void Bitmap::drawDottedEllipse(int left,
     if (y0 > y1) y0 = y1; /* .. exchange them */
     y0 += (b + 1) / 2;
     y1 = y0 - b1; /* starting pixel */
-    a = 8 * a * a;
+    a  = 8 * a * a;
     b1 = 8 * b * b;
 
     do {
@@ -623,9 +623,9 @@ void Bitmap::drawVerticalLineUnsafe(int x, int y1, int y2, ColorId color) {
 
 int Bitmap::computeOutcode(int x, int y) {
     const int OUTCODE_INSIDE = 0;  // 0000
-    const int OUTCODE_LEFT = 1;    // 0001
-    const int OUTCODE_RIGHT = 2;   // 0010
-    const int OUTCODE_TOP = 4;     // 0100
+    const int OUTCODE_LEFT   = 1;  // 0001
+    const int OUTCODE_RIGHT  = 2;  // 0010
+    const int OUTCODE_TOP    = 4;  // 0100
     const int OUTCODE_BOTTOM = 8;  // 1000
 
     if (x < 0) {

@@ -12,18 +12,18 @@
 
 namespace {
 
-u32 getHPGainForRepair(CUnit* unit);                                 // 02C40
-void refundUnitTrainCost(u32 unitId, u8 playerId);                   // 2CEC0
-void function_00432430(CUnit* unit, u32 buildQueueSlot);             // 32430
-void addHangarUnit(CUnit* main_unit, CUnit* added_unit);             // 66300
-void orderNewUnitToRally(CUnit* unit, CUnit* factory);               // 66F50
+u32    getHPGainForRepair(CUnit* unit);                              // 02C40
+void   refundUnitTrainCost(u32 unitId, u8 playerId);                 // 2CEC0
+void   function_00432430(CUnit* unit, u32 buildQueueSlot);           // 32430
+void   addHangarUnit(CUnit* main_unit, CUnit* added_unit);           // 66300
+void   orderNewUnitToRally(CUnit* unit, CUnit* factory);             // 66F50
 Bool32 buildingAddon(CUnit* unit, u32 hpGain, Bool32 canBeAborted);  // 679A0
 CUnit* attemptTrainHatchUnit(CUnit* trainer,
-                             u32 builtUnitID,
-                             u32 flag);                          // 68200
-void AI_CancelStructure(CUnit* unit);                            // 68280
-void AI_TrainingUnit(CUnit* unit_creator, CUnit* created_unit);  // A2830
-void hideAndDisableUnit(CUnit* unit);                            // E6340
+                             u32    builtUnitID,
+                             u32    flag);                            // 68200
+void   AI_CancelStructure(CUnit* unit);                            // 68280
+void   AI_TrainingUnit(CUnit* unit_creator, CUnit* created_unit);  // A2830
+void   hideAndDisableUnit(CUnit* unit);                            // E6340
 
 }  // unnamed namespace
 
@@ -37,7 +37,7 @@ void secondaryOrd_TrainFighter(CUnit* unit) {
         if (unit->secondaryOrderState == 0 || unit->secondaryOrderState == 1) {
             if (unit->buildQueue[unit->buildQueueSlot] == UnitId::None) {
                 unit->secondaryOrderState = 3;
-                unit->currentBuildUnit = NULL;
+                unit->currentBuildUnit    = NULL;
             } else {
                 CUnit* builtUnit;
 
@@ -54,13 +54,13 @@ void secondaryOrd_TrainFighter(CUnit* unit) {
                     unit->secondaryOrderState = 1;
                 else {
                     builtUnit->interceptor.parent = unit;
-                    unit->secondaryOrderState = 2;
+                    unit->secondaryOrderState     = 2;
                 }
             }
 
         } else if (unit->secondaryOrderState == 2) {
             CUnit* builtUnit = unit->currentBuildUnit;
-            u32 hpGain;
+            u32    hpGain;
 
             if (builtUnit != NULL) {
                 hpGain = getHPGainForRepair(builtUnit);
@@ -77,14 +77,14 @@ void secondaryOrd_TrainFighter(CUnit* unit) {
 
                     scbw::refreshConsole();
 
-                    unit->currentBuildUnit = NULL;
+                    unit->currentBuildUnit    = NULL;
                     unit->secondaryOrderState = 0;
                 }
 
             } else {
                 scbw::refreshConsole();
 
-                unit->currentBuildUnit = NULL;
+                unit->currentBuildUnit    = NULL;
                 unit->secondaryOrderState = 0;
             }
 
@@ -234,7 +234,7 @@ void function_00468420(CUnit* unit) {
 
             if (jump_to_685D8) {
                 scbw::refreshConsole();
-                unit->currentBuildUnit = NULL;
+                unit->currentBuildUnit    = NULL;
                 unit->secondaryOrderState = 0;
             }
         }
@@ -262,7 +262,7 @@ u32 getHPGainForRepair(CUnit* unit) {
 ;
 
 const u32 Func_refundUnitTrainCost = 0x0042CEC0;
-void refundUnitTrainCost(u32 unitId, u8 playerId){
+void      refundUnitTrainCost(u32 unitId, u8 playerId){
 
     __asm {PUSHAD MOV ECX,
            unitId MOV AL,
@@ -273,10 +273,10 @@ void refundUnitTrainCost(u32 unitId, u8 playerId){
 ;
 
 const u32 Func_Sub432430 = 0x00432430;
-void function_00432430(CUnit* unit, u32 buildQueueSlot){
+void      function_00432430(CUnit* unit, u32 buildQueueSlot){
 
     __asm {PUSHAD MOV EAX,
-           unit MOV ECX,
+           unit MOV       ECX,
            buildQueueSlot CALL Func_Sub432430 POPAD}
 
 }
@@ -284,7 +284,7 @@ void function_00432430(CUnit* unit, u32 buildQueueSlot){
 ;
 
 const u32 Func_addHangerUnit = 0x00466300;
-void addHangarUnit(CUnit* main_unit, CUnit* added_unit){
+void      addHangarUnit(CUnit* main_unit, CUnit* added_unit){
 
     __asm {PUSHAD MOV EDI,
            main_unit MOV ESI,
@@ -295,7 +295,7 @@ void addHangarUnit(CUnit* main_unit, CUnit* added_unit){
 ;
 
 const u32 Func_Sub466F50 = 0x00466F50;
-void orderNewUnitToRally(CUnit* unit, CUnit* factory){
+void      orderNewUnitToRally(CUnit* unit, CUnit* factory){
 
     __asm {PUSHAD MOV EAX, unit MOV ECX, factory CALL Func_Sub466F50 POPAD}
 
@@ -325,7 +325,7 @@ Bool32 buildingAddon(CUnit* unit, u32 hpGain, Bool32 canBeAborted) {
 ;
 
 const u32 Func_attemptTrainHatchUnit = 0x00468200;
-CUnit* attemptTrainHatchUnit(CUnit* trainer, u32 builtUnitID, u32 flag) {
+CUnit*    attemptTrainHatchUnit(CUnit* trainer, u32 builtUnitID, u32 flag) {
     static CUnit* builtUnit;
 
     __asm {
@@ -344,7 +344,7 @@ CUnit* attemptTrainHatchUnit(CUnit* trainer, u32 builtUnitID, u32 flag) {
 ;
 
 const u32 Func_AI_CancelStructure = 0x00468280;
-void AI_CancelStructure(CUnit* unit){
+void      AI_CancelStructure(CUnit* unit){
 
     __asm {PUSHAD MOV ECX, unit CALL Func_AI_CancelStructure POPAD}
 
@@ -353,15 +353,15 @@ void AI_CancelStructure(CUnit* unit){
 ;
 
 const u32 Func_AI_TrainingUnit = 0x004A2830;
-void AI_TrainingUnit(CUnit* unit_creator, CUnit* created_unit){
-    __asm {PUSHAD MOV EAX,
+void      AI_TrainingUnit(CUnit* unit_creator, CUnit* created_unit){
+    __asm {PUSHAD MOV   EAX,
            created_unit MOV ECX,
            unit_creator CALL Func_AI_TrainingUnit POPAD}}
 
 ;
 
 const u32 Func_unitDeathSomething_0 = 0x004E6340;
-void hideAndDisableUnit(CUnit* unit){
+void      hideAndDisableUnit(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_unitDeathSomething_0 POPAD}
 

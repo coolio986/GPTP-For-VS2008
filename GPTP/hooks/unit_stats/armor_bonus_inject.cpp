@@ -8,7 +8,7 @@ namespace {
 // Inject with jmpPatch()
 void __declspec(naked) getArmorBonusWrapper() {
     static CUnit* unit;
-    static u8 armor;
+    static u8     armor;
 
     __asm {
 		MOV unit, EAX

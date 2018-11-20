@@ -21,7 +21,7 @@ void CMDRECV_CancelNuke() {
     CUnit* current_unit;
 
     *selectionIndexStart = 0;
-    current_unit = getActivePlayerNextSelection();
+    current_unit         = getActivePlayerNextSelection();
 
     while (current_unit != NULL) {
         if (current_unit->id == UnitId::TerranGhost ||
@@ -33,7 +33,7 @@ void CMDRECV_CancelNuke() {
 
             if (nuke != NULL && nuke->id == UnitId::TerranNuclearMissile) {
                 current_unit->connectedUnit = NULL;
-                nuke->connectedUnit = NULL;
+                nuke->connectedUnit         = NULL;
             }
         }
 
@@ -48,7 +48,7 @@ void CMDRECV_CancelAddon() {
     CUnit* unit;
 
     *selectionIndexStart = 0;
-    unit = getActivePlayerNextSelection();
+    unit                 = getActivePlayerNextSelection();
 
     if (unit != NULL && getActivePlayerNextSelection() == NULL &&
         unit->secondaryOrderId == OrderId::BuildAddon &&
@@ -71,7 +71,7 @@ void CMDRECV_CancelUpgrade() {
     CUnit* unit;
 
     *selectionIndexStart = 0;
-    unit = getActivePlayerNextSelection();
+    unit                 = getActivePlayerNextSelection();
 
     if (unit != NULL && getActivePlayerNextSelection() == NULL &&
         unit->status & UnitStatus::Completed &&
@@ -88,7 +88,7 @@ void CMDRECV_CancelResearch() {
     CUnit* unit;
 
     *selectionIndexStart = 0;
-    unit = getActivePlayerNextSelection();
+    unit                 = getActivePlayerNextSelection();
 
     if (unit != NULL && getActivePlayerNextSelection() == NULL &&
         units_dat::BaseProperty[unit->id] & UnitProperty::Building &&
@@ -106,7 +106,7 @@ void CMDRECV_CancelTrain(u16 wUnitID) {
     CUnit* unit;
 
     *selectionIndexStart = 0;
-    unit = getActivePlayerNextSelection();
+    unit                 = getActivePlayerNextSelection();
 
     if (unit != NULL && getActivePlayerNextSelection() == NULL &&
         unit->id != UnitId::ZergLarva && unit->id != UnitId::ZergMutalisk &&
@@ -133,7 +133,7 @@ void CMDRECV_CancelUnitMorph() {
     CUnit* current_unit;
 
     *selectionIndexStart = 0;
-    current_unit = getActivePlayerNextSelection();
+    current_unit         = getActivePlayerNextSelection();
 
     while (current_unit != NULL) {
         if (current_unit->playerId == *ACTIVE_NATION_ID)
@@ -150,7 +150,7 @@ void CMDRECV_CancelConstruction() {
     CUnit* unit;
 
     *selectionIndexStart = 0;
-    unit = getActivePlayerNextSelection();
+    unit                 = getActivePlayerNextSelection();
 
     if (unit != NULL && getActivePlayerNextSelection() == NULL &&
         unit->playerId == *ACTIVE_NATION_ID)
@@ -166,7 +166,7 @@ void CMDRECV_CancelConstruction() {
 namespace {
 
 const u32 Func_Sub453E30 = 0x00453E30;
-void CancelResearch_Proc(CUnit* unit){
+void      CancelResearch_Proc(CUnit* unit){
 
     __asm {PUSHAD MOV EDX, unit CALL Func_Sub453E30 POPAD}
 
@@ -175,7 +175,7 @@ void CancelResearch_Proc(CUnit* unit){
 ;
 
 const u32 Func_Sub454280 = 0x00454280;
-void CancelUpgrade_Proc(CUnit* unit){
+void      CancelUpgrade_Proc(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub454280 POPAD}
 
@@ -184,7 +184,7 @@ void CancelUpgrade_Proc(CUnit* unit){
 ;
 
 const u32 Func_refundQueueSlot = 0x00466A70;
-void refundQueueSlot(CUnit* unit, u16 slot){
+void      refundQueueSlot(CUnit* unit, u16 slot){
 
     __asm {PUSHAD MOV EDI, unit MOVZX EAX, slot CALL Func_refundQueueSlot POPAD}
 
@@ -193,7 +193,7 @@ void refundQueueSlot(CUnit* unit, u16 slot){
 ;
 
 const u32 Func_Sub466E40 = 0x00466E40;
-void function_00466E40(CUnit* unit){
+void      function_00466E40(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub466E40 POPAD}
 
@@ -202,7 +202,7 @@ void function_00466E40(CUnit* unit){
 ;
 
 const u32 Func_AI_CancelStructure = 0x00468280;
-void AI_CancelStructure(CUnit* unit){
+void      AI_CancelStructure(CUnit* unit){
 
     __asm {PUSHAD MOV ECX, unit CALL Func_AI_CancelStructure POPAD}
 
@@ -211,7 +211,7 @@ void AI_CancelStructure(CUnit* unit){
 ;
 
 const u32 Func_Sub4E66E0 = 0x004E66E0;
-void CancelAddon_Proc(CUnit* unit){
+void      CancelAddon_Proc(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub4E66E0 POPAD}
 

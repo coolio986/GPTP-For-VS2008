@@ -7,9 +7,9 @@
 namespace graphics {
 
 enum GraphicsErrorId {
-    ERR_TOO_MANY_SHAPES = 0x1,
-    ERR_TOO_MANY_STRINGS = 0x2,
-    ERR_UNKNOWN_SHAPE = 0x4,
+    ERR_TOO_MANY_SHAPES    = 0x1,
+    ERR_TOO_MANY_STRINGS   = 0x2,
+    ERR_UNKNOWN_SHAPE      = 0x4,
     ERR_UNKNOWN_COORD_TYPE = 0x8,
 };
 

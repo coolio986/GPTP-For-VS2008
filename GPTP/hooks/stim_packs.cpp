@@ -4,9 +4,9 @@
 // helper functions def
 namespace {
 
-void QueueGameCommand(u8* params, u32 param_length);              // 0x00485BD0
-u32 get_statTxt_Str_0(CUnit* unit, u32 playerId, char* message);  // 0x0048EF30
-u32 RandBetween(u32 min, u32 max, u32 someIndex);                 // 0x004DC550
+void QueueGameCommand(u8* params, u32 param_length);               // 0x00485BD0
+u32  get_statTxt_Str_0(CUnit* unit, u32 playerId, char* message);  // 0x0048EF30
+u32  RandBetween(u32 min, u32 max, u32 someIndex);                 // 0x004DC550
 
 }  // unnamed namespace
 
@@ -20,7 +20,7 @@ const int MIN_HITPOINTS_FOR_STIMPACKS = 2560;
 // players of the attempt if no unit can do the stimpack action)
 void CMDACT_Stimpack() {
     CUnit* currentClientSelectionUnit;
-    bool bFoundUnitAbleToStimpack = false;
+    bool   bFoundUnitAbleToStimpack = false;
 
     // original code used pointer comparison with clientSelectionGroupEnd
     // and incrementing a pointer starting at clientSelectionGroup
@@ -73,7 +73,7 @@ void useStimPacksAIHook(CUnit* unit) {
 void CMDRECV_StimPack() {
     CUnit* activePlayerCurrentSelection;
 
-    *selectionIndexStart = 0;
+    *selectionIndexStart         = 0;
     activePlayerCurrentSelection = getActivePlayerNextSelection();
 
     while (activePlayerCurrentSelection != NULL) {
@@ -126,9 +126,9 @@ void CMDRECV_StimPack() {
 namespace {
 
 const u32 Func_QueueGameCommand = 0x00485BD0;
-void QueueGameCommand(u8* params, u32 param_length){
+void      QueueGameCommand(u8* params, u32 param_length){
 
-    __asm {PUSHAD MOV EDX,
+    __asm {PUSHAD MOV   EDX,
            param_length MOV ECX,
            params CALL Func_QueueGameCommand POPAD}
 
@@ -137,7 +137,7 @@ void QueueGameCommand(u8* params, u32 param_length){
 ;
 
 const u32 Func_get_statTxt_Str_0 = 0x0048EF30;
-u32 get_statTxt_Str_0(CUnit* unit, u32 playerId, char* message) {
+u32       get_statTxt_Str_0(CUnit* unit, u32 playerId, char* message) {
     static u32 return_value;
 
     __asm {
@@ -156,7 +156,7 @@ u32 get_statTxt_Str_0(CUnit* unit, u32 playerId, char* message) {
 ;
 
 const u32 Func_RandBetween = 0x004DC550;
-u32 RandBetween(u32 min, u32 max, u32 someIndex) {
+u32       RandBetween(u32 min, u32 max, u32 someIndex) {
     static u32 return_value;
 
     __asm {

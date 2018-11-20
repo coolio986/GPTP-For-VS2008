@@ -2,8 +2,8 @@
 #include <SCBW/api.h>
 
 const int DEFAULT_SIGHT_RANGE = 4;
-const int BLIND_SIGHT_RANGE = 2;
-const int MAX_SIGHT_RANGE = 11;
+const int BLIND_SIGHT_RANGE   = 2;
+const int MAX_SIGHT_RANGE     = 11;
 
 namespace hooks {
 

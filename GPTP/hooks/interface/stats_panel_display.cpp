@@ -12,7 +12,7 @@ void StatsShieldLevel(BinDlg* dialog, u32 index);                // 25510
 void StatsArmorLevel(BinDlg* dialog, u32 index);                 // 25600
 void StatsWeaponLevel(BinDlg* dialog, u32 index, u32 weaponId);  // 25790
 bool StatSpidermineCount(BinDlg* dialog, u32 index);             // 26300
-u16 getLastQueueSlotType(CUnit* unit);                           // 7B270
+u16  getLastQueueSlotType(CUnit* unit);                          // 7B270
 
 }  // unnamed namespace
 
@@ -23,16 +23,16 @@ namespace hooks {
 // in badly unoptimized code
 void stats_panel_display(BinDlg* dialog) {
     BinDlg* current_dialog;
-    CUnit* activeUnit = *activePortraitUnit;
-    u32 index = 0;
+    CUnit*  activeUnit = *activePortraitUnit;
+    u32     index      = 0;
 
     if (!(activeUnit->status & UnitStatus::IsHallucination) ||
         (!*IS_IN_REPLAY && activeUnit->playerId != *LOCAL_NATION_ID)) {
         bool bNoAirWeaponDisplay;
 
-        u32 airWeapon;         //[EBP-01] then [EBP-05]
-        u8 airWeaponMainUnit;  // BL
-        u8 airWeaponSubunit;   // AL
+        u32 airWeapon;          //[EBP-01] then [EBP-05]
+        u8  airWeaponMainUnit;  // BL
+        u8  airWeaponSubunit;   // AL
 
         u16 unitId = getLastQueueSlotType(activeUnit);
 
@@ -51,7 +51,7 @@ void stats_panel_display(BinDlg* dialog) {
             bool bNoGroundWeaponDisplay = false;
 
             u32 groundWeapon;  //[EBP-05]
-            u8 groundWeaponMainUnit =
+            u8  groundWeaponMainUnit =
                 units_dat::GroundWeapon[activeUnit->id];  // BL
             u8 groundWeaponSubunit;                       // CL
 
@@ -88,7 +88,7 @@ void stats_panel_display(BinDlg* dialog) {
 
         // 26D67
         bNoAirWeaponDisplay = false;
-        airWeaponMainUnit = units_dat::AirWeapon[activeUnit->id];
+        airWeaponMainUnit   = units_dat::AirWeapon[activeUnit->id];
 
         if (airWeaponMainUnit != WeaponId::None)
             airWeaponSubunit = airWeaponMainUnit;  // 26D79
@@ -205,7 +205,7 @@ void stats_panel_display(BinDlg* dialog) {
 namespace {
 
 const u32 Func_HideDialog = 0x00418700;
-void hideDialog(BinDlg* dialog){
+void      hideDialog(BinDlg* dialog){
 
     __asm {PUSHAD MOV ESI, dialog CALL Func_HideDialog POPAD}
 
@@ -214,7 +214,7 @@ void hideDialog(BinDlg* dialog){
 ;
 
 const u32 Func_Sub425310 = 0x00425310;
-void StatsNukesCount(BinDlg* dialog, u32 index){
+void      StatsNukesCount(BinDlg* dialog, u32 index){
 
     __asm {PUSHAD MOV EAX, dialog PUSH index CALL Func_Sub425310 POPAD}
 
@@ -223,7 +223,7 @@ void StatsNukesCount(BinDlg* dialog, u32 index){
 ;
 
 const u32 Func_StatHangerCount = 0x004253D0;
-void StatHangerCount(BinDlg* dialog, u32 index){
+void      StatHangerCount(BinDlg* dialog, u32 index){
 
     __asm {PUSHAD MOV EBX, dialog PUSH index CALL Func_StatHangerCount POPAD}
 
@@ -232,7 +232,7 @@ void StatHangerCount(BinDlg* dialog, u32 index){
 ;
 
 const u32 Func_Sub425510 = 0x00425510;
-void StatsShieldLevel(BinDlg* dialog, u32 index){
+void      StatsShieldLevel(BinDlg* dialog, u32 index){
 
     __asm {PUSHAD MOV EAX, dialog PUSH index CALL Func_Sub425510 POPAD}
 
@@ -241,7 +241,7 @@ void StatsShieldLevel(BinDlg* dialog, u32 index){
 ;
 
 const u32 Func_Sub425600 = 0x00425600;
-void StatsArmorLevel(BinDlg* dialog, u32 index){
+void      StatsArmorLevel(BinDlg* dialog, u32 index){
 
     __asm {PUSHAD MOV EAX, dialog PUSH index CALL Func_Sub425600 POPAD}
 
@@ -250,7 +250,7 @@ void StatsArmorLevel(BinDlg* dialog, u32 index){
 ;
 
 const u32 Func_Sub425790 = 0x00425790;
-void StatsWeaponLevel(BinDlg* dialog, u32 index, u32 weaponId){
+void      StatsWeaponLevel(BinDlg* dialog, u32 index, u32 weaponId){
 
     __asm {PUSHAD MOV EAX,
            dialog PUSH weaponId PUSH index CALL Func_Sub425790 POPAD}
@@ -260,7 +260,7 @@ void StatsWeaponLevel(BinDlg* dialog, u32 index, u32 weaponId){
 ;
 
 const u32 Func_StatSpidermineCount = 0x00426300;
-bool StatSpidermineCount(BinDlg* dialog, u32 index) {
+bool      StatSpidermineCount(BinDlg* dialog, u32 index) {
     static Bool32 bPreResult;
 
     __asm {

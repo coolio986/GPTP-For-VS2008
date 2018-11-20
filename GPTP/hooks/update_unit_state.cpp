@@ -32,8 +32,8 @@ void updateUnitEnergy(CUnit* unit) {
                  UnitStatus::RequiresDetection) &&  // If the unit is cloaked
             !(unit->status &
               UnitStatus::CloakingForFree)  //...and must consume energy to stay
-                                            //cloaked (i.e. not under an
-                                            //Arbiter)
+                                            // cloaked (i.e. not under an
+                                            // Arbiter)
         ) {
             u16 cloakingEnergyCost;
 
@@ -202,7 +202,7 @@ namespace {
 /**** Helper function definitions. Do not modify anything below this! ****/
 
 const u32 Helper_UnitHpIsInRedZone = 0x004022C0;
-bool unitHpIsInRedZone(CUnit* unit) {
+bool      unitHpIsInRedZone(CUnit* unit) {
     static Bool32 result;
 
     __asm {
@@ -220,7 +220,7 @@ bool unitHpIsInRedZone(CUnit* unit) {
 
 // hooked by hooks\update_status_effects.cpp
 const u32 Func_RestoreAllUnitStats = 0x00492F70;
-void RestoreAllUnitStats(CUnit* unit){
+void      RestoreAllUnitStats(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_RestoreAllUnitStats POPAD}
 
@@ -231,7 +231,7 @@ void RestoreAllUnitStats(CUnit* unit){
 // Identical to setAllImageGroupFlagsPal11 @ 0x00497430;
 void setAllImageGroupFlagsPal11(CSprite* sprite) {
     for (CImage* current_image = sprite->images.head; current_image != NULL;
-         current_image = current_image->link.next) {
+         current_image         = current_image->link.next) {
         if (current_image->paletteType == PaletteType::RLE_HPFLOATDRAW)
             current_image->flags |= CImage_Flags::Redraw;
     }

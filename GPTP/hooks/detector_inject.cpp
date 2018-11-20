@@ -8,7 +8,7 @@ namespace {
 // Inject with jmpPatch()
 void __declspec(naked) unitCanDetectWrapper() {
     static CUnit* unit;
-    static u32 result;
+    static u32    result;
 
     __asm {
 		MOV unit, EAX
@@ -26,7 +26,7 @@ void __declspec(naked) unitCanDetectWrapper() {
 
 void __declspec(naked) getCloakedTargetVisibilityWrapper() {
     static DetectorCheckParam* param;
-    static CUnit* detector;
+    static CUnit*              detector;
 
     __asm {
 		MOV detector, ECX

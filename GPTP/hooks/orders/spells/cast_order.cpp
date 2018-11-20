@@ -5,10 +5,10 @@
 
 namespace {
 
-u32 getUpgradedWpnCooldown(CUnit* unit, u8 weaponId);              // 0x00475DC0
+u32  getUpgradedWpnCooldown(CUnit* unit, u8 weaponId);             // 0x00475DC0
 bool function_00476640(CUnit* unit, u32 weaponId);                 // 0x00476640
 void setUnitStatTxtErrorMsg(char* message);                        // 0x0048CCB0
-u32 get_statTxt_Str_0(CUnit* unit, u32 playerId, char* message);   // 0x0048EF30
+u32  get_statTxt_Str_0(CUnit* unit, u32 playerId, char* message);  // 0x0048EF30
 bool canCastSpell_0(CUnit* unit);                                  // 0x00492140
 u32 function_00492620(CUnit* unit, Bool32 wasMainOrderStateZero);  // 0x00492620
 u32 RandomizeShort(u32 unknown_index);                             // 0x004DC4A0
@@ -19,9 +19,9 @@ void setNextWaypoint_Sub4EB290(CUnit* unit);                       // 0x004EB290
 namespace hooks {
 
 void orders_Spell(CUnit* unit) {
-    s32 spellCost;
-    u8 orderWeaponId = orders_dat::OrderWeaponId[unit->mainOrderId];
-    CUnit* target = unit->orderTarget.unit;
+    s32    spellCost;
+    u8     orderWeaponId = orders_dat::OrderWeaponId[unit->mainOrderId];
+    CUnit* target        = unit->orderTarget.unit;
 
     if (unit->mainOrderState == 2) {
         if (unit->orderSignal & 2) {
@@ -66,7 +66,7 @@ void orders_Spell(CUnit* unit) {
 
             if (!(*CHEAT_STATE & CheatFlags::TheGathering) &&
                 unit->energy < spellCost) {
-                u8 raceId;
+                u8    raceId;
                 char* message;
 
                 if (units_dat::GroupFlags[unit->id].isZerg)
@@ -177,7 +177,7 @@ void orders_Spell(CUnit* unit) {
 
                         if (!bStopHere) {  // 92AA3
 
-                            u8 cooldown;
+                            u8  cooldown;
                             u32 random_value;
 
                             unit->spendUnitEnergy(spellCost);
@@ -237,7 +237,7 @@ void orders_Spell(CUnit* unit) {
 namespace {
 
 const u32 Func_getUpgradedWpnCooldown = 0x00475DC0;
-u32 getUpgradedWpnCooldown(CUnit* unit, u8 weaponId) {
+u32       getUpgradedWpnCooldown(CUnit* unit, u8 weaponId) {
     static u32 return_value;
 
     __asm {
@@ -255,7 +255,7 @@ u32 getUpgradedWpnCooldown(CUnit* unit, u8 weaponId) {
 ;
 
 const u32 Func_Sub476640 = 0x00476640;
-bool function_00476640(CUnit* unit, u32 weaponId) {
+bool      function_00476640(CUnit* unit, u32 weaponId) {
     static Bool32 pre_result;
 
     __asm {
@@ -273,7 +273,7 @@ bool function_00476640(CUnit* unit, u32 weaponId) {
 ;
 
 const u32 Func_setUnitStatTxtErrorMsg = 0x0048CCB0;
-void setUnitStatTxtErrorMsg(char* message){
+void      setUnitStatTxtErrorMsg(char* message){
 
     __asm {PUSHAD MOV EAX, message CALL Func_setUnitStatTxtErrorMsg POPAD}
 
@@ -282,7 +282,7 @@ void setUnitStatTxtErrorMsg(char* message){
 ;
 
 const u32 Func_get_statTxt_Str_0 = 0x0048EF30;
-u32 get_statTxt_Str_0(CUnit* unit, u32 playerId, char* message) {
+u32       get_statTxt_Str_0(CUnit* unit, u32 playerId, char* message) {
     static u32 return_value;
 
     __asm {
@@ -301,7 +301,7 @@ u32 get_statTxt_Str_0(CUnit* unit, u32 playerId, char* message) {
 ;
 
 const u32 Func_canCastSpell_0 = 0x00492140;
-bool canCastSpell_0(CUnit* unit) {
+bool      canCastSpell_0(CUnit* unit) {
     static Bool32 bPreResult;
 
     __asm {
@@ -319,7 +319,7 @@ bool canCastSpell_0(CUnit* unit) {
 ;
 
 const u32 Func_Sub492620 = 0x00492620;
-u32 function_00492620(CUnit* unit, Bool32 wasMainOrderStateZero) {
+u32       function_00492620(CUnit* unit, Bool32 wasMainOrderStateZero) {
     static u32 return_value;
 
     __asm {
@@ -337,7 +337,7 @@ u32 function_00492620(CUnit* unit, Bool32 wasMainOrderStateZero) {
 ;
 
 const u32 Func_RandomizeShort = 0x004DC4A0;
-u32 RandomizeShort(u32 unknown_index) {
+u32       RandomizeShort(u32 unknown_index) {
     static u32 return_value;
 
     __asm {
@@ -355,7 +355,7 @@ u32 RandomizeShort(u32 unknown_index) {
 
 // Related to path/movement decision
 const u32 Func_sub_4EB290 = 0x004EB290;
-void setNextWaypoint_Sub4EB290(CUnit* unit){
+void      setNextWaypoint_Sub4EB290(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_sub_4EB290 POPAD}}
 

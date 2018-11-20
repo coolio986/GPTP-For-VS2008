@@ -10,7 +10,7 @@ namespace graphics {
 
 // Based on BWAPI's ColorId.h and ColorId.cpp
 // No strongly typed enum because we're at pre-C++11
-typedef u8 ColorId;
+typedef u8    ColorId;
 const ColorId RED =
     111;  // Player 1 color					(0x67)
 const ColorId BLUE =
@@ -28,7 +28,7 @@ const ColorId WHITE =
 const ColorId YELLOW =
     135;                    // Player 8 color					(0x87)
 const ColorId GREEN = 117;  // Player 7 color for Ice tilesets	(0x75)
-const ColorId CYAN = 128;   // Neutral player color			(0x80)
+const ColorId CYAN  = 128;  // Neutral player color			(0x80)
 const ColorId BLACK =
     0;  //								(0x00)
 const ColorId GREY =
@@ -50,9 +50,9 @@ const static ColorId standardColors[] = {RED,
 
 // Font sizes accepted by graphics::drawTextOnScreen() and drawTextOnMap().
 enum FontSize {
-    FONT_SMALL = 0,
-    FONT_MEDIUM = 1,
-    FONT_LARGE = 2,
+    FONT_SMALL   = 0,
+    FONT_MEDIUM  = 1,
+    FONT_LARGE   = 2,
     FONT_LARGEST = 3,
 };
 
@@ -67,66 +67,66 @@ enum CoordType {
 /// called every frame in game_hooks.cpp.
 void resetAllGraphics();
 
-void drawText(int x,
-              int y,
+void drawText(int                x,
+              int                y,
               const std::string& str,
-              FontSize fontSize = FONT_MEDIUM,
-              CoordType ct = ON_SCREEN);
+              FontSize           fontSize = FONT_MEDIUM,
+              CoordType          ct       = ON_SCREEN);
 
 void drawDot(int x, int y, ColorId color, CoordType ct = ON_SCREEN);
 
-void drawLine(int x1,
-              int y1,
-              int x2,
-              int y2,
-              ColorId color,
+void drawLine(int       x1,
+              int       y1,
+              int       x2,
+              int       y2,
+              ColorId   color,
               CoordType ct = ON_SCREEN);
 
-void drawBox(int left,
-             int top,
-             int right,
-             int bottom,
-             ColorId color,
+void drawBox(int       left,
+             int       top,
+             int       right,
+             int       bottom,
+             ColorId   color,
              CoordType ct = ON_SCREEN);
 
-void drawCircle(int x,
-                int y,
-                int radius,
-                ColorId color,
+void drawCircle(int       x,
+                int       y,
+                int       radius,
+                ColorId   color,
                 CoordType ct = ON_SCREEN);
 
-void drawFilledBox(int left,
-                   int top,
-                   int right,
-                   int bottom,
-                   ColorId color,
+void drawFilledBox(int       left,
+                   int       top,
+                   int       right,
+                   int       bottom,
+                   ColorId   color,
                    CoordType ct = ON_SCREEN);
 
-void drawFilledCircle(int x,
-                      int y,
-                      int radius,
-                      ColorId color,
+void drawFilledCircle(int       x,
+                      int       y,
+                      int       radius,
+                      ColorId   color,
                       CoordType ct = ON_SCREEN);
 
-void drawEllipse(int left,
-                 int top,
-                 int right,
-                 int bottom,
-                 ColorId color,
+void drawEllipse(int       left,
+                 int       top,
+                 int       right,
+                 int       bottom,
+                 ColorId   color,
                  CoordType ct = ON_SCREEN);
 
-void drawDottedLine(int x1,
-                    int y1,
-                    int x2,
-                    int y2,
-                    ColorId color,
+void drawDottedLine(int       x1,
+                    int       y1,
+                    int       x2,
+                    int       y2,
+                    ColorId   color,
                     CoordType ct = ON_SCREEN);
 
-void drawDottedEllipse(int left,
-                       int top,
-                       int right,
-                       int bottom,
-                       ColorId color,
+void drawDottedEllipse(int       left,
+                       int       top,
+                       int       right,
+                       int       bottom,
+                       ColorId   color,
                        CoordType ct = ON_SCREEN);
 
 }  // namespace graphics

@@ -45,7 +45,7 @@ bool isValidPsiProviderType(u16 unitId) {
 bool addPsiFieldSprite(CUnit* unit) {
     if (!unit) return false;
 
-    const u32 Func_addPsiFieldSprite = 0x00493BF0;
+    const u32  Func_addPsiFieldSprite = 0x00493BF0;
     static u32 result;
 
     __asm {
@@ -98,7 +98,7 @@ void removePsiField(CUnit* unit) {
     if (unit->building.pylonAura) {
         unit->building.pylonAura->free();
         unit->building.pylonAura = NULL;
-        *canUpdatePoweredStatus = true;  // Might work?
+        *canUpdatePoweredStatus  = true;  // Might work?
     }
     removeFromPsiProviderList(unit);
 }

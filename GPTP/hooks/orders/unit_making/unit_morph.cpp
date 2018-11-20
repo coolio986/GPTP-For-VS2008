@@ -5,23 +5,23 @@
 
 namespace {
 
-void fixTargetLocation(Point16* coords, u32 unitId);  // 01FA0
-bool hasSuppliesForUnit(u32 unitId,
-                        u32 playerId,
-                        Bool32 canShowErrorMessage);             // 2CF70
-CUnit* function_0045D910(CUnit* unit);                           // 5D910
-void orderNewUnitToRally(CUnit* unit, CUnit* factory);           // 66F50
-bool advanceRemainingBuildTime_Sub466940(CUnit* unit);           // 66940
-void refundAllQueueSlots(CUnit* unit);                           // 66E80
-void actUnitReturnToIdle(CUnit* unit);                           // 75420
-void incrementUnitScoresEx(CUnit* unit, s32 unk1, s32 unk2);     // 88D50
-void playMorphingCompleteSound(CUnit* unit);                     // 8F440
-void updateUnitStrength(CUnit* unit);                            // 9FA40
-void replaceUnitWithType(CUnit* unit, u16 newUnitId);            // 9FED0
-void function_004A01F0(CUnit* unit);                             // A01F0
-void AI_TrainingUnit(CUnit* unit_creator, CUnit* created_unit);  // A2830
-void changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 unitId);     // E5D60
-void function_004E65E0(CUnit* unit, Bool32 flag);                // E65E0
+void   fixTargetLocation(Point16* coords, u32 unitId);  // 01FA0
+bool   hasSuppliesForUnit(u32    unitId,
+                          u32    playerId,
+                          Bool32 canShowErrorMessage);             // 2CF70
+CUnit* function_0045D910(CUnit* unit);                             // 5D910
+void   orderNewUnitToRally(CUnit* unit, CUnit* factory);           // 66F50
+bool   advanceRemainingBuildTime_Sub466940(CUnit* unit);           // 66940
+void   refundAllQueueSlots(CUnit* unit);                           // 66E80
+void   actUnitReturnToIdle(CUnit* unit);                           // 75420
+void   incrementUnitScoresEx(CUnit* unit, s32 unk1, s32 unk2);     // 88D50
+void   playMorphingCompleteSound(CUnit* unit);                     // 8F440
+void   updateUnitStrength(CUnit* unit);                            // 9FA40
+void   replaceUnitWithType(CUnit* unit, u16 newUnitId);            // 9FED0
+void   function_004A01F0(CUnit* unit);                             // A01F0
+void   AI_TrainingUnit(CUnit* unit_creator, CUnit* created_unit);  // A2830
+void   changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 unitId);     // E5D60
+void   function_004E65E0(CUnit* unit, Bool32 flag);                // E65E0
 
 }  // unnamed namespace
 
@@ -29,8 +29,8 @@ namespace hooks {
 
 void orders_ZergBirth(CUnit* unit) {
     if (unit->orderSignal & 4) {
-        bool bTwinEggOrCocoon = true;
-        CUnit* unit2;
+        bool    bTwinEggOrCocoon = true;
+        CUnit*  unit2;
         Point16 pos;
 
         unit->orderSignal -= 4;
@@ -97,7 +97,7 @@ void orders_Morph1(CUnit* unit) {
                 unit->orderComputerCL(units_dat::ReturnToIdleOrder[unit->id]);
             } else {
                 bool bStopThere = false;
-                u16 eggId;
+                u16  eggId;
 
                 incrementUnitScoresEx(unit, -1, 0);
 
@@ -186,7 +186,7 @@ void orders_Morph1(CUnit* unit) {
 namespace {
 
 const u32 Func_fixTargetLocation = 0x00401FA0;
-void fixTargetLocation(Point16* coords, u32 unitId){
+void      fixTargetLocation(Point16* coords, u32 unitId){
 
     __asm {PUSHAD MOV EAX,
            unitId MOV EDX,
@@ -216,7 +216,7 @@ bool hasSuppliesForUnit(u32 unitId, u32 playerId, Bool32 canShowErrorMessage) {
 ;
 
 const u32 Func_Sub45D910 = 0x0045D910;
-CUnit* function_0045D910(CUnit* unit) {
+CUnit*    function_0045D910(CUnit* unit) {
     static CUnit* rValue;
 
     __asm {
@@ -252,7 +252,7 @@ bool advanceRemainingBuildTime_Sub466940(CUnit* unit) {
 ;
 
 const u32 Func_RefundAllQueueSlots = 0x00466E80;
-void refundAllQueueSlots(CUnit* unit){
+void      refundAllQueueSlots(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_RefundAllQueueSlots POPAD}
 
@@ -261,7 +261,7 @@ void refundAllQueueSlots(CUnit* unit){
 ;
 
 const u32 Func_Sub466F50 = 0x00466F50;
-void orderNewUnitToRally(CUnit* unit, CUnit* factory){
+void      orderNewUnitToRally(CUnit* unit, CUnit* factory){
 
     __asm {PUSHAD MOV EAX, unit MOV ECX, factory CALL Func_Sub466F50 POPAD}
 
@@ -270,7 +270,7 @@ void orderNewUnitToRally(CUnit* unit, CUnit* factory){
 ;
 
 const u32 Func_ActUnitReturnToIdle = 0x00475420;
-void actUnitReturnToIdle(CUnit* unit){
+void      actUnitReturnToIdle(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_ActUnitReturnToIdle POPAD}
 
@@ -291,7 +291,7 @@ void incrementUnitScoresEx(CUnit* unit, s32 unk1, s32 unk2){
 ;
 
 const u32 Func_PlayMorphingCompleteSound = 0x0048F440;
-void playMorphingCompleteSound(CUnit* unit){
+void      playMorphingCompleteSound(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_PlayMorphingCompleteSound POPAD}
 
@@ -300,7 +300,7 @@ void playMorphingCompleteSound(CUnit* unit){
 ;
 
 const u32 Func_UpdateUnitStrength = 0x0049FA40;
-void updateUnitStrength(CUnit* unit){
+void      updateUnitStrength(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_UpdateUnitStrength POPAD}
 
@@ -309,7 +309,7 @@ void updateUnitStrength(CUnit* unit){
 ;
 
 const u32 Func_ReplaceUnitWithType = 0x0049FED0;
-void replaceUnitWithType(CUnit* unit, u16 newUnitId) {
+void      replaceUnitWithType(CUnit* unit, u16 newUnitId) {
     u32 newUnitId_ = newUnitId;
 
     __asm {
@@ -324,7 +324,7 @@ void replaceUnitWithType(CUnit* unit, u16 newUnitId) {
 ;
 
 const u32 Func_Sub4A01F0 = 0x004A01F0;
-void function_004A01F0(CUnit* unit){
+void      function_004A01F0(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub4A01F0 POPAD}
 
@@ -333,15 +333,15 @@ void function_004A01F0(CUnit* unit){
 ;
 
 const u32 Func_AI_TrainingUnit = 0x004A2830;
-void AI_TrainingUnit(CUnit* unit_creator, CUnit* created_unit){
-    __asm {PUSHAD MOV EAX,
+void      AI_TrainingUnit(CUnit* unit_creator, CUnit* created_unit){
+    __asm {PUSHAD MOV   EAX,
            created_unit MOV ECX,
            unit_creator CALL Func_AI_TrainingUnit POPAD}}
 
 ;
 
 const u32 Func_Sub4E5D60 = 0x004E5D60;
-void changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 buttonSetId){
+void      changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 buttonSetId){
 
     __asm {PUSHAD MOV EAX, unit MOV CX, buttonSetId CALL Func_Sub4E5D60 POPAD}
 
@@ -350,7 +350,7 @@ void changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 buttonSetId){
 ;
 
 const u32 Func_Sub4E65E0 = 0x004E65E0;
-void function_004E65E0(CUnit* unit, Bool32 flag){
+void      function_004E65E0(CUnit* unit, Bool32 flag){
 
     __asm {PUSHAD MOV EDI, unit PUSH flag CALL Func_Sub4E65E0 POPAD}
 

@@ -15,7 +15,7 @@ namespace hooks {
 // changing identical tests in order function is useless
 // since the unit won't even use that function)
 bool canEnterNydusCanal(CUnit* unit, CUnit* nydusCanal) {
-    bool bReturnValue;
+    bool         bReturnValue;
     CUnit* const nydusExit = nydusCanal->building.nydusExit;
 
     bReturnValue =
@@ -37,8 +37,8 @@ bool canEnterNydusCanal(CUnit* unit, CUnit* nydusCanal) {
 void enterNydusCanal_Effect(CUnit* unit, CUnit* nydusCanal) {
     Point16 oldPos, aimedPos, finalPos;
 
-    oldPos.x = unit->sprite->position.x;
-    oldPos.y = unit->sprite->position.y;
+    oldPos.x   = unit->sprite->position.x;
+    oldPos.y   = unit->sprite->position.y;
     aimedPos.x = (nydusCanal->building.nydusExit)->sprite->position.x;
     aimedPos.y = (nydusCanal->building.nydusExit)->sprite->position.y;
 
@@ -132,7 +132,7 @@ void orders_EnterNydusCanal(CUnit* unit) {
 namespace {
 
 const u32 Func__moveToTarget = 0x004EB980;
-bool orderToMoveToTarget(CUnit* unit, CUnit* target) {
+bool      orderToMoveToTarget(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {

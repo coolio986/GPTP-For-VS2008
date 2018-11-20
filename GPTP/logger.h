@@ -25,10 +25,10 @@ class GameLogger {
     GameLogger& operator<<(std::ostream& (*func)(std::ostream&));
 
    private:
-    bool checkLogFile();
-    bool updateFrame();
+    bool          checkLogFile();
+    bool          updateFrame();
     std::ofstream logFile;
-    int lastUpdatedFrame;
+    int           lastUpdatedFrame;
 };
 
 extern GameLogger logger;

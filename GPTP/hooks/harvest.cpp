@@ -4,9 +4,9 @@
 // Helper functions
 void updateMineralPatchImage(CUnit* mineralPatch);
 void setResourceAmountCarried(CUnit* worker,
-                              u8 amountCarried,
-                              u32 chunkImageId,
-                              bool isMineral);
+                              u8     amountCarried,
+                              u32    chunkImageId,
+                              bool   isMineral);
 
 //-------- Actual hooks --------//
 
@@ -26,7 +26,7 @@ u8 harvestResourceFrom(CUnit* resource, bool isMineral) {
             return_value = (u8)(resource->building.resource.resourceAmount);
         } else {
             resource->building.resource.resourceAmount = 0;
-            return_value = 2;
+            return_value                               = 2;
         }
 
     } else {
@@ -56,7 +56,7 @@ u8 harvestResourceFrom(CUnit* resource, bool isMineral) {
 void transferResourceToWorkerHook(CUnit* worker, CUnit* resource) {
     if (resource->id >= UnitId::TerranRefinery &&
         resource->id <= UnitId::ResourceMineralFieldType3) {
-        u32 chunkImageId;
+        u32  chunkImageId;
         bool isMineral = false;
         bool bEndThere = false;
 
@@ -64,7 +64,7 @@ void transferResourceToWorkerHook(CUnit* worker, CUnit* resource) {
             resource->id <=
                 UnitId::ResourceMineralFieldType3) {  // Is a mineral patch
             chunkImageId = ImageId::MineralChunkType1;
-            isMineral = true;
+            isMineral    = true;
         } else if (resource->id == UnitId::assimilator)
             chunkImageId = ImageId::ProtossGasOrbType1;
         else if (resource->id == UnitId::extractor)
@@ -146,9 +146,9 @@ void updateImagePositionOffset(CImage* image) {
 
 // Identical to function @ 0x004F3AF0
 void setResourceAmountCarried(CUnit* worker,
-                              u8 amountCarried,
-                              u32 chunkImageId,
-                              bool isMineral) {
+                              u8     amountCarried,
+                              u32    chunkImageId,
+                              bool   isMineral) {
     if (worker->resourceType != 0) return;
 
     worker->resourceType = isMineral ? 2 : 1;

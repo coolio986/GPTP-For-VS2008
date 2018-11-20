@@ -14,8 +14,8 @@ void* SMemAlloc(u32 amount,
                 u32 unkFilename,
                 u32 unkLine,
                 u32 defaultValue);  // 1006A (based on Storm.dll definition)
-void SetCallbackTimer(BinDlg* dialog, u32 unk1, u32 unk2, u32 unk3);  // 16090
-void function_0049A7F0(CUnit* unit);                                  // 9A7F0
+void  SetCallbackTimer(BinDlg* dialog, u32 unk1, u32 unk2, u32 unk3);  // 16090
+void  function_0049A7F0(CUnit* unit);                                  // 9A7F0
 
 u32 fxnInteract(BinDlg* dialog, u32 data_struct_offset);
 
@@ -56,30 +56,30 @@ void InitializeDialog(BinDlg* dialog, void* dlgFunc) {
 
     dialog->index = 0;
 
-    stack_placeholder.mouseX = mouse->x;
-    stack_placeholder.always_14_here = 14;  // 0x000E
-    stack_placeholder.unknown_value = 7;    // 0x00000007
+    stack_placeholder.mouseX           = mouse->x;
+    stack_placeholder.always_14_here   = 14;  // 0x000E
+    stack_placeholder.unknown_value    = 7;   // 0x00000007
     stack_placeholder.always_zero_here = 0;
-    stack_placeholder.mouseY = mouse->y;
+    stack_placeholder.mouseY           = mouse->y;
 
     fxnInteract(dialog, (u32)&stack_placeholder);
 
     dialog->bounds.right += dialog->bounds.left;
     dialog->bounds.bottom += dialog->bounds.top;
 
-    stack_placeholder.mouseY = mouse->y;
-    stack_placeholder.always_14_here = 14;  // 0x000E
-    stack_placeholder.unknown_value = 10;   // 0x0000000A
+    stack_placeholder.mouseY           = mouse->y;
+    stack_placeholder.always_14_here   = 14;  // 0x000E
+    stack_placeholder.unknown_value    = 10;  // 0x0000000A
     stack_placeholder.always_zero_here = 0;
-    stack_placeholder.mouseX = mouse->x;
+    stack_placeholder.mouseX           = mouse->x;
 
     fxnInteract(dialog, (u32)&stack_placeholder);
 
-    stack_placeholder.mouseX = mouse->x;
-    stack_placeholder.always_14_here = 14;  // 0x000E
-    stack_placeholder.unknown_value = 0;
+    stack_placeholder.mouseX           = mouse->x;
+    stack_placeholder.always_14_here   = 14;  // 0x000E
+    stack_placeholder.unknown_value    = 0;
     stack_placeholder.always_zero_here = 0;
-    stack_placeholder.mouseY = mouse->y;
+    stack_placeholder.mouseY           = mouse->y;
 
     fxnInteract(dialog, (u32)&stack_placeholder);
 
@@ -129,8 +129,8 @@ CUnit* getActivePlayerFirstSelection() {
     if (*selectionIndexStart >= 12)
         unit = NULL;
     else {
-        s32 playerId = *ACTIVE_PLAYER_ID;
-        u8 index = *selectionIndexStart;
+        s32  playerId  = *ACTIVE_PLAYER_ID;
+        u8   index     = *selectionIndexStart;
         bool bStopLoop = false;
 
         while (!bStopLoop) {
@@ -146,9 +146,10 @@ CUnit* getActivePlayerFirstSelection() {
             }
 
             if (!bStopLoop)
-                function_0049A7F0(unit);  // remove the unit from
-                                          // playersSelections->unit[playerId][index]
-                                          // among other things
+                function_0049A7F0(
+                    unit);  // remove the unit from
+                            // playersSelections->unit[playerId][index]
+                            // among other things
         }
 
         *selectionIndexStart = *selectionIndexStart + 1;
@@ -176,10 +177,10 @@ void* SMemAlloc(u32 amount, u32 unkFilename, u32 unkLine, u32 defaultValue) {
     __asm {
 		PUSHAD
 		PUSH defaultValue  // probably what to fill the memory with
-		PUSH unkLine          // unknown use, seems to use hardcoded value
-		PUSH unkFilename   // unknown use, seems to use hardcoded adress
-                                 // (of some text?)
-		PUSH amount  // amount of memory to allocate
+		PUSH unkLine  // unknown use, seems to use hardcoded value
+		PUSH unkFilename  // unknown use, seems to use hardcoded adress
+                                  // (of some text?)
+		PUSH amount   // amount of memory to allocate
 		CALL Func_SMemAlloc
 		MOV pointer_on_allocated_memory, EAX
 		POPAD
@@ -192,7 +193,7 @@ void* SMemAlloc(u32 amount, u32 unkFilename, u32 unkLine, u32 defaultValue) {
 
 // Likely to call SMemAlloc!
 const u32 Func_SetCallbackTimer = 0x00416090;
-void SetCallbackTimer(BinDlg* dialog, u32 unk1, u32 unk2, u32 unk3){
+void      SetCallbackTimer(BinDlg* dialog, u32 unk1, u32 unk2, u32 unk3){
 
     __asm {PUSHAD PUSH unk3 PUSH unk2 MOV EAX,
            unk1 MOV ECX,
@@ -203,7 +204,7 @@ void SetCallbackTimer(BinDlg* dialog, u32 unk1, u32 unk2, u32 unk3){
 ;
 
 const u32 Func_Sub49A7F0 = 0x0049A7F0;
-void function_0049A7F0(CUnit* unit){
+void      function_0049A7F0(CUnit* unit){
 
     __asm {PUSHAD MOV EDI, unit CALL Func_Sub49A7F0 POPAD}
 

@@ -11,7 +11,7 @@ void killAllHangarUnits(CUnit* unit) {
     u32 random_value;
 
     while (unit->carrier.inHangarCount != 0) {
-        CUnit* childInside = unit->carrier.inHangarChild;
+        CUnit* childInside          = unit->carrier.inHangarChild;
         unit->carrier.inHangarChild = childInside->interceptor.hangar_link.prev;
         childInside->interceptor.parent = NULL;
         childInside->remove();
@@ -88,7 +88,7 @@ void freeResourceContainer(CUnit* resource) {
 
         nextWorker = worker->worker.harvest_link.next;
 
-        worker->worker.harvestTarget = NULL;
+        worker->worker.harvestTarget     = NULL;
         worker->worker.harvest_link.prev = NULL;
         worker->worker.harvest_link.next = NULL;
 
@@ -135,9 +135,9 @@ void unitDestructorSpecialHook(CUnit* unit) {
         if (unit->id >= UnitId::TerranNuclearMissile &&
             unit->id <= UnitId::ProtossPylon) {
         // In original code, this part is handled by an internal id_based array
-        // and a switch-like system to execute the code corresponding to the unit
-        // If the id were within the previous test, the resource units would go
-        // through those tests
+        // and a switch-like system to execute the code corresponding to the
+        // unit If the id were within the previous test, the resource units
+        // would go through those tests
 
         // Is a scarab or interceptor
         if (unit->id == UnitId::ProtossScarab ||
@@ -195,7 +195,7 @@ void unitDestructorSpecialHook(CUnit* unit) {
             if (unit->id == UnitId::TerranNuclearMissile) {
             if (unit->connectedUnit != NULL &&
                 unit->connectedUnit->id == UnitId::TerranNuclearSilo) {
-                (unit->connectedUnit)->building.silo.nuke = NULL;
+                (unit->connectedUnit)->building.silo.nuke    = NULL;
                 (unit->connectedUnit)->building.silo.isReady = false;
             }
 
@@ -207,8 +207,9 @@ void unitDestructorSpecialHook(CUnit* unit) {
             // copied because the content is hardcoded here
 
             if (unit->building.pylonAura != NULL) {
-                unit->building.pylonAura->free();  // should be equivalent to
-                                                   // SpriteDestructor @ 00497B40
+                unit->building.pylonAura
+                    ->free();  // should be equivalent to
+                               // SpriteDestructor @ 00497B40
                 unit->building.pylonAura = NULL;
             }
 
@@ -241,7 +242,7 @@ void unitDestructorSpecialHook(CUnit* unit) {
             CUnit* nydusExit = unit->building.nydusExit;
 
             if (nydusExit != NULL) {
-                unit->building.nydusExit = NULL;
+                unit->building.nydusExit      = NULL;
                 nydusExit->building.nydusExit = NULL;
                 nydusExit->remove();
             }

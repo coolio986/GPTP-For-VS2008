@@ -58,10 +58,11 @@ C_ASSERT(sizeof(Bounds) == 12);
 
 // static_assert(sizeof(Point8)  == 2,   "The size of the Point8 structure is
 // invalid"); static_assert(sizeof(Point16) == 4,   "The size of the Point16
-// structure is invalid"); static_assert(sizeof(Point32) == 8,   "The size of the
-// Point32 structure is invalid"); static_assert(sizeof(Box16)   == 8,   "The
-// size of the Box16 structure is invalid"); static_assert(sizeof(Box32)   == 16,
-// "The size of the Box32 structure is invalid"); static_assert(sizeof(Bounds) ==
-// 12, "The size of the Bounds structure is invalid");
+// structure is invalid"); static_assert(sizeof(Point32) == 8,   "The size of
+// the Point32 structure is invalid"); static_assert(sizeof(Box16)   == 8, "The
+// size of the Box16 structure is invalid"); static_assert(sizeof(Box32)   ==
+// 16, "The size of the Box32 structure is invalid");
+// static_assert(sizeof(Bounds) == 12, "The size of the Bounds structure is
+// invalid");
 
 #pragma pack()

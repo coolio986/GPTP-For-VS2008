@@ -38,15 +38,15 @@ bool unitCanInfest(CUnit* unit) {
 
 // replace 0x00402210 CC_CanBeInfested
 bool isInfestableUnit(CUnit* unit) {
-    u32 unitHpTest;
-    u32 unitMaxHp;
+    u32  unitHpTest;
+    u32  unitMaxHp;
     bool returnValue;
 
     returnValue = (unit->status & UnitStatus::Completed) &&
                   (unit->id == UnitId::command_center);
 
     if (returnValue) {
-        unitMaxHp = unit->getMaxHpInGame();
+        unitMaxHp  = unit->getMaxHpInGame();
         unitHpTest = unit->getCurrentHpInGame();
 
         // if HP/maxHP higher or equal than 50%, not damaged enough
@@ -75,8 +75,8 @@ void orderMorphIntoInfested(CUnit* unitInfested) {
         if (unitInfested->mainOrderState == 0) {
             // init timer
             unitInfested->remainingBuildTime = 3;
-            unitInfested->mainOrderState = 2;
-            bStopFunction = true;
+            unitInfested->mainOrderState     = 2;
+            bStopFunction                    = true;
         }
 
         if (!bStopFunction) {
@@ -126,14 +126,14 @@ void orderMorphIntoInfested(CUnit* unitInfested) {
                     unitInfested, unitInfesting->playerId);
 
                 // Related to infestation process, don't use
-                // unitInfested->setSecondaryOrder because here it is supposed to
-                // perform all actions even if unitInfested->secondaryOrderId ==
-                // OrderId::Nothing2 beforehand
+                // unitInfested->setSecondaryOrder because here it is supposed
+                // to perform all actions even if unitInfested->secondaryOrderId
+                // == OrderId::Nothing2 beforehand
                 unitInfested->secondaryOrderPos.y = 0;
                 unitInfested->secondaryOrderPos.x = 0;
-                unitInfested->currentBuildUnit = NULL;
+                unitInfested->currentBuildUnit    = NULL;
                 unitInfested->secondaryOrderState = 0;
-                unitInfested->secondaryOrderId = OrderId::Nothing2;
+                unitInfested->secondaryOrderId    = OrderId::Nothing2;
 
                 // refund what the unit was producing
                 refundAllQueueSlots(unitInfested);
@@ -187,10 +187,10 @@ void orderMorphIntoInfested(CUnit* unitInfested) {
 
 // Based on and replace 004EA290 orders_InfestMine4
 void orderInfestTarget(CUnit* unitInfesting) {
-    CUnit* unitInfested = unitInfesting->orderTarget.unit;
-    bool bBuildTimeReachedZero = false;
-    bool bStopFunction = false;
-    bool bReturnToIdle = false;
+    CUnit* unitInfested          = unitInfesting->orderTarget.unit;
+    bool   bBuildTimeReachedZero = false;
+    bool   bStopFunction         = false;
+    bool   bReturnToIdle         = false;
 
     Point16 actualpos;
 
@@ -246,9 +246,9 @@ void orderInfestTarget(CUnit* unitInfesting) {
                 OrderId::InfestMine1,
                 unitInfesting);  // order the target to be infested, giving it
                                  // the infesting unit as order target
-            unitInfesting->mainOrderState = 3;
+            unitInfesting->mainOrderState     = 3;
             unitInfesting->remainingBuildTime = 60;  // timer before reappearing
-            bStopFunction = true;
+            bStopFunction                     = true;
         }
 
         if (!bStopFunction) {  // EA377
@@ -297,7 +297,7 @@ void orderInfestTarget(CUnit* unitInfesting) {
 namespace {
 
 const u32 Func_Sub_464930 = 0x00464930;
-void disconnectFromAddOn(CUnit* unit){
+void      disconnectFromAddOn(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub_464930 POPAD}
 
@@ -306,7 +306,7 @@ void disconnectFromAddOn(CUnit* unit){
 ;
 
 const u32 Func_RefundAllQueueSlots = 0x00466E80;
-void refundAllQueueSlots(CUnit* unit){
+void      refundAllQueueSlots(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_RefundAllQueueSlots POPAD}
 
@@ -315,7 +315,7 @@ void refundAllQueueSlots(CUnit* unit){
 ;
 
 const u32 Func_removeOrderFromUnitQueue = 0x004742D0;
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
+void      removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 
     __asm {PUSHAD MOV ECX,
            unit MOV EAX,
@@ -326,7 +326,7 @@ void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 ;
 
 const u32 Func_ActUnitReturnToIdle = 0x00475420;
-void actUnitReturnToIdle(CUnit* unit){
+void      actUnitReturnToIdle(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_ActUnitReturnToIdle POPAD}
 
@@ -336,14 +336,14 @@ void actUnitReturnToIdle(CUnit* unit){
 
 // Related to path/movement decision
 const u32 Func_sub_4EB290 = 0x004EB290;
-void setNextWaypoint_Sub4EB290(CUnit* unit){
+void      setNextWaypoint_Sub4EB290(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_sub_4EB290 POPAD}}
 
 ;
 
 const u32 Func_IncrementUnitDeathScores = 0x00488AF0;
-void incrementUnitDeathScores(CUnit* unit, u8 player){
+void      incrementUnitDeathScores(CUnit* unit, u8 player){
 
     __asm {PUSHAD MOV EDI,
            unit MOVZX EDX,
@@ -354,7 +354,7 @@ void incrementUnitDeathScores(CUnit* unit, u8 player){
 ;
 
 const u32 Func_incrementUnitScores = 0x00488BF0;
-void incrementUnitScores(CUnit* unit, s32 unkScore){
+void      incrementUnitScores(CUnit* unit, s32 unkScore){
 
     __asm {PUSHAD MOV EAX,
            unit PUSH unkScore CALL Func_incrementUnitScores POPAD}
@@ -364,7 +364,7 @@ void incrementUnitScores(CUnit* unit, s32 unkScore){
 ;
 
 const u32 Func_incrementUnitScoresEx = 0x00488D50;
-void incrementUnitScoresEx(CUnit* unit, s32 unkScore, s32 unk2){
+void      incrementUnitScoresEx(CUnit* unit, s32 unkScore, s32 unk2){
 
     __asm {PUSHAD MOV EDI,
            unit MOV ECX,
@@ -375,13 +375,13 @@ void incrementUnitScoresEx(CUnit* unit, s32 unkScore, s32 unk2){
 ;
 
 const u32 Func_Sub_49E4E0 = 0x0049E4E0;
-void initializeEmptyUnitsLinkedListRef_Sub49E4E0(CUnit* unit, u8 playerId){
+void      initializeEmptyUnitsLinkedListRef_Sub49E4E0(CUnit* unit, u8 playerId){
 
     __asm {
 
         PUSHAD
 
-            MOV DL,
+            MOV  DL,
         playerId MOV ECX,
         unit
 
@@ -396,7 +396,7 @@ void initializeEmptyUnitsLinkedListRef_Sub49E4E0(CUnit* unit, u8 playerId){
 ;
 
 const u32 Func_Sub_49EFA0 = 0x0049EFA0;
-void GiveUnitHelper(CUnit* unit, u32 playerId, s32 unkScore){
+void      GiveUnitHelper(CUnit* unit, u32 playerId, s32 unkScore){
 
     __asm {PUSHAD PUSH unkScore MOV ECX,
            unit PUSH playerId CALL Func_Sub_49EFA0 POPAD}
@@ -406,7 +406,7 @@ void GiveUnitHelper(CUnit* unit, u32 playerId, s32 unkScore){
 ;
 
 const u32 Func_Sub_4E5D60 = 0x004E5D60;
-void changeUnitButtonSet_Sub_4E5D60(CUnit* unit, u16 buttonSetId){
+void      changeUnitButtonSet_Sub_4E5D60(CUnit* unit, u16 buttonSetId){
 
     __asm {PUSHAD MOV EAX, unit MOV CX, buttonSetId CALL Func_Sub_4E5D60 POPAD}
 
@@ -416,7 +416,7 @@ void changeUnitButtonSet_Sub_4E5D60(CUnit* unit, u16 buttonSetId){
 
 // This is what hide the infesting unit
 const u32 Func_unitDeathSomething_0 = 0x004E6340;
-void hideAndDisableUnit(CUnit* unit){
+void      hideAndDisableUnit(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_unitDeathSomething_0 POPAD}
 
@@ -426,7 +426,7 @@ void hideAndDisableUnit(CUnit* unit){
 
 // What make the target reappear
 const u32 Func_InitUnitTrapDoodad = 0x004E6490;
-void showAndEnableUnit(CUnit* unit){
+void      showAndEnableUnit(CUnit* unit){
 
     __asm {PUSHAD MOV EDI, unit CALL Func_InitUnitTrapDoodad POPAD}
 
@@ -437,7 +437,7 @@ void showAndEnableUnit(CUnit* unit){
 // not related with assigning orders, but only with
 // destinations of orders
 const u32 Func_OrdersHoldPositionSuicidal = 0x004EB5B0;
-void makeToHoldPosition(CUnit* unit){
+void      makeToHoldPosition(CUnit* unit){
 
     __asm {PUSHAD MOV ESI, unit CALL Func_OrdersHoldPositionSuicidal POPAD}
 

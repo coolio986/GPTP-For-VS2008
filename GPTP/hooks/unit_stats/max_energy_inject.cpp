@@ -8,7 +8,7 @@ namespace {
 // Inject with jmpPatch()
 void __declspec(naked) getUnitMaxEnergyWrapper() {
     static CUnit* unit;
-    static u16 maxEnergy;
+    static u16    maxEnergy;
 
     __asm {
 		MOV unit, EAX

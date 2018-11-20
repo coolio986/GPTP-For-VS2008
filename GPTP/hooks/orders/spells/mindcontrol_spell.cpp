@@ -5,12 +5,12 @@
 
 namespace {
 
-u8 hasOverlay(CUnit* unit);  // 7B720
+u8   hasOverlay(CUnit* unit);  // 7B720
 bool ordersSpell_Sub_4926D0(CUnit* unit,
-                            u32 techId,
-                            u16* techEnergyCost,
-                            u32 sightRange,
-                            u32 error_message_index);  // 926D0
+                            u32    techId,
+                            u16*   techEnergyCost,
+                            u32    sightRange,
+                            u32    error_message_index);  // 926D0
 void MindControlHit(CUnit* attacker, CUnit* target);   // F6910
 
 }  // unnamed namespace
@@ -37,7 +37,7 @@ void ordersCastMindControl(CUnit* unit) {
         if (unit->playerId == target->playerId)
             unit->orderToIdle();
         else {
-            u16 techEnergyCost = 0;
+            u16  techEnergyCost = 0;
             bool spellCastSuccess;
 
             // F69CB
@@ -66,11 +66,11 @@ void ordersCastMindControl(CUnit* unit) {
 
                     // if(units_dat::BaseProperty[target->id] &
                     // UnitProperty::MediumOverlay) 	overlayId =
-                    //ImageId::MindControlHit_Medium; else
+                    // ImageId::MindControlHit_Medium; else
                     // if(units_dat::BaseProperty[target->id] &
                     // UnitProperty::LargeOverlay) 	overlayId =
-                    //ImageId::MindControlHit_Large; else 	overlayId =
-                    //ImageId::MindControlHit_Small;
+                    // ImageId::MindControlHit_Large; else 	overlayId =
+                    // ImageId::MindControlHit_Small;
 
                     if (target->subunit != NULL)
                         target->subunit->sprite->createTopOverlay(
@@ -114,7 +114,7 @@ void ordersCastMindControl(CUnit* unit) {
 namespace {
 
 const u32 Func_hasOverlay = 0x0047B720;
-u8 hasOverlay(CUnit* unit) {
+u8        hasOverlay(CUnit* unit) {
     static u8 result;
 
     __asm {
@@ -131,11 +131,11 @@ u8 hasOverlay(CUnit* unit) {
 ;
 
 const u32 Func_Sub_4926D0 = 0x004926D0;
-bool ordersSpell_Sub_4926D0(CUnit* unit,
-                            u32 techId,
-                            u16* techEnergyCost,
-                            u32 sightRange,
-                            u32 error_message_index) {
+bool      ordersSpell_Sub_4926D0(CUnit* unit,
+                                 u32    techId,
+                                 u16*   techEnergyCost,
+                                 u32    sightRange,
+                                 u32    error_message_index) {
     static Bool32 bPreResult;
 
     __asm {
@@ -156,7 +156,7 @@ bool ordersSpell_Sub_4926D0(CUnit* unit,
 ;
 
 const u32 Func_MindControl_Hit = 0x004F6910;
-void MindControlHit(CUnit* attacker, CUnit* target){
+void      MindControlHit(CUnit* attacker, CUnit* target){
 
     __asm {PUSHAD MOV ESI, target PUSH attacker CALL Func_MindControl_Hit POPAD}
 

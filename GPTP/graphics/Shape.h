@@ -12,57 +12,57 @@ namespace graphics {
 // All coordinates are relative to screen.
 class Shape {
    public:
-    void setText(int x,
-                 int y,
-                 int stringIndex,
-                 FontSize fontSize,
+    void setText(int       x,
+                 int       y,
+                 int       stringIndex,
+                 FontSize  fontSize,
                  CoordType coordType);
     void setDot(int x, int y, ColorId color, CoordType coordType);
-    void setLine(int x1,
-                 int y1,
-                 int x2,
-                 int y2,
-                 ColorId color,
+    void setLine(int       x1,
+                 int       y1,
+                 int       x2,
+                 int       y2,
+                 ColorId   color,
                  CoordType coordType);
-    void setBox(int left,
-                int top,
-                int right,
-                int bottom,
-                ColorId color,
+    void setBox(int       left,
+                int       top,
+                int       right,
+                int       bottom,
+                ColorId   color,
                 CoordType coordType);
-    void setCircle(int x,
-                   int y,
-                   int radius,
-                   ColorId color,
+    void setCircle(int       x,
+                   int       y,
+                   int       radius,
+                   ColorId   color,
                    CoordType coordType);
-    void setFilledBox(int left,
-                      int top,
-                      int right,
-                      int bottom,
-                      ColorId color,
+    void setFilledBox(int       left,
+                      int       top,
+                      int       right,
+                      int       bottom,
+                      ColorId   color,
                       CoordType coordType);
-    void setFilledCircle(int x,
-                         int y,
-                         int radius,
-                         ColorId color,
+    void setFilledCircle(int       x,
+                         int       y,
+                         int       radius,
+                         ColorId   color,
                          CoordType coordType);
-    void setEllipse(int left,
-                    int top,
-                    int right,
-                    int bottom,
-                    ColorId color,
+    void setEllipse(int       left,
+                    int       top,
+                    int       right,
+                    int       bottom,
+                    ColorId   color,
                     CoordType coordType);
-    void setDottedLine(int x1,
-                       int y1,
-                       int x2,
-                       int y2,
-                       ColorId color,
+    void setDottedLine(int       x1,
+                       int       y1,
+                       int       x2,
+                       int       y2,
+                       ColorId   color,
                        CoordType coordType);
-    void setDottedEllipse(int left,
-                          int top,
-                          int right,
-                          int bottom,
-                          ColorId color,
+    void setDottedEllipse(int       left,
+                          int       top,
+                          int       right,
+                          int       bottom,
+                          ColorId   color,
                           CoordType coordType);
     void draw() const;
 
@@ -81,12 +81,12 @@ class Shape {
         DOTTED_ELLIPSE
     } type;
     CoordType coordType;
-    Point32 p1;
-    Point32 p2;
-    int radius;
-    ColorId color;
-    FontSize fontSize;
-    int stringIndex;
+    Point32   p1;
+    Point32   p2;
+    int       radius;
+    ColorId   color;
+    FontSize  fontSize;
+    int       stringIndex;
 };
 
 }  // namespace graphics

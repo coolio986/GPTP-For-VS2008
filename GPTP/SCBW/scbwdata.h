@@ -180,7 +180,8 @@ SCBW_DATA(const DatLoad*, unitsDat, 0x00513C30);
 
 SCBW_DATA(u8*, Graphic, unitsDat[0].address);   // 006644F8
 SCBW_DATA(u16*, SubUnit, unitsDat[1].address);  // 006607C0
-// SCBW_DATA(u16*,	???,					unitsDat[2].address);
+// SCBW_DATA(u16*,	???,
+// unitsDat[2].address);
 // //00660C38 //Subunit 2 according to EUDDB
 SCBW_DATA(u16*,
           InfestedUnitPartial,
@@ -208,7 +209,8 @@ SCBW_DATA(u8*, GroundWeapon, unitsDat[17].address);       // 006636B8
 SCBW_DATA(u8*, MaxGroundHits, unitsDat[18].address);      // 006645E0
 SCBW_DATA(u8*, AirWeapon, unitsDat[19].address);          // 006616E0
 SCBW_DATA(u8*, MaxAirHits, unitsDat[20].address);         // 0065FC18
-// SCBW_DATA(u8*,	???,					unitsDat[21].address);
+// SCBW_DATA(u8*,	???,
+// unitsDat[21].address);
 // //00660178 //"Computer AI Unit Type" according to EUDDB
 SCBW_DATA(
     u32*,
@@ -234,7 +236,8 @@ SCBW_DATA(u16*, SoundYesLast, unitsDat[35].address);            // 00661440
 SCBW_DATA(Point16*, BuildingDimensions, unitsDat[36].address);  // 00662860
 SCBW_DATA(Point16*, AddonPlacement, unitsDat[37].address);      // 006626E0
 SCBW_DATA(Box16*, UnitBounds, unitsDat[38].address);            // 006617C8
-// SCBW_DATA(u16*,	???,					unitsDat[39].address);
+// SCBW_DATA(u16*,	???,
+// unitsDat[39].address);
 // //00662F88 //Portrait according to EUDDB
 SCBW_DATA(u16*, MineralCost, unitsDat[40].address);  // 00663888
 SCBW_DATA(u16*, GasCost, unitsDat[41].address);      // 0065FD00
@@ -260,7 +263,8 @@ SCBW_DATA(u16*, BuildScore, unitsDat[49].address);    // 00663408
 SCBW_DATA(u16*, DestroyScore, unitsDat[50].address);  // 00663EB8
 SCBW_DATA(u16*, MapStringId, unitsDat[51].address);   // 00660260
 SCBW_DATA(u8*, BroodwarOnly, unitsDat[52].address);   // 006606D8
-// SCBW_DATA(u16*, ???,						unitsDat[53].address);
+// SCBW_DATA(u16*, ???,
+// unitsDat[53].address);
 // //00661518 //"Staredit Availability Flags" according to EUDDB
 }  // namespace units_dat
 
@@ -284,7 +288,8 @@ SCBW_DATA(const DatLoad*, weaponsDat, 0x00513868);
 
 SCBW_DATA(u16*, Label, weaponsDat[0].address);     // 006572E0
 SCBW_DATA(u32*, FlingyId, weaponsDat[1].address);  // 00656CA8
-// SCBW_DATA(u8*, ???,				weaponsDat[2].address); //006573E8
+// SCBW_DATA(u8*, ???,				weaponsDat[2].address);
+// //006573E8
 // //"Special Attack" according to EUDDB
 SCBW_DATA(TargetFlag*, TargetFlags, weaponsDat[3].address);  // 00657998
 SCBW_DATA(u32*, MinRange, weaponsDat[4].address);            // 00656A18
@@ -316,7 +321,7 @@ SCBW_DATA(u8*, AttackAngle, weaponsDat[18].address);          // 00656990
 SCBW_DATA(u8*, LaunchSpin, weaponsDat[19].address);           // 00657888
 SCBW_DATA(u8*, ForwardOffset, weaponsDat[20].address);        // 00657910
 SCBW_DATA(u8*, VerticalOffset, weaponsDat[21].address);       // 00656C20
-// SCBW_DATA(u16*, ???,				weaponsDat[22].address);//00656568
+// SCBW_DATA(u16*, ???, weaponsDat[22].address);//00656568
 // //Target Error Message according to EUDDB SCBW_DATA(u16*, ???,
 // weaponsDat[23].address);//00656780 //Icon according to EUDDB
 }  // namespace weapons_dat
@@ -369,8 +374,8 @@ SCBW_DATA(const DatLoad*, ordersDat, 0x00513EC8);
 SCBW_DATA(u16*, Label, ordersDat[0].address);              // 00665280
 SCBW_DATA(u8*, UseWeaponTargeting, ordersDat[1].address);  // 00664B00
 // SCBW_DATA(u8*,	???,				ordersDat[2].address);
-// //00665940 //May be "secondary order" used for debug/assert only / "Order goes
-// in bSecondaryOrderID instead of bMainOrderID." according to EUDDB
+// //00665940 //May be "secondary order" used for debug/assert only / "Order
+// goes in bSecondaryOrderID instead of bMainOrderID." according to EUDDB
 // SCBW_DATA(u8*,	???,				ordersDat[3].address);
 // //00665A00 //May be "Non-subunit" used for debug only SCBW_DATA(u8*, ???,
 // ordersDat[4].address);	//00664A40 SCBW_DATA(u8*,	???,
@@ -496,7 +501,7 @@ SCBW_DATA(u8*,
           0x006CEFF8);  // 640 x 480 divided into 1200 squares of 16x16
 SCBW_DATA(Layers*, screenLayers, 0x006CEF50);
 typedef void(__stdcall* DrawGameProc)(graphics::Bitmap* surface,
-                                      Bounds* bounds);
+                                      Bounds*           bounds);
 static DrawGameProc const oldDrawGameProc = (DrawGameProc)0x004BD580;
 
 // Array used in multiplayer to randomize factions

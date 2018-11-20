@@ -6,24 +6,24 @@
 namespace {
 
 Bool32 OrderAllowed(CUnit* unit, u16 order, u32 nationID);  // 6DC20
-u32 function_00473FB0(CUnit* unit,
-                      u8 playerId,
-                      int x,
-                      int y,
-                      u16 unitId,
-                      u8 unk1,
-                      u8 unk2,
-                      u8 unk3,
-                      u8 unk4);                     // 73FB0
-bool placeBuildingMsg(u32 result_function_473FB0);  // 8D930
-bool CMDRECV_PlaceBuildingAllowedHelper(CUnit* unit,
-                                        u8 orderId,
-                                        u16 builtUnitId);  // 8DBD0
-void function_0048DE70(CUnit* unit,
-                       u32 orderId,
-                       u16 dimensionX,
-                       u16 dimensionY,
-                       u32 builtUnitId);                                // 8DE70
+u32    function_00473FB0(CUnit* unit,
+                         u8     playerId,
+                         int    x,
+                         int    y,
+                         u16    unitId,
+                         u8     unk1,
+                         u8     unk2,
+                         u8     unk3,
+                         u8     unk4);                    // 73FB0
+bool   placeBuildingMsg(u32 result_function_473FB0);  // 8D930
+bool   CMDRECV_PlaceBuildingAllowedHelper(CUnit* unit,
+                                          u8     orderId,
+                                          u16    builtUnitId);  // 8DBD0
+void   function_0048DE70(CUnit* unit,
+                         u32    orderId,
+                         u16    dimensionX,
+                         u16    dimensionY,
+                         u32    builtUnitId);                              // 8DE70
 void cmdRECV_PlaceBuilding(s16 x, s16 y, u8 orderId, u16 builtUnitId);  // 8E190
 
 }  // unnamed namespace
@@ -61,10 +61,10 @@ bool CMDRECV_PlaceBuildingAllowed(CUnit* builder, u8 orderId, u16 builtUnitId) {
 
 void cmdRECV_PlaceBuildingNormal(s16 x, s16 y, u32 orderId, u32 builtUnitId) {
     CUnit* builder;
-    u32 result_function_00473FB0;
+    u32    result_function_00473FB0;
 
     *selectionIndexStart = 0;
-    builder = getActivePlayerNextSelection();
+    builder              = getActivePlayerNextSelection();
 
     result_function_00473FB0 = function_00473FB0(
         builder, builder->playerId, x, y, builtUnitId, 1, 0, 0, 0);
@@ -97,12 +97,12 @@ void cmdRECV_PlaceBuildingNormal(s16 x, s16 y, u32 orderId, u32 builtUnitId) {
 
 void cmdRECV_PlaceBuildingAddon(s16 x, s16 y, u32 orderId, u32 builtUnitId) {
     CUnit* builder;
-    u32 result_function_00473FB0;
+    u32    result_function_00473FB0;
 
     s32 addonPlaceX = 0, addonPlaceY = 0;
 
     *selectionIndexStart = 0;
-    builder = getActivePlayerNextSelection();
+    builder              = getActivePlayerNextSelection();
 
     result_function_00473FB0 = function_00473FB0(
         builder, builder->playerId, x, y, builtUnitId, 1, 0, 0, 0);
@@ -175,7 +175,7 @@ void CMDRECV_Build(u8 orderId, s16 x, s16 y, u16 builtUnitId) {
     CUnit* builder;
 
     *selectionIndexStart = 0;
-    builder = getActivePlayerNextSelection();
+    builder              = getActivePlayerNextSelection();
 
     if (builder != NULL) {
         if (getActivePlayerNextSelection() ==
@@ -198,7 +198,7 @@ void CMDRECV_Build(u8 orderId, s16 x, s16 y, u16 builtUnitId) {
 namespace {
 
 const u32 Func_OrderAllowed = 0x0046DC20;
-Bool32 OrderAllowed(CUnit* unit, u16 order, u32 nationID) {
+Bool32    OrderAllowed(CUnit* unit, u16 order, u32 nationID) {
     static Bool32 bResult;
 
     __asm {
@@ -217,15 +217,15 @@ Bool32 OrderAllowed(CUnit* unit, u16 order, u32 nationID) {
 ;
 
 const u32 Func_Sub473FB0 = 0x00473FB0;
-u32 function_00473FB0(CUnit* unit,
-                      u8 playerId,
-                      int x,
-                      int y,
-                      u16 unitId,
-                      u8 unk1,
-                      u8 unk2,
-                      u8 unk3,
-                      u8 unk4) {
+u32       function_00473FB0(CUnit* unit,
+                            u8     playerId,
+                            int    x,
+                            int    y,
+                            u16    unitId,
+                            u8     unk1,
+                            u8     unk2,
+                            u8     unk3,
+                            u8     unk4) {
     u32 return_value;
 
     __asm {
@@ -256,7 +256,7 @@ u32 function_00473FB0(CUnit* unit,
 ;
 
 const u32 Func_placeBuildingMsg = 0x0048D930;
-bool placeBuildingMsg(u32 result_function_473FB0) {
+bool      placeBuildingMsg(u32 result_function_473FB0) {
     static Bool32 bPreResult;
 
     __asm {
@@ -273,9 +273,9 @@ bool placeBuildingMsg(u32 result_function_473FB0) {
 ;
 
 const u32 Func_CMDRECV_PlaceBuildingAllowed = 0x0048DBD0;
-bool CMDRECV_PlaceBuildingAllowedHelper(CUnit* unit,
-                                        u8 orderId,
-                                        u16 builtUnitId) {
+bool      CMDRECV_PlaceBuildingAllowedHelper(CUnit* unit,
+                                             u8     orderId,
+                                             u16    builtUnitId) {
     static Bool32 bPreResult;
 
     __asm {
@@ -294,11 +294,11 @@ bool CMDRECV_PlaceBuildingAllowedHelper(CUnit* unit,
 ;
 
 const u32 Func_Sub48DE70 = 0x0048DE70;
-void function_0048DE70(CUnit* unit,
-                       u32 orderId,
-                       u16 dimensionX,
-                       u16 dimensionY,
-                       u32 builtUnitId) {
+void      function_0048DE70(CUnit* unit,
+                            u32    orderId,
+                            u16    dimensionX,
+                            u16    dimensionY,
+                            u32    builtUnitId) {
     static Point16 dim;
 
     dim.x = dimensionX;
@@ -318,7 +318,7 @@ void function_0048DE70(CUnit* unit,
 ;
 
 const u32 Func_cmdRECV_PlaceBuilding = 0x0048E190;
-void cmdRECV_PlaceBuilding(s16 x, s16 y, u8 orderId, u16 builtUnitId) {
+void      cmdRECV_PlaceBuilding(s16 x, s16 y, u8 orderId, u16 builtUnitId) {
     static Point16 pos;
 
     pos.x = x;

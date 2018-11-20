@@ -8,7 +8,7 @@ namespace AI {
 class PsiStormTargetFinderProc : public scbw::UnitFinderCallbackMatchInterface {
    private:
     CUnit* caster;
-    bool isUnderAttack;
+    bool   isUnderAttack;
 
    public:
     PsiStormTargetFinderProc(CUnit* caster, bool isUnderAttack)

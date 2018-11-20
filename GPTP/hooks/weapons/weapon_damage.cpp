@@ -5,7 +5,7 @@
 namespace {
 // Helper functions
 void createShieldOverlay(CUnit* unit, u32 attackDirection);
-u16 getUnitStrength(CUnit* unit, bool useGroundStrength);
+u16  getUnitStrength(CUnit* unit, bool useGroundStrength);
 
 /// Definition of damage factors (explosive, concussive, etc.)
 struct {
@@ -24,13 +24,13 @@ struct {
 namespace hooks {
 
 /// Hooks into the CUnit::damageWith() function.
-void weaponDamageHook(s32 damage,
+void weaponDamageHook(s32    damage,
                       CUnit* target,
-                      u8 weaponId,
+                      u8     weaponId,
                       CUnit* attacker,
-                      u8 attackingPlayerId,
-                      s8 direction,
-                      u8 dmgDivisor) {
+                      u8     attackingPlayerId,
+                      s8     direction,
+                      u8     dmgDivisor) {
     // the unit must neither be already dead nor invincible
     if (target->hitPoints != 0 && !(target->status & UnitStatus::Invincible)) {
         u8 damageType;
@@ -118,7 +118,7 @@ void weaponDamageHook(s32 damage,
         }
 
         // Update unit strength data (?)
-        target->airStrength = getUnitStrength(target, false);
+        target->airStrength    = getUnitStrength(target, false);
         target->groundStrength = getUnitStrength(target, true);
     }
 }
@@ -145,7 +145,7 @@ void createShieldOverlay(CUnit* unit, u32 attackDirection) {
 
 // Somehow related to AI stuff; details unknown.
 const u32 Helper_GetUnitStrength = 0x00431800;
-u16 getUnitStrength(CUnit* unit, bool useGroundStrength) {
+u16       getUnitStrength(CUnit* unit, bool useGroundStrength) {
     static u16 strength;
     static u32 useGroundStrength_;
 

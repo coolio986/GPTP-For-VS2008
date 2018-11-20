@@ -7,7 +7,7 @@ void __declspec(naked) statdata_UnitWireframeUpdate_FragmentWrapper() {
     static const u32 JUMPBACK_POINT_WIREFRAME = 0x00456955;
 
     static CUnit* unit;
-    static u16 unitId;
+    static u16    unitId;
 
     __asm {
 		MOV unit, ESI

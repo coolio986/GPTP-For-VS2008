@@ -21,13 +21,13 @@ u8 getDamageFactorForTooltip(u8 weaponId, CUnit* unit) {
 // Returns the C-string for the tooltip text of the unit's weapon icon.
 // This function is used for weapon icons and special icons.
 // Precondition: @p entryStrIndex is a stat_txt.tbl string index.
-const char* getDamageTooltipString(u8 weaponId,
+const char* getDamageTooltipString(u8     weaponId,
                                    CUnit* unit,
-                                   u16 entryStrIndex) {
+                                   u16    entryStrIndex) {
     // Default StarCraft behavior
 
-    const char* entryName = statTxtTbl->getString(entryStrIndex);
-    const char* damageStr = statTxtTbl->getString(777);      //"Damage:"
+    const char* entryName    = statTxtTbl->getString(entryStrIndex);
+    const char* damageStr    = statTxtTbl->getString(777);   //"Damage:"
     const char* perRocketStr = statTxtTbl->getString(1301);  //"per rocket"
 
     const u8 damageFactor = getDamageFactorForTooltip(weaponId, unit);
@@ -89,9 +89,9 @@ const char* getArmorTooltipString(CUnit* unit) {
 
     const u16 labelId = upgrades_dat::Label[units_dat::ArmorUpgrade[unit->id]];
     const char* armorUpgradeName = statTxtTbl->getString(labelId);
-    const char* armorStr = statTxtTbl->getString(778);  //"Armor:"
+    const char* armorStr         = statTxtTbl->getString(778);  //"Armor:"
 
-    const u8 baseArmor = units_dat::ArmorAmount[unit->id];
+    const u8 baseArmor  = units_dat::ArmorAmount[unit->id];
     const u8 bonusArmor = unit->getArmorBonus();
 
     if (bonusArmor > 0)
@@ -117,9 +117,9 @@ const char* getArmorTooltipString(CUnit* unit) {
 const char* getShieldTooltipString(CUnit* unit) {
     // Default StarCraft behavior
 
-    const u16 labelId = upgrades_dat::Label[UpgradeId::ProtossPlasmaShields];
+    const u16   labelId = upgrades_dat::Label[UpgradeId::ProtossPlasmaShields];
     const char* shieldUpgradeName = statTxtTbl->getString(labelId);
-    const char* shieldStr = statTxtTbl->getString(779);  //"Shields:"
+    const char* shieldStr         = statTxtTbl->getString(779);  //"Shields:"
 
     const u8 shieldUpgradeLevel =
         scbw::getUpgradeLevel(unit->playerId, UpgradeId::ProtossPlasmaShields);

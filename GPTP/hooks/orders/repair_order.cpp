@@ -7,9 +7,9 @@ namespace {
 
 bool isUnitPositions2Equal(CUnit* unit);  // 02160
 void getRepairInfo(CUnit* repairTarget,
-                   u32* repairCostMineral,
-                   u32* repairCostGas,
-                   s16* unkRepairInfo);                            // 66D10
+                   u32*   repairCostMineral,
+                   u32*   repairCostGas,
+                   s16*   unkRepairInfo);                            // 66D10
 bool verifyResources(u32 mineralCost, u32 gasCost, u32 playerId);  // 66EE0
 bool ord_repair_subtract(CUnit* worker, CUnit* target);            // 66FB0
 void unitOrderMoveToTargetUnit(CUnit* unit, CUnit* target);        // 79FE0
@@ -26,7 +26,7 @@ namespace hooks {
 
 void orders_Repair1(CUnit* unit) {
     bool jump_to_676C4 = false;  // handle various early invalid cases
-    bool bEndThere = false;
+    bool bEndThere     = false;
 
     CUnit* target = unit->orderTarget.unit;
 
@@ -66,7 +66,7 @@ void orders_Repair1(CUnit* unit) {
                  (unit->mainOrderState >= 2 && unit->mainOrderState <= 5));
 
             if (!jump_to_default_switch && unit->mainOrderState == 0) {
-                s16 unkRepairInfo = 0;
+                s16 unkRepairInfo      = 0;
                 u32 repairCostMinerals = 0, repairCostGas = 0;
 
                 getRepairInfo(target,
@@ -137,7 +137,7 @@ void orders_Repair1(CUnit* unit) {
                 unit->mainOrderState == 7) {
                 if (!(unit->isTargetWithinMinRange(target, 5))) {
                     unit->mainOrderState = 1;
-                    bEndThere = true;
+                    bEndThere            = true;
                 } else {
                     function_00494BB0(unit,
                                       target->sprite->position.x,
@@ -146,7 +146,7 @@ void orders_Repair1(CUnit* unit) {
 
                     if (!isUnitPositions2Equal(unit)) {
                         s32 angleReturned, currentAngle;
-                        u8 weaponId;
+                        u8  weaponId;
 
                         angleReturned =
                             scbw::getAngle(unit->sprite->position.x,
@@ -313,11 +313,11 @@ bool isUnitPositions2Equal(CUnit* unit) {
 const u32 Func_getRepairInfo = 0x00466D10;
 // unkRepairInfo may be related to unit->worker.repairResourceLossTimer
 void getRepairInfo(CUnit* repairTarget,
-                   u32* repairCostMineral,
-                   u32* repairCostGas,
-                   s16* unkRepairInfo){
+                   u32*   repairCostMineral,
+                   u32*   repairCostGas,
+                   s16*   unkRepairInfo){
 
-    __asm {PUSHAD MOV EAX,
+    __asm {PUSHAD MOV   EAX,
            repairTarget PUSH unkRepairInfo PUSH repairCostGas PUSH
                repairCostMineral CALL Func_getRepairInfo POPAD}
 
@@ -326,7 +326,7 @@ void getRepairInfo(CUnit* repairTarget,
 ;
 
 const u32 Func_ord_repair_subtract = 0x00466FB0;
-bool ord_repair_subtract(CUnit* worker, CUnit* target) {
+bool      ord_repair_subtract(CUnit* worker, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {
@@ -364,7 +364,7 @@ bool verifyResources(u32 mineralCost, u32 gasCost, u32 playerId) {
 ;
 
 const u32 Func_unitOrderMoveToTargetUnit = 0x00479FE0;
-void unitOrderMoveToTargetUnit(CUnit* unit, CUnit* target){
+void      unitOrderMoveToTargetUnit(CUnit* unit, CUnit* target){
 
     __asm {PUSHAD MOV EAX,
            unit MOV ECX,
@@ -375,7 +375,7 @@ void unitOrderMoveToTargetUnit(CUnit* unit, CUnit* target){
 ;
 
 const u32 Func_RefreshLayer3And4 = 0x0048D9A0;
-void refreshLayer3And4(){
+void      refreshLayer3And4(){
 
     __asm {PUSHAD CALL Func_RefreshLayer3And4 POPAD}
 
@@ -384,7 +384,7 @@ void refreshLayer3And4(){
 ;
 
 const u32 Func_Sub48DDA0 = 0x0048DDA0;
-bool function_0048DDA0() {
+bool      function_0048DDA0() {
     Bool32 pre_return_value;
 
     __asm {
@@ -400,7 +400,7 @@ bool function_0048DDA0() {
 ;
 
 const u32 Func_Sub48E310 = 0x0048E310;
-void function_0048E310(){
+void      function_0048E310(){
 
     __asm {PUSHAD CALL Func_Sub48E310 POPAD}
 
@@ -409,7 +409,7 @@ void function_0048E310(){
 ;
 
 const u32 Func_Sub494BB0 = 0x00494BB0;
-void function_00494BB0(CUnit* unit, int x, int y){
+void      function_00494BB0(CUnit* unit, int x, int y){
 
     __asm {PUSHAD MOV ECX, y MOV EDX, x MOV EAX, unit CALL Func_Sub494BB0 POPAD}
 
@@ -418,7 +418,7 @@ void function_00494BB0(CUnit* unit, int x, int y){
 ;
 
 const u32 Func_Sub4EB900 = 0x004EB900;
-bool function_004EB900(CUnit* unit, CUnit* target) {
+bool      function_004EB900(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {
@@ -436,7 +436,7 @@ bool function_004EB900(CUnit* unit, CUnit* target) {
 ;
 
 const u32 Func__moveToTarget = 0x004EB980;
-bool orderToMoveToTarget(CUnit* unit, CUnit* target) {
+bool      orderToMoveToTarget(CUnit* unit, CUnit* target) {
     static Bool32 bPreResult;
 
     __asm {

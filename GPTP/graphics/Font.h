@@ -23,19 +23,19 @@ class FontChar {
 
 class Font {
    public:
-    FontChar *getChar(char c) const;
-    int getTextWidth(const char *pszStr) const;
-    int getTextHeight(const char *pszStr) const;
-    int getCharWidth(char c) const;
-    int maxWidth() const;
-    int maxHeight() const;
+    FontChar * getChar(char c) const;
+    int        getTextWidth(const char *pszStr) const;
+    int        getTextHeight(const char *pszStr) const;
+    int        getCharWidth(char c) const;
+    int        maxWidth() const;
+    int        maxHeight() const;
     static int getTextWidth(const char *pszStr, int size);
     static int getTextHeight(const char *pszStr, int size);
 
    private:
-    u32 magic;
-    u8 low, high;
-    u8 xMax, yMax;
+    u32       magic;
+    u8        low, high;
+    u8        xMax, yMax;
     FontChar *chrs[1];
 };
 

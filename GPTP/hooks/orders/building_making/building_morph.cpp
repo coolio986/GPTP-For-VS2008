@@ -5,23 +5,23 @@
 
 namespace {
 
-void refundBuildingCost(u16 unitId, u8 playerId);                   // 2CE70
-void function_00433FE0(CUnit* unit);                                // 33FE0
-bool isValidMorph(u16 buildingId);                                  // 5CC60
-void updateNewUnitVision(CUnit* unit, int x, int y);                // 5CE90
-void zergPlaceBuildingCntd(CUnit* unit);                            // 5D410
-void function_0047D770(CUnit* unit);                                // 7D770
-void function_0047DE40(CSprite* sprite, u32 unitId, int x, int y);  // 7DE40
-bool setThingyVisibilityFlags(CThingy* thingy);                     // 878F0
-CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId);    // 88210
-void incrementUnitScoresEx(CUnit* building, s32 unk1, s32 unk2);    // 88D50
-void playBuildingCompleteSound(CUnit* building);                    // 8F310
-void refreshSpriteData(CSprite* sprite);                            // 983A0
-void displayLastNetErrForPlayer(u32 playerId);                      // 9E530
-void updateUnitStrength(CUnit* unit);                               // 9FA40
-void replaceUnitWithType(CUnit* unit, u16 newUnitId);               // 9FED0
-void function_004A01F0(CUnit* unit);                                // A01F0
-CUnit* createUnit(u32 unitId, int x, int y, u32 playerId);          // A09D0
+void     refundBuildingCost(u16 unitId, u8 playerId);                   // 2CE70
+void     function_00433FE0(CUnit* unit);                                // 33FE0
+bool     isValidMorph(u16 buildingId);                                  // 5CC60
+void     updateNewUnitVision(CUnit* unit, int x, int y);                // 5CE90
+void     zergPlaceBuildingCntd(CUnit* unit);                            // 5D410
+void     function_0047D770(CUnit* unit);                                // 7D770
+void     function_0047DE40(CSprite* sprite, u32 unitId, int x, int y);  // 7DE40
+bool     setThingyVisibilityFlags(CThingy* thingy);                     // 878F0
+CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId);        // 88210
+void     incrementUnitScoresEx(CUnit* building, s32 unk1, s32 unk2);    // 88D50
+void     playBuildingCompleteSound(CUnit* building);                    // 8F310
+void     refreshSpriteData(CSprite* sprite);                            // 983A0
+void     displayLastNetErrForPlayer(u32 playerId);                      // 9E530
+void     updateUnitStrength(CUnit* unit);                               // 9FA40
+void     replaceUnitWithType(CUnit* unit, u16 newUnitId);               // 9FED0
+void     function_004A01F0(CUnit* unit);                                // A01F0
+CUnit*   createUnit(u32 unitId, int x, int y, u32 playerId);            // A09D0
 
 }  // unnamed namespace
 
@@ -45,7 +45,7 @@ bool isMorphing(CUnit* building) {
 void orders_ZergBuildSelf(CUnit* building) {
     const int OPCWAL_PROGRESS_INCREASE = 16;
 
-    u16 buildingId;
+    u16  buildingId;
     bool jump_to_5D56C = false;
     bool jump_to_5D718 = false;
     bool jump_to_5D720 = false;
@@ -133,7 +133,7 @@ void orders_ZergBuildSelf(CUnit* building) {
     } else if (building->mainOrderState == 6) {  // 5D64B
 
         if (building->orderSignal & 4) {
-            s32 hpAfterMorph;
+            s32     hpAfterMorph;
             CImage* current_image;
 
             building->orderSignal -= 4;
@@ -339,7 +339,7 @@ void ZergPlaceBuilding(CUnit* unit) {
 namespace {
 
 const u32 Func_refundBuildingCost = 0x0042CE70;
-void refundBuildingCost(u16 unitId, u8 playerId){
+void      refundBuildingCost(u16 unitId, u8 playerId){
 
     __asm {PUSHAD MOV AX,
            unitId MOV CL,
@@ -350,7 +350,7 @@ void refundBuildingCost(u16 unitId, u8 playerId){
 ;
 
 const u32 Func_Sub433FE0 = 0x00433FE0;
-void function_00433FE0(CUnit* unit){
+void      function_00433FE0(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub433FE0 POPAD}
 
@@ -376,7 +376,7 @@ bool isValidMorph(u16 buildingId) {
 ;
 
 const u32 Func_updateNewUnitVision = 0x0045CE90;
-void updateNewUnitVision(CUnit* unit, int x, int y){
+void      updateNewUnitVision(CUnit* unit, int x, int y){
 
     __asm {PUSHAD MOV ECX,
            unit PUSH y PUSH x CALL Func_updateNewUnitVision POPAD}
@@ -386,7 +386,7 @@ void updateNewUnitVision(CUnit* unit, int x, int y){
 ;
 
 const u32 Func_ZergPlaceBuildingCntd = 0x0045D410;
-void zergPlaceBuildingCntd(CUnit* unit){
+void      zergPlaceBuildingCntd(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_ZergPlaceBuildingCntd POPAD}
 
@@ -395,7 +395,7 @@ void zergPlaceBuildingCntd(CUnit* unit){
 ;
 
 const u32 Func_Sub47D770 = 0x0047D770;
-void function_0047D770(CUnit* unit){
+void      function_0047D770(CUnit* unit){
 
     __asm {PUSHAD PUSH unit CALL Func_Sub47D770 POPAD}
 
@@ -404,11 +404,11 @@ void function_0047D770(CUnit* unit){
 ;
 
 const u32 Func_Sub47DE40 = 0x0047DE40;
-void function_0047DE40(CSprite* sprite, u32 unitId, int x, int y){
+void      function_0047DE40(CSprite* sprite, u32 unitId, int x, int y){
 
     __asm {PUSHAD MOV ECX,
            y MOV EDX,
-           x MOV ESI,
+           x MOV  ESI,
            sprite PUSH unitId CALL Func_Sub47DE40 POPAD}
 
 }
@@ -418,7 +418,7 @@ void function_0047DE40(CSprite* sprite, u32 unitId, int x, int y){
 // original referenced name was sub_4878F0, but using
 // the name from bunker_hooks.cpp since it got meaning
 const u32 Func_SetThingyVisibilityFlags = 0x004878F0;
-bool setThingyVisibilityFlags(CThingy* thingy) {
+bool      setThingyVisibilityFlags(CThingy* thingy) {
     static Bool32 bPreResult;
 
     __asm {
@@ -437,9 +437,9 @@ bool setThingyVisibilityFlags(CThingy* thingy) {
 // original referenced name was replaceSprite (but this one is probably
 // more accurate since it does create something rather than replacing)
 const u32 Func_CreateThingy = 0x00488210;
-CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId) {
+CThingy*  createThingy(u32 spriteId, s16 x, s16 y, u32 playerId) {
     static CThingy* thingy;
-    s32 x_ = x;
+    s32             x_ = x;
 
     __asm {
 		PUSHAD
@@ -470,7 +470,7 @@ void incrementUnitScoresEx(CUnit* building, s32 unk1, s32 unk2){
 ;
 
 const u32 Func_PlayBuildingCompleteSound = 0x0048F310;
-void playBuildingCompleteSound(CUnit* building){
+void      playBuildingCompleteSound(CUnit* building){
 
     __asm {PUSHAD MOV EAX, building CALL Func_PlayBuildingCompleteSound POPAD}
 
@@ -479,7 +479,7 @@ void playBuildingCompleteSound(CUnit* building){
 ;
 
 const u32 Func_refreshSpriteData = 0x004983A0;
-void refreshSpriteData(CSprite* sprite){
+void      refreshSpriteData(CSprite* sprite){
 
     __asm {PUSHAD MOV EAX, sprite CALL Func_refreshSpriteData POPAD}
 
@@ -488,13 +488,13 @@ void refreshSpriteData(CSprite* sprite){
 ;
 
 const u32 Func_displayLastNetErrForPlayer = 0x0049E530;
-void displayLastNetErrForPlayer(u32 playerId){
+void      displayLastNetErrForPlayer(u32 playerId){
     __asm {PUSHAD PUSH playerId CALL Func_displayLastNetErrForPlayer POPAD}}
 
 ;
 
 const u32 Func_UpdateUnitStrength = 0x0049FA40;
-void updateUnitStrength(CUnit* unit){
+void      updateUnitStrength(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_UpdateUnitStrength POPAD}
 
@@ -503,7 +503,7 @@ void updateUnitStrength(CUnit* unit){
 ;
 
 const u32 Func_ReplaceUnitWithType = 0x0049FED0;
-void replaceUnitWithType(CUnit* unit, u16 newUnitId) {
+void      replaceUnitWithType(CUnit* unit, u16 newUnitId) {
     u32 newUnitId_ = newUnitId;
 
     __asm {
@@ -518,7 +518,7 @@ void replaceUnitWithType(CUnit* unit, u16 newUnitId) {
 ;
 
 const u32 Func_Sub4A01F0 = 0x004A01F0;
-void function_004A01F0(CUnit* unit){
+void      function_004A01F0(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub4A01F0 POPAD}
 
@@ -527,7 +527,7 @@ void function_004A01F0(CUnit* unit){
 ;
 
 const u32 Func_CreateUnit = 0x004A09D0;
-CUnit* createUnit(u32 unitId, int x, int y, u32 playerId) {
+CUnit*    createUnit(u32 unitId, int x, int y, u32 playerId) {
     static CUnit* unit_created;
 
     __asm {

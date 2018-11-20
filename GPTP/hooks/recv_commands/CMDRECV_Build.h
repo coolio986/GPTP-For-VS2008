@@ -4,8 +4,8 @@
 namespace hooks {
 
 bool CMDRECV_PlaceBuildingAllowed(CUnit* builder,
-                                  u8 orderId,
-                                  u16 builtUnitId);  // 0048DBD0
+                                  u8     orderId,
+                                  u16    builtUnitId);  // 0048DBD0
 void cmdRECV_PlaceBuildingNormal(s16 x,
                                  s16 y,
                                  u32 orderId,

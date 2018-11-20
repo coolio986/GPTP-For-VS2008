@@ -6,7 +6,7 @@ namespace {
 // Inject with jmpPatch()
 void __declspec(naked) getModifiedUnitSpeedWrapper() {
     static CUnit* unit;
-    static u32 speed;
+    static u32    speed;
 
     __asm {
 		MOV unit, EDX
@@ -26,7 +26,7 @@ void __declspec(naked) getModifiedUnitSpeedWrapper() {
 // Inject with jmpPatch()
 void __declspec(naked) getModifiedUnitAccelerationWrapper() {
     static CUnit* unit;
-    static u32 acceleration;
+    static u32    acceleration;
 
     __asm {
 		MOV unit, ECX
@@ -45,7 +45,7 @@ void __declspec(naked) getModifiedUnitAccelerationWrapper() {
 // Inject with jmpPatch()
 void __declspec(naked) getModifiedUnitTurnSpeedWrapper() {
     static CUnit* unit;
-    static u32 turnSpeed;
+    static u32    turnSpeed;
 
     __asm {
 		MOV unit, ECX

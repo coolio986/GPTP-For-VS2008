@@ -7,7 +7,7 @@ namespace {
 void __declspec(naked) IrradiateHitWrapper() {
     static CUnit* attacker;
     static CUnit* target;
-    static u8 attackingPlayerId;
+    static u8     attackingPlayerId;
 
     __asm {
 
@@ -38,8 +38,8 @@ void __declspec(naked) IrradiateHitWrapper() {
 ;
 
 void __declspec(naked) OpticalFlareHitWrapper() {
-    static CUnit* target;
-    static u32 attackingPlayerId;
+    static CUnit*   target;
+    static u32      attackingPlayerId;
     static CBullet* bullet;
 
     __asm {
@@ -70,7 +70,7 @@ void __declspec(naked) OpticalFlareHitWrapper() {
 ;
 
 void __declspec(naked) RestoreHitWrapper() {
-    static CUnit* target;
+    static CUnit*   target;
     static CBullet* bullet;
 
     __asm {
@@ -90,8 +90,8 @@ void __declspec(naked) RestoreHitWrapper() {
 ;
 
 void __declspec(naked) LockdownHitWrapper() {
-    static CUnit* target;
-    static u8 previousLockdownTimer;
+    static CUnit*   target;
+    static u8       previousLockdownTimer;
     static CBullet* bullet;
 
     __asm {
@@ -145,8 +145,8 @@ void __declspec(naked) MeleeAttackHitWrapper() {
 
 void __declspec(naked) WeaponBulletHitWrapper() {
     static CBullet* bullet;
-    static CUnit* target;
-    static u32 hitFlags;
+    static CUnit*   target;
+    static u32      hitFlags;
 
     __asm {
 
@@ -175,10 +175,10 @@ void __declspec(naked) WeaponBulletHitWrapper() {
 ;
 
 void __declspec(naked) EMPShockwaveHitWrapper() {
-    static CUnit* attacker;
+    static CUnit*   attacker;
     static CBullet* bullet;
-    static int x;
-    static int y;
+    static int      x;
+    static int      y;
 
     __asm {
 
@@ -210,9 +210,9 @@ void __declspec(naked) EMPShockwaveHitWrapper() {
 ;
 
 void __declspec(naked) CorrosiveAcidHitWrapper() {
-    static int x;
-    static int y;
-    static u32 playerId;
+    static int      x;
+    static int      y;
+    static u32      playerId;
     static CBullet* bullet;
 
     __asm {
@@ -266,9 +266,9 @@ void __declspec(naked) ConsumeHitWrapper() {
 ;
 
 void __declspec(naked) EnsnareHitWrapper() {
-    static CUnit* attacker;
-    static int x;
-    static int y;
+    static CUnit*   attacker;
+    static int      x;
+    static int      y;
     static CBullet* bullet;
 
     __asm {
@@ -301,9 +301,9 @@ void __declspec(naked) EnsnareHitWrapper() {
 ;
 
 void __declspec(naked) DarkSwarmHitWrapper() {
-    static int x;
-    static int y;
-    static u32 attackingPlayerId;
+    static int      x;
+    static int      y;
+    static u32      attackingPlayerId;
     static CBullet* bullet;
 
     __asm {
@@ -338,8 +338,8 @@ void __declspec(naked) DarkSwarmHitWrapper() {
 ;
 
 void __declspec(naked) BroodlingHitWrapper() {
-    static CUnit* attacker;
-    static CUnit* target;
+    static CUnit*   attacker;
+    static CUnit*   target;
     static CBullet* bullet;
 
     __asm {
@@ -372,9 +372,9 @@ void __declspec(naked) BroodlingHitWrapper() {
 ;
 
 void __declspec(naked) PlagueHitWrapper() {
-    static CUnit* attacker;
-    static int x;
-    static int y;
+    static CUnit*   attacker;
+    static int      x;
+    static int      y;
     static CBullet* bullet;
 
     __asm {
@@ -407,9 +407,9 @@ void __declspec(naked) PlagueHitWrapper() {
 ;
 
 void __declspec(naked) MaelstromHitWrapper() {
-    static CUnit* attacker;
-    static int x;
-    static int y;
+    static CUnit*   attacker;
+    static int      x;
+    static int      y;
     static CBullet* bullet;
 
     __asm {
@@ -471,9 +471,9 @@ void __declspec(naked) MindControlHitWrapper() {
 ;
 
 void __declspec(naked) StasisFieldHitWrapper() {
-    static CUnit* attacker;
-    static int x;
-    static int y;
+    static CUnit*   attacker;
+    static int      x;
+    static int      y;
     static CBullet* bullet;
 
     __asm {
@@ -506,9 +506,9 @@ void __declspec(naked) StasisFieldHitWrapper() {
 ;
 
 void __declspec(naked) DisruptionWebHitWrapper() {
-    static int x;
-    static int y;
-    static u32 playerId;
+    static int      x;
+    static int      y;
+    static u32      playerId;
     static CBullet* bullet;
 
     __asm {

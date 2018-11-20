@@ -24,7 +24,7 @@ void __declspec(naked) applyUpgradeFlagsToNewUnitWrapper() {
 
 void __declspec(naked) applyUpgradeFlagsToExistingUnitsWrapper() {
     static CUnit* unit;
-    static u8 upgradeId;
+    static u8     upgradeId;
 
     __asm {
 

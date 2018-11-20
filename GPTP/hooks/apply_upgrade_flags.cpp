@@ -8,8 +8,8 @@
 namespace {
 
 bool upgradeRestrictionProc(CUnit* unit,
-                            u8 upgradeId,
-                            u32 Func_UpgradeRestrictionProc);
+                            u8     upgradeId,
+                            u32    Func_UpgradeRestrictionProc);
 
 }  // unnamed namespace
 
@@ -43,7 +43,7 @@ void applyUpgradeFlagsToNewUnitHook(CUnit* unit) {
                 UpgradesSc
                     ->currentLevel[unit->playerId][ScUpgrade::AdrenalGlands];
         } else if (unit->id == UnitId::Hero_DevouringOne) {
-            bSpeedUpgrade = 1;
+            bSpeedUpgrade    = 1;
             bCooldownUpgrade = 1;
         } else if (unit->id == UnitId::ZergHydralisk)
             bSpeedUpgrade =
@@ -102,12 +102,12 @@ void applyUpgradeFlagsToNewUnitHook(CUnit* unit) {
 // Should be equivalent or identical to ApplySpeedUpgradeFromUpgradeType @
 // 00454540
 void applyUpgradeFlagsToExistingUnitsHook(CUnit* unit, u8 upgradeId) {
-    const u32 UnitUpgradeRestrictionProc = 0x00453DC0;
+    const u32 UnitUpgradeRestrictionProc      = 0x00453DC0;
     const u32 UltraliskUpgradeRestrictionProc = 0x00454070;
-    const u32 VultureUpgradeRestrictionProc = 0x00454090;
+    const u32 VultureUpgradeRestrictionProc   = 0x00454090;
 
     bool bCooldownUpgrade = false;  //[EBP-01]
-    bool bSpeedUpgrade = true;      //[EBP-02]
+    bool bSpeedUpgrade    = true;   //[EBP-02]
 
     if (upgradeId >= UpgradeId::IonThrusters &&
         upgradeId <= UpgradeId::AnabolicSynthesis) {
@@ -116,36 +116,36 @@ void applyUpgradeFlagsToExistingUnitsHook(CUnit* unit, u8 upgradeId) {
 
         if (upgradeId == UpgradeId::IonThrusters) {
             Func_UpgradeRestrictionProc = VultureUpgradeRestrictionProc;
-            unitTypeUpgradedId = UnitId::TerranVulture;
+            unitTypeUpgradedId          = UnitId::TerranVulture;
         } else if (upgradeId == UpgradeId::PneumatizedCarapace) {
             Func_UpgradeRestrictionProc = UnitUpgradeRestrictionProc;
-            unitTypeUpgradedId = UnitId::ZergOverlord;
+            unitTypeUpgradedId          = UnitId::ZergOverlord;
         } else if (upgradeId == UpgradeId::MetabolicBoost) {
             Func_UpgradeRestrictionProc = UnitUpgradeRestrictionProc;
-            unitTypeUpgradedId = UnitId::ZergZergling;
+            unitTypeUpgradedId          = UnitId::ZergZergling;
         } else if (upgradeId == UpgradeId::AdrenalGlands) {
             Func_UpgradeRestrictionProc = UnitUpgradeRestrictionProc;
-            unitTypeUpgradedId = UnitId::ZergZergling;
-            bCooldownUpgrade = true;
-            bSpeedUpgrade = false;
+            unitTypeUpgradedId          = UnitId::ZergZergling;
+            bCooldownUpgrade            = true;
+            bSpeedUpgrade               = false;
         } else if (upgradeId == UpgradeId::MuscularAugments) {
             Func_UpgradeRestrictionProc = UnitUpgradeRestrictionProc;
-            unitTypeUpgradedId = UnitId::ZergHydralisk;
+            unitTypeUpgradedId          = UnitId::ZergHydralisk;
         } else if (upgradeId == UpgradeId::LegEnhancements) {
             Func_UpgradeRestrictionProc = UnitUpgradeRestrictionProc;
-            unitTypeUpgradedId = UnitId::ProtossZealot;
+            unitTypeUpgradedId          = UnitId::ProtossZealot;
         } else if (upgradeId == UpgradeId::GraviticThrusters) {
             Func_UpgradeRestrictionProc = UnitUpgradeRestrictionProc;
-            unitTypeUpgradedId = UnitId::ProtossScout;
+            unitTypeUpgradedId          = UnitId::ProtossScout;
         } else if (upgradeId == UpgradeId::GraviticDrive) {
             Func_UpgradeRestrictionProc = UnitUpgradeRestrictionProc;
-            unitTypeUpgradedId = UnitId::ProtossShuttle;
+            unitTypeUpgradedId          = UnitId::ProtossShuttle;
         } else if (upgradeId == UpgradeId::GraviticBoosters) {
             Func_UpgradeRestrictionProc = UnitUpgradeRestrictionProc;
-            unitTypeUpgradedId = UnitId::ProtossObserver;
+            unitTypeUpgradedId          = UnitId::ProtossObserver;
         } else if (upgradeId == UpgradeId::AnabolicSynthesis) {
             Func_UpgradeRestrictionProc = UltraliskUpgradeRestrictionProc;
-            unitTypeUpgradedId = UnitId::ZergUltralisk;
+            unitTypeUpgradedId          = UnitId::ZergUltralisk;
         }
 
         if (Func_UpgradeRestrictionProc != NULL) {
@@ -184,8 +184,8 @@ void applyUpgradeFlagsToExistingUnitsHook(CUnit* unit, u8 upgradeId) {
 namespace {
 
 bool upgradeRestrictionProc(CUnit* unit,
-                            u8 upgradeId,
-                            u32 Func_UpgradeRestrictionProc) {
+                            u8     upgradeId,
+                            u32    Func_UpgradeRestrictionProc) {
     static u32 bPreResult;
 
     __asm {

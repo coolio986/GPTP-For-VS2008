@@ -51,7 +51,7 @@ bool isUmsMode(u8 playerId) {
 
 // Internal use only
 const u32 Func_GetRegionIdAtPosEx = 0x0049C9F0;
-u16 getRegionIdAtPosEx(s32 x, s32 y) {
+u16       getRegionIdAtPosEx(s32 x, s32 y) {
     static u16 result;
 
     __asm {
@@ -68,7 +68,7 @@ u16 getRegionIdAtPosEx(s32 x, s32 y) {
 
 // Based on code @ 0x00440BB0 (not a real independant function)
 bool isUnitInUnsafeRegion(CUnit* unit) {
-    u16 currentRegion = getRegionIdAtPosEx(unit->getX(), unit->getY());
+    u16        currentRegion = getRegionIdAtPosEx(unit->getX(), unit->getY());
     AiCaptain* currentAiCaptain =
         &AiRegionCaptains[unit->playerId][currentRegion];
     return currentAiCaptain->captainType == 3 ||
@@ -91,11 +91,11 @@ scbw::UnitFinder unitStatTotalFinder;
 // In original functions:
 // 0x00695604 would contains weaponId
 // 0x00695798 would contains totalEnemyLife
-int getTotalEnemyLifeInArea(int x,
-                            int y,
-                            int searchBounds,
+int getTotalEnemyLifeInArea(int    x,
+                            int    y,
+                            int    searchBounds,
                             CUnit* caster,
-                            u8 weaponId) {
+                            u8     weaponId) {
     unitStatTotalFinder.search(
         x - searchBounds, y - searchBounds, x + searchBounds, y + searchBounds);
 
@@ -143,7 +143,7 @@ int getTotalEnemyLifeInArea(int x,
         //	  totalEnemyLife += target->getCurrentHpInGame();
         //	else if (weaponId == WeaponId::Maelstrom) {
         //	  if (units_dat::BaseProperty[target->id] &
-        //UnitProperty::Organic
+        // UnitProperty::Organic
         //		  && target->maelstromTimer == 0) {
         //		totalEnemyLife += target->getCurrentLifeInGame();
         //	  }
@@ -158,11 +158,11 @@ int getTotalEnemyLifeInArea(int x,
 
 // Loop content based on AIAllyUnitHPAccumulatorProc @ 0x00440D60
 // 0x00695798 would contains totalAllyLife
-int getTotalAllyLifeInArea(int x,
-                           int y,
-                           int searchBounds,
+int getTotalAllyLifeInArea(int    x,
+                           int    y,
+                           int    searchBounds,
                            CUnit* caster,
-                           u8 weaponId) {
+                           u8     weaponId) {
     unitStatTotalFinder.search(
         x - searchBounds, y - searchBounds, x + searchBounds, y + searchBounds);
 
@@ -225,9 +225,9 @@ int getTotalEnemyEnergyInArea(int x, int y, int searchBounds, CUnit* caster) {
 // 0x00695798 would contains totalNukeTargetValue
 // Optimized to stop when reaching totalNukeTargetValue == 800 since that's what
 // matter
-int getTotalEnemyNukeValueInArea(int x,
-                                 int y,
-                                 int searchBounds,
+int getTotalEnemyNukeValueInArea(int    x,
+                                 int    y,
+                                 int    searchBounds,
                                  CUnit* caster) {
     unitStatTotalFinder.search(
         x - searchBounds, y - searchBounds, x + searchBounds, y + searchBounds);

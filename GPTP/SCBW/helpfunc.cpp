@@ -2,43 +2,43 @@
 
 namespace helpers {
 
-const u32 Func_FixTargetLocation = 0x00401FA0;
-const u32 Func_HideDialog = 0x00418700;
-const u32 Func_Sub_42D9A0_IsVisible = 0x0042D9A0;
-const u32 Func_SetRepulseAngle = 0x00453300;
-const u32 Func_RemoveRepulseTile = 0x004533D0;
-const u32 Func_ApplySpeedUpgradeFromUnitType = 0x00454370;
-const u32 Func_Sub_463040_AI_PlaceGuard = 0x00463040;
-const u32 Func_Sub_469EC0_SortLeftRight = 0x00469EC0;
-const u32 Func_Sub_469F60_SortLeftRight = 0x00469F60;
-const u32 Func_SortUnit = 0x0046A300;
-const u32 Func_UpdateUnitOrderFinder = 0x0046A3A0;
-const u32 Func_Sub_476D30_DoWeaponIscript = 0x00476D30;
-const u32 Func_Sub_47CB90_NameTooLongToBePutHere = 0x0047CB90;
-const u32 Func_IncrementUnitScores = 0x00488BF0;
-const u32 Func_IncrementUnitScoresEx = 0x00488D50;
-const u32 Func_ClearUnitTarget = 0x0048AAC0;
-const u32 Func_PlayBuildingLiftoffSound = 0x0048F8A0;
-const u32 Func_GetFlingyHaltDistance = 0x00494F90;
-const u32 Func_Sub_497480_GetSpriteUnderlay = 0x00497480;
-const u32 Func_Sub_49A7F0_CompareUnitRank = 0x0049A7F0;
-const u32 Func_Sub_49DE50_AirTrainingProc = 0x0049DE50;
-const u32 Func_Sub_49DEA0_AirTrainingProc = 0x0049DEA0;
-const u32 Func_Sub_49EFA0_ReadUnitsArray = 0x0049EFA0;
-const u32 Func_Sub_49F7A0_ResetOrdersUnitsDAT = 0x0049F7A0;
-const u32 Func_Sub_4A1E50_Orders_AIPatrol = 0x004A1E50;
-const u32 Func_ToggleUnitPath = 0x004E42A0;
-const u32 Func_Sub_4E5F30_GetRightClickActionOrder = 0x004E5F30;
-const u32 Func_CreateUnitSelection = 0x004E6180;
-const u32 Func_DestroyUnitSelection = 0x004E6290;
-const u32 Func_Sub_4EBE10_RefreshSprite = 0x004EBE10;
+const u32 Func_FixTargetLocation                     = 0x00401FA0;
+const u32 Func_HideDialog                            = 0x00418700;
+const u32 Func_Sub_42D9A0_IsVisible                  = 0x0042D9A0;
+const u32 Func_SetRepulseAngle                       = 0x00453300;
+const u32 Func_RemoveRepulseTile                     = 0x004533D0;
+const u32 Func_ApplySpeedUpgradeFromUnitType         = 0x00454370;
+const u32 Func_Sub_463040_AI_PlaceGuard              = 0x00463040;
+const u32 Func_Sub_469EC0_SortLeftRight              = 0x00469EC0;
+const u32 Func_Sub_469F60_SortLeftRight              = 0x00469F60;
+const u32 Func_SortUnit                              = 0x0046A300;
+const u32 Func_UpdateUnitOrderFinder                 = 0x0046A3A0;
+const u32 Func_Sub_476D30_DoWeaponIscript            = 0x00476D30;
+const u32 Func_Sub_47CB90_NameTooLongToBePutHere     = 0x0047CB90;
+const u32 Func_IncrementUnitScores                   = 0x00488BF0;
+const u32 Func_IncrementUnitScoresEx                 = 0x00488D50;
+const u32 Func_ClearUnitTarget                       = 0x0048AAC0;
+const u32 Func_PlayBuildingLiftoffSound              = 0x0048F8A0;
+const u32 Func_GetFlingyHaltDistance                 = 0x00494F90;
+const u32 Func_Sub_497480_GetSpriteUnderlay          = 0x00497480;
+const u32 Func_Sub_49A7F0_CompareUnitRank            = 0x0049A7F0;
+const u32 Func_Sub_49DE50_AirTrainingProc            = 0x0049DE50;
+const u32 Func_Sub_49DEA0_AirTrainingProc            = 0x0049DEA0;
+const u32 Func_Sub_49EFA0_ReadUnitsArray             = 0x0049EFA0;
+const u32 Func_Sub_49F7A0_ResetOrdersUnitsDAT        = 0x0049F7A0;
+const u32 Func_Sub_4A1E50_Orders_AIPatrol            = 0x004A1E50;
+const u32 Func_ToggleUnitPath                        = 0x004E42A0;
+const u32 Func_Sub_4E5F30_GetRightClickActionOrder   = 0x004E5F30;
+const u32 Func_CreateUnitSelection                   = 0x004E6180;
+const u32 Func_DestroyUnitSelection                  = 0x004E6290;
+const u32 Func_Sub_4EBE10_RefreshSprite              = 0x004EBE10;
 const u32 Func_Sub_4F3B70_DestroyPowerupImageOverlay = 0x004F3B70;
 
 // 464930
 void disconnectAddOn_Sub464930(CUnit* unit) {
-    CUnit* addon_unit;
+    CUnit*  addon_unit;
     CUnit** offset_006D11FC = (CUnit**)0x006D11FC;
-    CUnit* offset_006D11FC_backup;
+    CUnit*  offset_006D11FC_backup;
 
     __asm {
 			PUSHAD
@@ -48,7 +48,7 @@ void disconnectAddOn_Sub464930(CUnit* unit) {
 			POPAD
     }
 
-    addon_unit = unit->building.addon;
+    addon_unit           = unit->building.addon;
     unit->building.addon = NULL;
     scbw::refreshConsole();
 
@@ -61,7 +61,7 @@ void disconnectAddOn_Sub464930(CUnit* unit) {
     }
 
     offset_006D11FC_backup = *offset_006D11FC;
-    *offset_006D11FC = unit->building.addon;
+    *offset_006D11FC       = unit->building.addon;
 
     if (unit->building.addon->sprite->images.head != NULL) {
         CImage* current_image = unit->building.addon->sprite->images.head;
@@ -98,7 +98,7 @@ void removeUnitRefsFromTarget(CUnit* unit, CUnit* target) {
         if (target->worker.isCarryingSomething) {
             if (unit == target->worker.harvestTarget) {
                 target->worker.isCarryingSomething = false;
-                target->worker.harvestTarget = NULL;
+                target->worker.harvestTarget       = NULL;
             }
         }
 
@@ -141,12 +141,12 @@ void removeUnitRefsFromTarget(CUnit* unit, CUnit* target) {
 
 // 49EFA0
 void readUnitsArray_Sub49EFA0(CUnit* unit,
-                              u8 playerId_param,
-                              u32 unknown_param) {
+                              u8     playerId_param,
+                              u32    unknown_param) {
     if (playerId_param != unit->playerId) {
         bool bIsUnitReallyCompleted;
         bool bWasUnitSelected;
-        u8 savedSelectionIndex;
+        u8   savedSelectionIndex;
 
         __asm {
 
@@ -190,7 +190,7 @@ void readUnitsArray_Sub49EFA0(CUnit* unit,
         }
 
         if (unit->sprite->flags & CSprite_Flags::Selected) {
-            bWasUnitSelected = true;
+            bWasUnitSelected    = true;
             savedSelectionIndex = unit->sprite->selectionIndex;
 
             __asm {
@@ -201,7 +201,7 @@ void readUnitsArray_Sub49EFA0(CUnit* unit,
             }
         }
         else {
-            bWasUnitSelected = false;
+            bWasUnitSelected    = false;
             savedSelectionIndex = 0;
         }
 
@@ -225,7 +225,7 @@ void readUnitsArray_Sub49EFA0(CUnit* unit,
 
         unit->player_link.prev = NULL;
         unit->player_link.next = NULL;
-        unit->playerId = playerId_param;
+        unit->playerId         = playerId_param;
 
         if (bWasUnitSelected) {
             __asm {
@@ -342,8 +342,8 @@ void ordersRescuePassive(CUnit* unit) {
     const u32 offset_006BEE64 = 0x006BEE64;
 
     scbw::UnitFinder unit_finder;
-    int unit_finder_index = 0;
-    int unit_finder_items_count;
+    int              unit_finder_index = 0;
+    int              unit_finder_items_count;
 
     if (unit->mainOrderTimer == 0) {
         unit->mainOrderTimer = 1;
@@ -375,10 +375,10 @@ void ordersRescuePassive(CUnit* unit) {
                     jump_to_A2105 = true;
             }
             if (!jump_to_A2105) {
-                CUnit* unit_found = unit_finder.getUnit(unit_finder_index);
-                bool jump_to_A204A = false;
-                bool jump_to_A2052;
-                bool jump_to_A20B2 = false;
+                CUnit* unit_found    = unit_finder.getUnit(unit_finder_index);
+                bool   jump_to_A204A = false;
+                bool   jump_to_A2052;
+                bool   jump_to_A20B2 = false;
 
                 if ((unit->status & UnitStatus::Completed) ||
                     unit->id == UnitId::ZergHive ||
@@ -529,7 +529,7 @@ void ordersRescuePassive(CUnit* unit) {
         __asm {
 				PUSHAD /*Here's my theory:*/
 				MOV EAX,[offset_006BEE6C] /*get an array size (which is the 1st real element
-                                 stored in that array)*/
+     stored in that array)*/
 				MOV EDX,[EAX*4+offset_006BEE6C] /*get (pointer to) last element of array*/
 				DEC EAX /*decrease the local copy of size by 1*/
 				MOV [offset_006BEE6C],EAX /*set the array size to the decreased size*/
@@ -541,11 +541,12 @@ void ordersRescuePassive(CUnit* unit) {
 }
 // 4E5D60
 void changeUnitButtonSet(CUnit* unit, u16 buttonSetId) {
-    if ((unit->status & UnitStatus::DoodadStatesThing) ||  // original is "MOV
-                                                           // EDX,unit->status";"test
-                                                           // DH, 04";jne
-        unit->lockdownTimer != 0 || unit->stasisTimer != 0 ||
-        unit->maelstromTimer != 0) {
+    if ((unit->status &
+         UnitStatus::DoodadStatesThing) ||  // original is "MOV
+                                            // EDX,unit->status";"test
+                                            // DH, 04";jne
+        unit->lockdownTimer != 0 ||
+        unit->stasisTimer != 0 || unit->maelstromTimer != 0) {
         // original is "test byte ptr[ edx*4 + Starcraft.exe+264080 ] != 01"
         if (units_dat::BaseProperty[unit->id] & UnitProperty::Building)
             unit->currentButtonSet = buttonSetId;
@@ -579,7 +580,7 @@ void hideAndDisableUnit(CUnit* unit) {
 
             if ((*dialog_structure != NULL) &&
                 ((CUnit*)((*dialog_structure)->user) == unit)) {
-                (*dialog_structure)->user = NULL;
+                (*dialog_structure)->user    = NULL;
                 (*dialog_structure)->graphic = 0xFFFF;
 
                 __asm {
@@ -612,15 +613,15 @@ void hideAndDisableUnit(CUnit* unit) {
 						PUSHAD
 
 						MOV EDI, unit
-						MOV EAX, [EDI+0x0C]          // EAX = unit->sprite
-						XOR EDX, EDX                   // EDX = NULL
-						MOV DX, [EAX+0x16]          // DX = unit->sprite->position.y
+						MOV EAX, [EDI+0x0C]  // EAX = unit->sprite
+						XOR EDX, EDX  // EDX = NULL
+						MOV DX, [EAX+0x16]  // DX = unit->sprite->position.y
 						MOVSX EAX, WORD PTR [EAX+0x14]  // EAX = 0xFFFF0000 +
-                                          // unit->sprite->position.x
+                    // unit->sprite->position.x
 						PUSH EDX  // use 0x00000000 + unit->sprite->position.y as arg
-						PUSH EAX  // use 0xFFFF0000 +
-                                      // unit->sprite->position.x as arg
-						MOV EAX, EDI               // EAX = unit
+						PUSH EAX      // use 0xFFFF0000 +
+                                // unit->sprite->position.x as arg
+						MOV EAX, EDI                   // EAX = unit
 
 						CALL Func_Sub_469EC0_SortLeftRight
 
@@ -660,12 +661,13 @@ void hideAndDisableUnit(CUnit* unit) {
                     AL AND DL, 01 XOR AL, DL MOV[EDI + 0x00000105],
                     AL  // unit->pathingFlags = AL
                         MOV EAX,
-                    EDI                                       // EAX = unit
-                        CALL Func_Sub_49DEA0_AirTrainingProc  // 0049DEA0
-                                                              // sub_49DEA0 under
-                                                              // airTrainingProc
+                    EDI  // EAX = unit
+                            CALL
+                            Func_Sub_49DEA0_AirTrainingProc  // 0049DEA0
+                                                             // sub_49DEA0 under
+                                                             // airTrainingProc
 
-                                                                  POPAD
+                                POPAD
             }
 
             if (*firstHiddenUnit != NULL) {
@@ -684,8 +686,8 @@ void hideAndDisableUnit(CUnit* unit) {
 
             } else {
                 CUnit** unknownUnitStorage = (CUnit**)0x00628428;
-                *unknownUnitStorage = unit;
-                *firstHiddenUnit = unit;
+                *unknownUnitStorage        = unit;
+                *firstHiddenUnit           = unit;
             }
 
             __asm {
@@ -693,13 +695,13 @@ void hideAndDisableUnit(CUnit* unit) {
 					PUSHAD
 
 					MOV EAX, unit
-					XOR EBX, EBX           // set EBX as NULL as it is normally at this point
+					XOR EBX, EBX  // set EBX as NULL as it is normally at this point
 					MOV EAX, [EAX+0x0C]  // EAX = unit->sprite
 					MOV DL, [EAX+0x0E]  // DL = unit->sprite->flags
-					OR DL, 0x20          // set CSprite_Flags::Hidden on DL
-					PUSH EBX      // NULL pushed as arg
-					MOV EBX, EAX           // EBX = unit->sprite
-					MOV [EAX+0x0E], DL            // unit->sprite->flags = DL
+					OR DL, 0x20  // set CSprite_Flags::Hidden on DL
+					PUSH EBX  // NULL pushed as arg
+					MOV EBX, EAX  // EBX = unit->sprite
+					MOV [EAX+0x0E], DL  // unit->sprite->flags = DL
 					CALL Func_Sub_497480_GetSpriteUnderlay
 
 					POPAD
@@ -718,9 +720,9 @@ void hideAndDisableUnit(CUnit* unit) {
 							MOV EDI, currentSubUnit
 							MOV EBX, [EDI+0x0C]  // EBX = unit->subunit->sprite
 							MOV CL, [EBX+0x0E]  // CL = unit->subunit->sprite->flags
-							OR CL, 0x20          // set CSprite_Flags::Hidden on CL
-							PUSH 0x00     // push 00 as arg
-							MOV [EBX+0x0E], CL            // unit->subunit->sprite->flags = CL
+							OR CL, 0x20  // set CSprite_Flags::Hidden on CL
+							PUSH 0x00  // push 00 as arg
+							MOV [EBX+0x0E], CL  // unit->subunit->sprite->flags = CL
 							CALL Func_Sub_497480_GetSpriteUnderlay
 
 							POPAD
@@ -740,10 +742,9 @@ void hideAndDisableUnit(CUnit* unit) {
                     PUSH EDI
                     MOV EDI,EAX						//EDI =
        unit MOV EAX,[EDI+0x0C]				//EAX = unit->sprite
-                    TEST BYTE PTR [EAX+0E],20		//if(unit->sprite->flags !=
-       CSprite_Flags::Hidden)
-                    JNE STARCRAFT.EXE+E6486			//jump to last "pop
-       edi"
+                    TEST BYTE PTR [EAX+0E],20		//if(unit->sprite->flags
+       != CSprite_Flags::Hidden) JNE STARCRAFT.EXE+E6486
+       //jump to last "pop edi"
 
                     PUSH EBX
                     PUSH ESI
@@ -754,8 +755,8 @@ void hideAndDisableUnit(CUnit* unit) {
        //unit = unit
 
                     //StarCraft.exe+E6360
-                    PUSH EDI						//push unit as
-       parameter MOV ECX,ESI						//ECX =
+                    PUSH EDI						//push unit
+       as parameter MOV ECX,ESI						//ECX =
        firstVisibleUnit[0] CALL STARCRAFT.EXE+9E590		//0049E590
        sub_49E590 nicknamed RemoveUnitRefsFromTarget()
 
@@ -766,15 +767,15 @@ void hideAndDisableUnit(CUnit* unit) {
                     //StarCraft.exe+E636F
                     MOV ECX,[EDI+0C]				//ECX =
        unit->sprite
-                    TEST BYTE PTR [ECX+0E],20		//if(unit->sprite->flags ==
-       CSprite_Flags::Hidden) JE STARCRAFT.EXE+E6395			//jump
+                    TEST BYTE PTR [ECX+0E],20		//if(unit->sprite->flags
+       == CSprite_Flags::Hidden) JE STARCRAFT.EXE+E6395			//jump
 
                     MOV ESI,[STARCRAFT.EXE+28AC98]	//ESI = some constant at
        0068AC98 CMP ESI,EBX						//if
        null JE STARCRAFT.EXE+E6395			//jump
 
-                    CMP EDI,[ESI+26]				//if unit != (const->0x26)
-       (constant holding units?) JNE STARCRAFT.EXE+E6395
+                    CMP EDI,[ESI+26]				//if unit !=
+       (const->0x26) (constant holding units?) JNE STARCRAFT.EXE+E6395
        //jump
 
                     MOV [ESI+26],EBX				//[ESI+26] =
@@ -785,8 +786,8 @@ void hideAndDisableUnit(CUnit* unit) {
                     MOV ECX,EDI						//ECX =
        unit CALL STARCRAFT.EXE+8AAC0		//0048AAC0 clearUnitTarget
 
-                    CALL STARCRAFT.EXE+9A7F0		//0049A7F0 sub_49A7F0 under
-       compareUnitRank
+                    CALL STARCRAFT.EXE+9A7F0		//0049A7F0 sub_49A7F0
+       under compareUnitRank
 
                     MOV EAX,EDI						//EAX =
        unit CALL STARCRAFT.EXE+9F7A0		//0049F7A0 sub_49F7A0 under
@@ -804,13 +805,11 @@ void hideAndDisableUnit(CUnit* unit) {
        NULL MOV DX,[EAX+16]					//DX =
        unit->sprite->position.y MOVSX EAX,WORD PTR [EAX+14]		//EAX =
        0xFFFF0000 + unit->sprite->position.x
-                    PUSH EDX						//use 0x00000000 +
-       unit->sprite->position.y as arg
-                    PUSH EAX						//use 0xFFFF0000 +
-       unit->sprite->position.x as arg
-                    MOV EAX,EDI						//EAX =
-       unit CALL STARCRAFT.EXE+69EC0		//00469EC0  sub_469EC0 under
-       sortLeftRight
+                    PUSH EDX						//use 0x00000000
+       + unit->sprite->position.y as arg PUSH EAX
+       //use 0xFFFF0000 + unit->sprite->position.x as arg MOV EAX,EDI
+       //EAX = unit CALL STARCRAFT.EXE+69EC0		//00469EC0  sub_469EC0
+       under sortLeftRight
 
                     //StarCraft.exe+E63CE
                     TEST BYTE PTR [EDI+000000DC],04	//if(unit->status &
@@ -828,18 +827,19 @@ void hideAndDisableUnit(CUnit* unit) {
        unit->pathingFlags MOV [EDI+00000097],BL
        //unit->movementState = BL (BL == NULL ? ) CMP BYTE PTR [ECX+0D],0C
        //cmp(unit->sprite->elevationLevel,12)
-                    SETB DL							//set DL to 1 if below,
-       else set it to 0 XOR DL,AL
+                    SETB DL							//set DL to 1 if
+       below, else set it to 0 XOR DL,AL
        //DL = (0 or 1) | (unit->pathingFlags usually 0 or 1) AND DL,01
        //0 if DL was 0, 1 if DL was 1 ? XOR AL,DL
-       //AL = (unit->pathingFlags usually 0 or 1) | (0 or 1) | MOV [EDI+00000105],AL			//unit->pathingFlags = AL MOV
+       //AL = (unit->pathingFlags usually 0 or 1) | (0 or 1) | MOV
+       [EDI+00000105],AL			//unit->pathingFlags = AL MOV
        EAX,EDI						//EAX = unit CALL
        STARCRAFT.EXE+9DEA0		//0049DEA0 sub_49DEA0 under
        airTrainingProc
 
                     MOV EAX,[STARCRAFT.EXE+2283EC]	//EAX = *firstHiddenUnit
-                    CMP EAX,EBX						//if EAX ==
-       NULL JE STARCRAFT.EXE+E643C			//jump
+                    CMP EAX,EBX						//if EAX
+       == NULL JE STARCRAFT.EXE+E643C			//jump
 
                     CMP [STARCRAFT.EXE+228428],EAX	//cmp some const with
        *firstHiddenUnit JNE STARCRAFT.EXE+E6426			//if not equal
@@ -849,8 +849,8 @@ void hideAndDisableUnit(CUnit* unit) {
        const
 
                     //StarCraft.exe+E6426
-                    MOV [EDI],EAX					//unit->link.prev =
-       firstHiddenUnit MOV ECX,[EAX+04]				//ECX =
+                    MOV [EDI],EAX					//unit->link.prev
+       = firstHiddenUnit MOV ECX,[EAX+04]				//ECX =
        firstHiddenUnit->link.next MOV [EDI+04],ECX
        //unit->link.next = firstHiddenUnit->link.next MOV ECX,[EAX+04]
        //ECX = firstHiddenUnit->link.next CMP ECX,EBX
@@ -861,8 +861,9 @@ void hideAndDisableUnit(CUnit* unit) {
        //firstHiddenUnit->link.next->link.prev = unit
 
                     //StarCraft.exe+E6437
-                    MOV [EAX+04],EDI				//firstHiddenUnit->link.next
-       = unit JMP STARCRAFT.EXE+E6448			//always jump
+                    MOV [EAX+04],EDI
+       //firstHiddenUnit->link.next = unit JMP STARCRAFT.EXE+E6448
+       //always jump
 
                     //StarCraft.exe+E643C
                     MOV [STARCRAFT.EXE+228428],EDI	//mov unit into some
@@ -872,33 +873,33 @@ void hideAndDisableUnit(CUnit* unit) {
                     MOV EAX,[EDI+0C]				//EAX =
        unit->sprite MOV DL,[EAX+0E]					//DL =
        unit->sprite->flags
-                    OR DL,20						//set CSprite_Flags::Hidden
+                    OR DL,20						//set
+       CSprite_Flags::Hidden
        on DL PUSH EBX						//NULL pushed as
        arg MOV EBX,EAX						//EBX =
        unit->sprite
-                    MOV [EAX+0E],DL					//unit->sprite->flags =
-       DL CALL STARCRAFT.EXE+97480		//00497480 sub_497480 under
+                    MOV [EAX+0E],DL					//unit->sprite->flags
+       = DL CALL STARCRAFT.EXE+97480		//00497480 sub_497480 under
        getSpriteUnderlay
 
                     MOV EDI,[EDI+70]				//EDI =
        unit->subunit
-                    TEST EDI,EDI					//if EDI ==
-       NULL JE STARCRAFT.EXE+E6484			//jump
+                    TEST EDI,EDI					//if EDI
+       == NULL JE STARCRAFT.EXE+E6484			//jump
 
                     MOVZX EDX,WORD PTR [EDI+64]		//EDX = 0x00000000 +
        unit->subunit->id TEST BYTE PTR [EDX*4+STARCRAFT.EXE+264080],10 //if
        units_dat::BaseProperty[unit->subunit->id] & Subunit JE
-       STARCRAFT.EXE+E6484							//jump to memory
-       release
+       STARCRAFT.EXE+E6484							//jump to
+       memory release
 
                     MOV EBX,[EDI+0C]				//EBX =
        unit->subunit->sprite
                     MOV CL,[EBX+0E]					//CL =
        unit->subunit->sprite->flags
-                    OR CL,20						//set CSprite_Flags::Hidden
-       on CL
-                    PUSH 00							//push 00 as
-       arg MOV [EBX+0E],CL
+                    OR CL,20						//set
+       CSprite_Flags::Hidden on CL PUSH 00
+       //push 00 as arg MOV [EBX+0E],CL
        //unit->subunit->sprite->flags = CL CALL STARCRAFT.EXE+97480
        //00497480 sub_497480 under getSpriteUnderlay
 
@@ -942,13 +943,13 @@ void showAndEnableUnit(CUnit* unit) {
             __asm {
 					PUSHAD
 					MOV EDI, unit
-					MOV EAX, [EDI+0x0C]      // EAX = unit->sprite
-					XOR ECX, ECX               // ECX = NULL
-					MOV CX, [EAX+0x16]      // CX = unit->sprite->position.y
-					XOR EDX, EDX               // EDX = NULL
-					MOV DX, [EAX+0x14]      // DX = unit->sprite->position.x
-					MOV EAX, EDI               // EAX = unit
-					PUSH ECX      // PUSH unit->sprite->position.y as arg
+					MOV EAX, [EDI+0x0C]  // EAX = unit->sprite
+					XOR ECX, ECX  // ECX = NULL
+					MOV CX, [EAX+0x16]  // CX = unit->sprite->position.y
+					XOR EDX, EDX  // EDX = NULL
+					MOV DX, [EAX+0x14]  // DX = unit->sprite->position.x
+					MOV EAX, EDI  // EAX = unit
+					PUSH ECX  // PUSH unit->sprite->position.y as arg
 					PUSH EDX  // PUSH unit->sprite->position.x as arg	
 					CALL Func_Sub_469F60_SortLeftRight
 					POPAD
@@ -983,16 +984,16 @@ void showAndEnableUnit(CUnit* unit) {
         __asm {
 				PUSHAD
 				MOV EDI, unit
-				MOV EAX, [EDI+0x0C]        // EAX = unit->sprite
-				MOV CL, [EAX+0x0D]        // CL = unit->sprite->elevationLevel
+				MOV EAX, [EDI+0x0C]  // EAX = unit->sprite
+				MOV CL, [EAX+0x0D]  // CL = unit->sprite->elevationLevel
 				MOV AL, [EDI+0x00000105]  // AL = unit->pathingFlags
-				CMP CL, 0x0C                // CMP(unit->sprite->elevationLevel, 12)
+				CMP CL, 0x0C  // CMP(unit->sprite->elevationLevel, 12)
 				SETB CL
 				XOR CL, AL
 				AND CL, 0x01
 				MOV DL, AL
 				XOR DL, CL
-				MOV [EDI+0x00000105], DL                  // unit->pathingFlags = DL
+				MOV [EDI+0x00000105], DL  // unit->pathingFlags = DL
 				POPAD
         }
 
@@ -1008,16 +1009,16 @@ void showAndEnableUnit(CUnit* unit) {
 						MOV ESI, subunit
 						CALL Func_ToggleUnitPath
 
-						MOV EAX, [ESI+0x0C]        // EAX = subunit->sprite
+						MOV EAX, [ESI+0x0C]  // EAX = subunit->sprite
 						MOV BL, [ESI+0x00000105]  // AL = subunit->pathingFlags
-						MOV BYTE PTR [ESI+0x00000097], 00                  // subunit->movementState = 0
+						MOV BYTE PTR [ESI+0x00000097], 00  // subunit->movementState = 0
 						CMP BYTE PTR [EAX+0x0D], 0x0C  // CMP(subunit->sprite->elevationLevel, 12)
 						SETB CL
 						XOR CL, BL
 						AND CL, 0x01
 						MOV AL, BL
 						XOR AL, CL
-						MOV [ESI+0x00000105], AL    // subunit->pathingFlags = AL
+						MOV [ESI+0x00000105], AL  // subunit->pathingFlags = AL
 
 						POPAD
 
@@ -1040,7 +1041,7 @@ void showAndEnableUnit(CUnit* unit) {
             CUnit** unknown_memory_area = (CUnit**)0x0059CC9C;
 
             *unknown_memory_area = unit;
-            *firstVisibleUnit = unit;
+            *firstVisibleUnit    = unit;
         }
         else {
             CUnit** unknown_memory_area = (CUnit**)0x0059CC9C;
@@ -1069,9 +1070,9 @@ void setNextWaypoint_Sub4EB290(CUnit* unit) {
     if (!(unit->movementFlags & 4)) {
         u8 movementFlagsBackup = unit->movementFlags;
 
-        unit->moveTarget.pt.x = unit->position.x;
-        unit->moveTarget.pt.y = unit->position.y;
-        unit->moveTarget.unit = NULL;
+        unit->moveTarget.pt.x      = unit->position.x;
+        unit->moveTarget.pt.y      = unit->position.y;
+        unit->moveTarget.unit      = NULL;
         unit->nextMovementWaypoint = unit->moveTarget.pt;
 
         unit->movementFlags &= -0x71;  // binary: 10001111
@@ -1123,15 +1124,15 @@ void setNextWaypoint_Sub4EB290(CUnit* unit) {
 			MOV EDI, [ESI+0x10]  // unit->moveTarget
 			MOV AX, [ESI+0x64]  // unit->id
 			LEA EDX, [EBP-0x04]  // EDX become a pointer on the stack
-			MOV [EBP-0x04], EDI           // a copy of unit->moveTarget is the target of [EDX]
+			MOV [EBP-0x04], EDI  // a copy of unit->moveTarget is the target of [EDX]
 			CALL Func_FixTargetLocation
 
 			MOV EAX, [EBP-0x04]  // EAX = modified unit->moveTarget
-			CMP EAX, EDI           // compare the modified and original unit->moveTarget
-			POP EDI   // free stack memory of EBP-4
+			CMP EAX, EDI  // compare the modified and original unit->moveTarget
+			POP EDI  // free stack memory of EBP-4
 			JE jump_to_end
 
-			MOV [ESI+0x10], EAX           // unit->moveTarget = modified unit->moveTarget
+			MOV [ESI+0x10], EAX  // unit->moveTarget = modified unit->moveTarget
 			MOV [ESI+0x18], EAX  // unit->nextMovementWaypoint = modified unit->moveTarget.pt
 
 			jump_to_end:

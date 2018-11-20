@@ -10,8 +10,8 @@ namespace graphics {
 class Bitmap {
    public:
     bool blitString(const char *pszStr, int x, int y, u8 size);
-    u16 getWidth() const;
-    u16 getHeight() const;
+    u16  getWidth() const;
+    u16  getHeight() const;
 
     void drawDot(int x, int y, ColorId color);
     void drawLine(int x1, int y1, int x2, int y2, ColorId color);
@@ -21,10 +21,10 @@ class Bitmap {
     void drawFilledCircle(int x, int y, int radius, ColorId color);
     void drawEllipse(int left, int top, int right, int bottom, ColorId color);
     void drawDottedLine(int x1, int y1, int x2, int y2, ColorId color);
-    void drawDottedEllipse(int left,
-                           int top,
-                           int right,
-                           int bottom,
+    void drawDottedEllipse(int     left,
+                           int     top,
+                           int     right,
+                           int     bottom,
                            ColorId color);
 
    private:
@@ -42,7 +42,7 @@ class Bitmap {
     // Trivially checks whether the line should be drawn; based on the trivial
     // check in the Cohen-Sutherland line clipping algorithm.
     bool isLineTriviallyIgnorable(int x1, int y1, int x2, int y2);
-    int computeOutcode(int x, int y);
+    int  computeOutcode(int x, int y);
 };
 
 }  // namespace graphics

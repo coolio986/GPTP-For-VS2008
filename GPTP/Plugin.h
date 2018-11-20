@@ -12,7 +12,7 @@ class Plugin : public IMPQDraftPlugin {
     BOOL WINAPI Configure(HWND hParentWnd);
     BOOL WINAPI ReadyForPatch();
     BOOL WINAPI GetModules(MPQDRAFTPLUGINMODULE *lpPluginModules,
-                           LPDWORD lpnNumModules);
+                           LPDWORD               lpnNumModules);
     BOOL WINAPI InitializePlugin(IMPQDraftServer *lpMPQDraftServer);
     BOOL WINAPI TerminatePlugin();
 

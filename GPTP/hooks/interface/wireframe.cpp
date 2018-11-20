@@ -11,7 +11,7 @@ namespace hooks {
 // buildings show the wireframe of the new building
 // before construction is complete
 u16 statdata_UnitWireframeUpdate_Fragment(CUnit* unit) {
-    u16 unitId;
+    u16  unitId;
     bool bUseCurrentUnitId = true;
 
     if (!(unit->status & UnitStatus::Completed)) {

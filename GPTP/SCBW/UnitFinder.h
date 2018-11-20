@@ -67,42 +67,42 @@ class UnitFinder {
     /// returning the nearest unit to @p sourceUnit for which match(unit)
     /// evaluates to true. If there are no matches, returns NULL.
     /// This does not use unit collision boxes for calculating distances.
-    static CUnit* getNearestTarget(int left,
-                                   int top,
-                                   int right,
-                                   int bottom,
-                                   CUnit* sourceUnit,
+    static CUnit* getNearestTarget(int                               left,
+                                   int                               top,
+                                   int                               right,
+                                   int                               bottom,
+                                   CUnit*                            sourceUnit,
                                    UnitFinderCallbackMatchInterface& match);
 
     /// Searches the entire map, returning the nearest unit to @p sourceUnit
     /// for which match(unit) evaluates to true. If there are no matches,
     /// returns NULL.
     /// This does not use unit collision boxes for calculating distances.
-    static CUnit* getNearestTarget(CUnit* sourceUnit,
+    static CUnit* getNearestTarget(CUnit*                            sourceUnit,
                                    UnitFinderCallbackMatchInterface& match);
 
    private:
     // This function is meant to be used by other getNearest() functions.
     // Do NOT use this function in the game code!
-    static CUnit* getNearest(int x,
-                             int y,
-                             int boundsLeft,
-                             int boundsTop,
-                             int boundsRight,
-                             int boundsBottom,
-                             UnitFinderData* left,
-                             UnitFinderData* top,
-                             UnitFinderData* right,
-                             UnitFinderData* bottom,
+    static CUnit* getNearest(int                               x,
+                             int                               y,
+                             int                               boundsLeft,
+                             int                               boundsTop,
+                             int                               boundsRight,
+                             int                               boundsBottom,
+                             UnitFinderData*                   left,
+                             UnitFinderData*                   top,
+                             UnitFinderData*                   right,
+                             UnitFinderData*                   bottom,
                              UnitFinderCallbackMatchInterface& match,
-                             CUnit* sourceUnit);
+                             CUnit*                            sourceUnit);
 
     static UnitFinderData* getStartX();
     static UnitFinderData* getStartY();
     static UnitFinderData* getEndX();
     static UnitFinderData* getEndY();
 
-    int unitCount;
+    int    unitCount;
     CUnit* units[UNIT_ARRAY_LENGTH];
 };
 

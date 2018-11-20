@@ -172,28 +172,28 @@ class DarkSwarmTargetFinderProc
         //  case WeaponBehavior::Bounce:
 
         //	//Based on	weaponBehaviourCanHitTargetCheck	@
-        //0x004765B0 and
+        // 0x004765B0 and
         //	//			isUnderDarkSwarm
         //@ 0x00476210
 
         //	if (!(targetOfTarget->status & UnitStatus::InAir)
         //		&& !(units_dat::BaseProperty[targetOfTarget->id] &
-        //UnitProperty::Building)
+        // UnitProperty::Building)
         //		&& scbw::isUnderDarkSwarm(targetOfTarget))
         //	  return true;
 
         //	//isUnderDarkSwarm @ 0x00476210 would return a positive value
         //(0x77) 	if (scbw::getActiveTileAt(targetOfTarget->getX(),
-        //targetOfTarget->getY()).hasDoodadCover) 	  return true;
+        // targetOfTarget->getY()).hasDoodadCover) 	  return true;
 
         //	if (!(targetOfTarget->status & UnitStatus::InAir ||
-        //target->status & UnitStatus::InAir))
+        // target->status & UnitStatus::InAir))
         //	{
         //	  u32 targGndHeight = scbw::getGroundHeightAtPos(target->getX(),
-        //target->getY()); 	  u32 totGndHeight =
-        //scbw::getGroundHeightAtPos(targetOfTarget->getX(),
-        //targetOfTarget->getY()); 	  if (targGndHeight < totGndHeight) 		return
-        //true;
+        // target->getY()); 	  u32 totGndHeight =
+        // scbw::getGroundHeightAtPos(targetOfTarget->getX(),
+        // targetOfTarget->getY()); 	  if (targGndHeight < totGndHeight)
+        // return true;
         //	}
 
         //  default:

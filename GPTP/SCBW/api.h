@@ -47,8 +47,8 @@ bool canBeEnteredBy(CUnit* transport, CUnit* unit);
 /// @param  target    If NULL is passed, the function checks whether the
 ///                   weapon can target a position on the ground. If @p target
 ///                   is invincible, the function returns false.
-bool canWeaponTargetUnit(u8 weaponId,
-                         CUnit* target = NULL,
+bool canWeaponTargetUnit(u8     weaponId,
+                         CUnit* target   = NULL,
                          CUnit* attacker = NULL);
 
 /// Checks if @p unit is under a Dark Swarm. This does NOT check whether the
@@ -177,12 +177,12 @@ void prepareUnitMove(CUnit* unit, bool hideUnit = false);
 ///
 /// @return True if the unit does not collide with other units, or can be moved
 ///         to a nearby non-colliding position.
-bool checkUnitCollisionPos(CUnit* unit,
+bool checkUnitCollisionPos(CUnit*         unit,
                            const Point16* inPos,
-                           Point16* outPos,
-                           Box16* moveArea = NULL,
-                           bool hideErrorMsg = false,
-                           u32 someFlag = 0);
+                           Point16*       outPos,
+                           Box16*         moveArea     = NULL,
+                           bool           hideErrorMsg = false,
+                           u32            someFlag     = 0);
 
 /// Moves the unit's position to @p (x, y). If the unit is a ground unit and the
 /// the target position is on unwalkable terrain, this function moves the unit
@@ -247,7 +247,7 @@ void minimapPing(u32 x, u32 y, s32 color, u32 playerId = 8);
 inline void playFrame(CImage* image, u16 frameset) {
     if (image->frameSet != frameset) {
         image->frameSet = frameset;
-        u16 frameIndex = frameset + image->direction;
+        u16 frameIndex  = frameset + image->direction;
         if (image->frameIndex != frameIndex) {
             image->flags |=
                 CImage_Flags::Redraw;  // Order the game to redraw the image
@@ -258,12 +258,12 @@ inline void playFrame(CImage* image, u16 frameset) {
 
 /// Sets the data of the Anywhere location.
 inline void setAnywhereLocation() {
-    LOCATION* location = &locationTable[63];
-    location->dimensions.left = 0;
-    location->dimensions.top = 0;
-    location->dimensions.right = 32 * mapTileSize->width;
+    LOCATION* location          = &locationTable[63];
+    location->dimensions.left   = 0;
+    location->dimensions.top    = 0;
+    location->dimensions.right  = 32 * mapTileSize->width;
     location->dimensions.bottom = 32 * mapTileSize->height;
-    location->flags = 63;
+    location->flags             = 63;
 }
 
 /// Sets the data of location @p locNumber.
@@ -273,12 +273,12 @@ inline void setLocation(int locNumber,
                         int right,
                         int bottom,
                         int flags) {
-    LOCATION* location = &locationTable[locNumber];
-    location->dimensions.left = left;
-    location->dimensions.top = top;
-    location->dimensions.right = right;
+    LOCATION* location          = &locationTable[locNumber];
+    location->dimensions.left   = left;
+    location->dimensions.top    = top;
+    location->dimensions.right  = right;
     location->dimensions.bottom = bottom;
-    location->flags = flags;
+    location->flags             = flags;
 }
 
 /// Sets or clears the "is currently inside the game loop" property.
@@ -286,7 +286,7 @@ inline void setLocation(int locNumber,
 inline bool setInGameLoopState(bool newState) {
     // Identical to function @ 0x004DC540
     Bool32 previousState = *IS_IN_GAME_LOOP;
-    *IS_IN_GAME_LOOP = (newState ? 1 : 0);
+    *IS_IN_GAME_LOOP     = (newState ? 1 : 0);
     return previousState != 0;
 }
 

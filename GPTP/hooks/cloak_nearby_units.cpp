@@ -3,7 +3,7 @@
 
 // Helper functions
 namespace {
-void secondaryOrder_Cloak(CUnit* unit);      // 0x00491790
+void    secondaryOrder_Cloak(CUnit* unit);   // 0x00491790
 CUnit** getAllUnitsInBounds(Box16* coords);  // 0x0042FF80
 }  // unnamed namespace
 
@@ -21,14 +21,14 @@ void cloakNearbyUnitsHook(CUnit* cloaker) {
     Box16 area_of_effect;
 
     CUnit** unitsInAreaOfEffect;
-    CUnit* current_unit;
+    CUnit*  current_unit;
 
     // Use the unit's air weapon range
     u32 cloakRadius = cloaker->getMaxWeaponRange(cloaker->getAirWeapon());
 
-    area_of_effect.left = cloaker->sprite->position.x - cloakRadius;
-    area_of_effect.right = cloaker->sprite->position.x + cloakRadius;
-    area_of_effect.top = cloaker->sprite->position.y - cloakRadius;
+    area_of_effect.left   = cloaker->sprite->position.x - cloakRadius;
+    area_of_effect.right  = cloaker->sprite->position.x + cloakRadius;
+    area_of_effect.top    = cloaker->sprite->position.y - cloakRadius;
     area_of_effect.bottom = cloaker->sprite->position.y + cloakRadius;
 
     if (area_of_effect.left < 0) area_of_effect.left = 0;
@@ -110,7 +110,7 @@ void secondaryOrder_Cloak(CUnit* unit) {
 ;
 
 const u32 Func_GetAllUnitsInBounds = 0x0042FF80;
-CUnit** getAllUnitsInBounds(Box16* coords) {
+CUnit**   getAllUnitsInBounds(Box16* coords) {
     static CUnit** units_in_bounds;
 
     __asm {

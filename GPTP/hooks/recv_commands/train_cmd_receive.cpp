@@ -15,7 +15,7 @@ void CMDRECV_TrainFighter() {
     CUnit* current_selection;
 
     *selectionIndexStart = 0;
-    current_selection = getActivePlayerNextSelection();
+    current_selection    = getActivePlayerNextSelection();
 
     while (current_selection != NULL) {
         u32 unitToBuild;
@@ -47,7 +47,7 @@ void CMDRECV_TrainFighter() {
                     current_selection->secondaryOrderId = OrderId::TrainFighter;
                     current_selection->secondaryOrderPos.y = 0;
                     current_selection->secondaryOrderPos.x = 0;
-                    current_selection->currentBuildUnit = NULL;
+                    current_selection->currentBuildUnit    = NULL;
                     current_selection->secondaryOrderState = 0;
                 }
             }
@@ -66,7 +66,7 @@ void CMDRECV_Train(u16 wUnitType) {
     CUnit* builder;
 
     *selectionIndexStart = 0;
-    builder = getActivePlayerNextSelection();
+    builder              = getActivePlayerNextSelection();
 
     if (builder != NULL && getActivePlayerNextSelection() == NULL) {
         if (builder->canMakeUnit(wUnitType, *ACTIVE_NATION_ID) == 1 &&
@@ -90,7 +90,7 @@ void CMDRECV_Train(u16 wUnitType) {
 namespace {
 
 const u32 Func_HasMoneyCanMake = 0x00467250;
-bool HasMoneyCanMake(CUnit* builder, u32 unitToBuild) {
+bool      HasMoneyCanMake(CUnit* builder, u32 unitToBuild) {
     static Bool32 bPreResult;
 
     __asm {

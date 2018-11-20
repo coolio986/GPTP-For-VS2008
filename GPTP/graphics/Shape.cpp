@@ -8,140 +8,140 @@ namespace graphics {
 
 //-------- Registering shapes --------//
 
-void Shape::setText(int x,
-                    int y,
-                    int stringIndex,
-                    FontSize fontSize,
+void Shape::setText(int       x,
+                    int       y,
+                    int       stringIndex,
+                    FontSize  fontSize,
                     CoordType coordType) {
-    this->type = TEXT;
-    this->p1.x = x;
-    this->p1.y = y;
+    this->type        = TEXT;
+    this->p1.x        = x;
+    this->p1.y        = y;
     this->stringIndex = stringIndex;
-    this->fontSize = fontSize;
-    this->coordType = coordType;
+    this->fontSize    = fontSize;
+    this->coordType   = coordType;
 }
 
 void Shape::setDot(int x, int y, ColorId color, CoordType coordType) {
-    this->type = DOT;
-    this->p1.x = x;
-    this->p1.y = y;
-    this->color = color;
+    this->type      = DOT;
+    this->p1.x      = x;
+    this->p1.y      = y;
+    this->color     = color;
     this->coordType = coordType;
 }
 
-void Shape::setLine(int x1,
-                    int y1,
-                    int x2,
-                    int y2,
-                    ColorId color,
+void Shape::setLine(int       x1,
+                    int       y1,
+                    int       x2,
+                    int       y2,
+                    ColorId   color,
                     CoordType coordType) {
-    this->type = LINE;
-    this->p1.x = x1;
-    this->p1.y = y1;
-    this->p2.x = x2;
-    this->p2.y = y2;
-    this->color = color;
+    this->type      = LINE;
+    this->p1.x      = x1;
+    this->p1.y      = y1;
+    this->p2.x      = x2;
+    this->p2.y      = y2;
+    this->color     = color;
     this->coordType = coordType;
 }
 
-void Shape::setBox(int left,
-                   int top,
-                   int right,
-                   int bottom,
-                   ColorId color,
+void Shape::setBox(int       left,
+                   int       top,
+                   int       right,
+                   int       bottom,
+                   ColorId   color,
                    CoordType coordType) {
-    this->type = BOX;
-    this->p1.x = left;
-    this->p1.y = top;
-    this->p2.x = right;
-    this->p2.y = bottom;
-    this->color = color;
+    this->type      = BOX;
+    this->p1.x      = left;
+    this->p1.y      = top;
+    this->p2.x      = right;
+    this->p2.y      = bottom;
+    this->color     = color;
     this->coordType = coordType;
 }
 
-void Shape::setEllipse(int left,
-                       int top,
-                       int right,
-                       int bottom,
-                       ColorId color,
+void Shape::setEllipse(int       left,
+                       int       top,
+                       int       right,
+                       int       bottom,
+                       ColorId   color,
                        CoordType coordType) {
-    this->type = ELLIPSE;
-    this->p1.x = left;
-    this->p1.y = top;
-    this->p2.x = right;
-    this->p2.y = bottom;
-    this->color = color;
+    this->type      = ELLIPSE;
+    this->p1.x      = left;
+    this->p1.y      = top;
+    this->p2.x      = right;
+    this->p2.y      = bottom;
+    this->color     = color;
     this->coordType = coordType;
 }
 
-void Shape::setDottedEllipse(int left,
-                             int top,
-                             int right,
-                             int bottom,
-                             ColorId color,
+void Shape::setDottedEllipse(int       left,
+                             int       top,
+                             int       right,
+                             int       bottom,
+                             ColorId   color,
                              CoordType coordType) {
-    this->type = DOTTED_ELLIPSE;
-    this->p1.x = left;
-    this->p1.y = top;
-    this->p2.x = right;
-    this->p2.y = bottom;
-    this->color = color;
+    this->type      = DOTTED_ELLIPSE;
+    this->p1.x      = left;
+    this->p1.y      = top;
+    this->p2.x      = right;
+    this->p2.y      = bottom;
+    this->color     = color;
     this->coordType = coordType;
 }
 
-void Shape::setDottedLine(int x1,
-                          int y1,
-                          int x2,
-                          int y2,
-                          ColorId color,
+void Shape::setDottedLine(int       x1,
+                          int       y1,
+                          int       x2,
+                          int       y2,
+                          ColorId   color,
                           CoordType coordType) {
-    this->type = DOTTED_LINE;
-    this->p1.x = x1;
-    this->p1.y = y1;
-    this->p2.x = x2;
-    this->p2.y = y2;
-    this->color = color;
+    this->type      = DOTTED_LINE;
+    this->p1.x      = x1;
+    this->p1.y      = y1;
+    this->p2.x      = x2;
+    this->p2.y      = y2;
+    this->color     = color;
     this->coordType = coordType;
 }
 
-void Shape::setCircle(int x,
-                      int y,
-                      int radius,
-                      ColorId color,
+void Shape::setCircle(int       x,
+                      int       y,
+                      int       radius,
+                      ColorId   color,
                       CoordType coordType) {
-    this->type = CIRCLE;
-    this->p1.x = x;
-    this->p1.y = y;
-    this->radius = radius;
-    this->color = color;
+    this->type      = CIRCLE;
+    this->p1.x      = x;
+    this->p1.y      = y;
+    this->radius    = radius;
+    this->color     = color;
     this->coordType = coordType;
 };
 
-void Shape::setFilledBox(int left,
-                         int top,
-                         int right,
-                         int bottom,
-                         ColorId color,
+void Shape::setFilledBox(int       left,
+                         int       top,
+                         int       right,
+                         int       bottom,
+                         ColorId   color,
                          CoordType coordType) {
-    this->type = FILLED_BOX;
-    this->p1.x = left;
-    this->p1.y = top;
-    this->p2.x = right;
-    this->p2.y = bottom;
-    this->color = color;
+    this->type      = FILLED_BOX;
+    this->p1.x      = left;
+    this->p1.y      = top;
+    this->p2.x      = right;
+    this->p2.y      = bottom;
+    this->color     = color;
     this->coordType = coordType;
 };
 
-void Shape::setFilledCircle(int x,
-                            int y,
-                            int radius,
-                            ColorId color,
+void Shape::setFilledCircle(int       x,
+                            int       y,
+                            int       radius,
+                            ColorId   color,
                             CoordType coordType) {
-    this->type = FILLED_CIRCLE;
-    this->p1.x = x;
-    this->p1.y = y;
-    this->radius = radius;
-    this->color = color;
+    this->type      = FILLED_CIRCLE;
+    this->p1.x      = x;
+    this->p1.y      = y;
+    this->radius    = radius;
+    this->color     = color;
     this->coordType = coordType;
 };
 

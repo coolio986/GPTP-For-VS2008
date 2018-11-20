@@ -4,12 +4,12 @@
 
 // helper functions def
 namespace {
-CUnit* SpiderMine_AcquireTarget(CUnit* spiderMine);  // 0x00441270
-void function_00495400(CUnit* unit, CUnit* target);  // 0x00495400
-void function_0049B1E0(CUnit* unit);                 // 0x0049B1E0
-void function_004E99D0(CUnit* unit);                 // 0x004E99D0
-void function_004E9A30(CUnit* unit);                 // 0x004E9A30
-void setNextWaypoint_Sub4EB290(CUnit* unit);         // 0x004EB290
+CUnit* SpiderMine_AcquireTarget(CUnit* spiderMine);    // 0x00441270
+void   function_00495400(CUnit* unit, CUnit* target);  // 0x00495400
+void   function_0049B1E0(CUnit* unit);                 // 0x0049B1E0
+void   function_004E99D0(CUnit* unit);                 // 0x004E99D0
+void   function_004E9A30(CUnit* unit);                 // 0x004E9A30
+void   setNextWaypoint_Sub4EB290(CUnit* unit);         // 0x004EB290
 }  // unnamed namespace
 
 // Helper class for findBestSpiderMineTargetHook()
@@ -43,8 +43,8 @@ class SpiderMineTargetFinder : public scbw::UnitFinderCallbackMatchInterface {
 
 namespace hooks {
 
-const int SPIDERMINE_BURROW_TIME = 60;
-const int SPIDERMINE_SEEKING_RANGE = 576;
+const int SPIDERMINE_BURROW_TIME    = 60;
+const int SPIDERMINE_SEEKING_RANGE  = 576;
 const int SPIDERMINE_DETONATE_RANGE = 30;
 
 // Return the best target for the Spider Mine. If there is no suitable target,
@@ -72,7 +72,7 @@ CUnit* findBestSpiderMineTargetHook(CUnit* spiderMine) {
 void orders_VultureMine(CUnit* unit) {
     if (unit->mainOrderState == 0) {
         unit->groundWeaponCooldown = SPIDERMINE_BURROW_TIME;
-        unit->mainOrderState = 1;
+        unit->mainOrderState       = 1;
     }
 
     if (unit->mainOrderState == 1) {
@@ -134,7 +134,7 @@ void orders_VultureMine(CUnit* unit) {
             // the same frame is impossible
         if (unit->mainOrderState == 5) {
         bool bIsCompletelyInRange = false;
-        bool bEndThere = false;
+        bool bEndThere            = false;
 
         function_004E99D0(
             unit);  // related to movement, similar to function_004E9A30
@@ -216,7 +216,7 @@ CUnit* SpiderMine_AcquireTarget(CUnit* spiderMine) {
 ;
 
 const u32 Func_Sub495400 = 0x00495400;
-void function_00495400(CUnit* unit, CUnit* target){
+void      function_00495400(CUnit* unit, CUnit* target){
 
     __asm {PUSHAD MOV EDI, unit MOV EAX, target CALL Func_Sub495400 POPAD}
 
@@ -265,7 +265,7 @@ void function_004E9A30(CUnit* unit) {
 
 // Related to path/movement decision
 const u32 Func_sub_4EB290 = 0x004EB290;
-void setNextWaypoint_Sub4EB290(CUnit* unit){
+void      setNextWaypoint_Sub4EB290(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_sub_4EB290 POPAD}}
 

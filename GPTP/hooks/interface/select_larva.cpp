@@ -7,12 +7,12 @@ namespace {
 
 u32 getLarvaeUnitsFromList(CUnit** unitList, CUnit** outputList);  // 0x00423190
 CUnit** getAllUnitsInBounds(Box16* coords);                        // 0x0042FF80
-u32 CUnitToUnitID(CUnit* unit);                                    // 0x0047B1D0
-Bool32 selectSingleUnitFromID(u32 unitIndex);                      // 0x00496D30
-void selectMultipleUnitsFromUnitList(CUnit** unitList,
-                                     u32 unitsCount,
-                                     Bool32 unk1,
-                                     Bool32 unk2);  // 0x0049AEF0
+u32     CUnitToUnitID(CUnit* unit);                                // 0x0047B1D0
+Bool32  selectSingleUnitFromID(u32 unitIndex);                     // 0x00496D30
+void    selectMultipleUnitsFromUnitList(CUnit** unitList,
+                                        u32     unitsCount,
+                                        Bool32  unk1,
+                                        Bool32  unk2);  // 0x0049AEF0
 
 }  // unnamed namespace
 
@@ -25,8 +25,8 @@ namespace hooks {
 /// slots to fill with larvae found in unitList.
 ///
 u32 getLarvaeUnitsFromList(CUnit** unitList, CUnit** outputList) {
-    CUnit* current_unit = *unitList;
-    u32 current_index = 0;
+    CUnit* current_unit  = *unitList;
+    u32    current_index = 0;
 
     if (current_unit != NULL) {
         bool bStopLoop = false;
@@ -43,7 +43,7 @@ u32 getLarvaeUnitsFromList(CUnit** unitList, CUnit** outputList) {
             if (!bStopLoop) {
                 unitList++;
                 current_unit = *unitList;
-                bStopLoop = (current_unit == NULL);
+                bStopLoop    = (current_unit == NULL);
             }
         }
     }
@@ -60,15 +60,15 @@ u32 getLarvaeUnitsFromList(CUnit** unitList, CUnit** outputList) {
 /// happen in selectMultipleUnitsFromUnitList).
 ///
 void BTNSACT_SelectLarva() {
-    Box16 coords;
+    Box16   coords;
     CUnit** units_in_bounds;
-    CUnit* new_selection[SELECTION_ARRAY_LENGTH];
-    u32 larvaeCount;
+    CUnit*  new_selection[SELECTION_ARRAY_LENGTH];
+    u32     larvaeCount;
 
-    coords.right = (*activePortraitUnit)->sprite->position.x + 128;
+    coords.right  = (*activePortraitUnit)->sprite->position.x + 128;
     coords.bottom = (*activePortraitUnit)->sprite->position.y + 128;
-    coords.left = (*activePortraitUnit)->sprite->position.x - 128;
-    coords.top = (*activePortraitUnit)->sprite->position.y - 128;
+    coords.left   = (*activePortraitUnit)->sprite->position.x - 128;
+    coords.top    = (*activePortraitUnit)->sprite->position.y - 128;
 
     units_in_bounds = getAllUnitsInBounds(&coords);
 
@@ -101,7 +101,7 @@ void BTNSACT_SelectLarva() {
 namespace {
 
 const u32 Func_getLarvaeUnitsFromList = 0x00423190;
-u32 getLarvaeUnitsFromList(CUnit** unitList, CUnit** outputList) {
+u32       getLarvaeUnitsFromList(CUnit** unitList, CUnit** outputList) {
     static u32 larvaeList_Count;
 
     __asm {
@@ -119,7 +119,7 @@ u32 getLarvaeUnitsFromList(CUnit** unitList, CUnit** outputList) {
 ;
 
 const u32 Func_GetAllUnitsInBounds = 0x0042FF80;
-CUnit** getAllUnitsInBounds(Box16* coords) {
+CUnit**   getAllUnitsInBounds(Box16* coords) {
     static CUnit** units_in_bounds;
 
     __asm {
@@ -136,7 +136,7 @@ CUnit** getAllUnitsInBounds(Box16* coords) {
 ;
 
 const u32 Func_CUnitToUnitID = 0x0047B1D0;
-u32 CUnitToUnitID(CUnit* unit) {
+u32       CUnitToUnitID(CUnit* unit) {
     static u32 return_value;
 
     __asm {
@@ -153,7 +153,7 @@ u32 CUnitToUnitID(CUnit* unit) {
 ;
 
 const u32 Func_SelectSingleUnitFromID = 0x00496D30;
-Bool32 selectSingleUnitFromID(u32 unitIndex) {
+Bool32    selectSingleUnitFromID(u32 unitIndex) {
     Bool32 bReturnedValue;
 
     __asm {
@@ -170,10 +170,10 @@ Bool32 selectSingleUnitFromID(u32 unitIndex) {
 ;
 
 const u32 Func_selectMultipleUnitsFromUnitList = 0x0049AEF0;
-void selectMultipleUnitsFromUnitList(CUnit** unitList,
-                                     u32 unitsCount,
-                                     Bool32 unk1,
-                                     Bool32 unk2){
+void      selectMultipleUnitsFromUnitList(CUnit** unitList,
+                                          u32     unitsCount,
+                                          Bool32  unk1,
+                                          Bool32  unk2){
 
     __asm {PUSHAD PUSH unk2 PUSH unk1 PUSH unitList PUSH unitsCount CALL
                Func_selectMultipleUnitsFromUnitList POPAD}

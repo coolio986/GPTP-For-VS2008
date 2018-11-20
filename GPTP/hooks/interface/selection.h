@@ -4,7 +4,7 @@
 namespace hooks {
 
 void function_0046FB40(CUnit* clicked_unit);
-u32 SortAllUnits(CUnit* unit, CUnit** unit_list, CUnit** units_in_bounds);
+u32  SortAllUnits(CUnit* unit, CUnit** unit_list, CUnit** units_in_bounds);
 
 void injectSelectMod();
 

@@ -19,16 +19,16 @@ bool isUmsMode(u8 playerId);
 /// controlling AI. Details are not really understood.
 bool isUnitInUnsafeRegion(CUnit* unit);
 
-int getTotalEnemyLifeInArea(int x,
-                            int y,
-                            int searchBounds,
+int getTotalEnemyLifeInArea(int    x,
+                            int    y,
+                            int    searchBounds,
                             CUnit* caster,
-                            u8 weaponId);
-int getTotalAllyLifeInArea(int x,
-                           int y,
-                           int searchBounds,
+                            u8     weaponId);
+int getTotalAllyLifeInArea(int    x,
+                           int    y,
+                           int    searchBounds,
                            CUnit* caster,
-                           u8 weaponId);
+                           u8     weaponId);
 int getTotalEnemyShieldsInArea(int x, int y, int searchBounds, CUnit* caster);
 int getTotalEnemyEnergyInArea(int x, int y, int searchBounds, CUnit* caster);
 int getTotalEnemyNukeValueInArea(int x, int y, int searchBounds, CUnit* caster);

@@ -13,7 +13,7 @@
 namespace {
 
 bool advanceRemainingBuildTime_Sub466940(CUnit* unit);  // 0x00466940
-u8 function_0046A820(CUnit* unit);                      // 0x0046A820
+u8   function_0046A820(CUnit* unit);                    // 0x0046A820
 void orderImmediate(CUnit* unit, u8 order);             // 0x00474B40
 void actUnitReturnToIdle(CUnit* unit);                  // 0x00475420
 void playMorphingCompleteSound(CUnit* unit);            // 0x0048F440
@@ -24,18 +24,20 @@ void replaceUnitWithType(CUnit* unit, u16 newUnitId);         // 0x0049FED0
 void changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 unitId);  // 0x004E5D60
 void setNextWaypoint_Sub4EB290(CUnit* unit);                  // 0x004EB290
 void makeToHoldPosition(CUnit* unit);                         // 0x004EB5B0
-bool delayedSetMoveTarget_xy_Sub4EB960(CUnit* unit, u16 x, u16 y);  // 0x004EB960
+bool delayedSetMoveTarget_xy_Sub4EB960(CUnit* unit,
+                                       u16    x,
+                                       u16    y);  // 0x004EB960
 
 }  // unnamed namespace
 
 namespace hooks {
 
 // equivalent to 0x004BFA80, but not identical
-CUnit* templarMergePartner(CUnit* unit,
+CUnit* templarMergePartner(CUnit*  unit,
                            CUnit** units_list,
-                           u32 units_list_length) {
-    CUnit* nearest_unit = NULL;  // was ebp-04
-    u32 best_distance = MAXINT32;
+                           u32     units_list_length) {
+    CUnit* nearest_unit  = NULL;  // was ebp-04
+    u32    best_distance = MAXINT32;
 
     for (u32 i = 0; i < units_list_length; i++) {
         if (units_list[i] != NULL) {
@@ -57,9 +59,9 @@ CUnit* templarMergePartner(CUnit* unit,
 
             if ((x_distance + y_distance) < best_distance) {
                 CUnit* new_nearest_unit = units_list[i];
-                units_list[i] = nearest_unit;
-                nearest_unit = new_nearest_unit;
-                best_distance = x_distance + y_distance;
+                units_list[i]           = nearest_unit;
+                nearest_unit            = new_nearest_unit;
+                best_distance           = x_distance + y_distance;
             }
 
         }  // if(units_list[i] != NULL)
@@ -72,11 +74,11 @@ CUnit* templarMergePartner(CUnit* unit,
 ;
 
 void orders_CompletingArchonSummon(CUnit* unit) {
-    u32* const bCanUpdateCurrentButtonSet = (u32*)0x0068C1B0;
-    u8* const bCanUpdateSelectedUnitPortrait = (u8*)0x0068AC74;
-    u8* const bCanUpdateStatDataDialog = (u8*)0x0068C1F8;
-    BinDlg** const someDialogUnknown = (BinDlg**)0x0068C1E8;
-    BinDlg** const someDialogUnknownUser = (BinDlg**)0x0068C1EC;
+    u32* const     bCanUpdateCurrentButtonSet     = (u32*)0x0068C1B0;
+    u8* const      bCanUpdateSelectedUnitPortrait = (u8*)0x0068AC74;
+    u8* const      bCanUpdateStatDataDialog       = (u8*)0x0068C1F8;
+    BinDlg** const someDialogUnknown              = (BinDlg**)0x0068C1E8;
+    BinDlg** const someDialogUnknownUser          = (BinDlg**)0x0068C1EC;
 
     bool stopFunction = false;
 
@@ -110,11 +112,11 @@ void orders_CompletingArchonSummon(CUnit* unit) {
 
         changeUnitButtonSet_Sub4E5D60(unit, unit->id);
 
-        *bCanUpdateCurrentButtonSet = 1;
+        *bCanUpdateCurrentButtonSet     = 1;
         *bCanUpdateSelectedUnitPortrait = 1;
-        *bCanUpdateStatDataDialog = 1;
-        *someDialogUnknown = NULL;
-        *someDialogUnknownUser = NULL;
+        *bCanUpdateStatDataDialog       = 1;
+        *someDialogUnknown              = NULL;
+        *someDialogUnknownUser          = NULL;
 
         playMorphingCompleteSound(unit);
         unit->order(
@@ -492,7 +494,7 @@ u8 function_0046A820(CUnit* unit) {
 
 ;
 
-u32 Func_OrderImmediate = 0x00474B40;
+u32  Func_OrderImmediate = 0x00474B40;
 void orderImmediate(CUnit* unit, u8 order){
 
     __asm {PUSHAD MOV ECX, unit MOV AL, order CALL Func_OrderImmediate POPAD}
@@ -502,7 +504,7 @@ void orderImmediate(CUnit* unit, u8 order){
 ;
 
 const u32 Func_ActUnitReturnToIdle = 0x00475420;
-void actUnitReturnToIdle(CUnit* unit){
+void      actUnitReturnToIdle(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_ActUnitReturnToIdle POPAD}
 
@@ -511,7 +513,7 @@ void actUnitReturnToIdle(CUnit* unit){
 ;
 
 const u32 Func_PlayMorphingCompleteSound = 0x0048F440;
-void playMorphingCompleteSound(CUnit* unit){
+void      playMorphingCompleteSound(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_PlayMorphingCompleteSound POPAD}
 
@@ -531,7 +533,7 @@ void mergeStatusIntoUnit_Sub493180(CUnit* unit_dst, CUnit* unit_src){
 ;
 
 const u32 Func_Sub49B440 = 0x0049B440;
-void function_0049B440(CUnit* unit, u32 soundId){
+void      function_0049B440(CUnit* unit, u32 soundId){
 
     __asm {PUSHAD MOV EBX, soundId MOV EAX, unit CALL Func_Sub49B440 POPAD}
 
@@ -540,7 +542,7 @@ void function_0049B440(CUnit* unit, u32 soundId){
 ;
 
 const u32 Func_ReplaceUnitWithType = 0x0049FED0;
-void replaceUnitWithType(CUnit* unit, u16 newUnitId) {
+void      replaceUnitWithType(CUnit* unit, u16 newUnitId) {
     u32 newUnitId_ = newUnitId;
 
     __asm {
@@ -555,7 +557,7 @@ void replaceUnitWithType(CUnit* unit, u16 newUnitId) {
 ;
 
 const u32 Func_Sub4E5D60 = 0x004E5D60;
-void changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 buttonSetId){
+void      changeUnitButtonSet_Sub4E5D60(CUnit* unit, u16 buttonSetId){
 
     __asm {PUSHAD MOV EAX, unit MOV CX, buttonSetId CALL Func_Sub4E5D60 POPAD}
 
@@ -574,7 +576,7 @@ void setNextWaypoint_Sub4EB290(CUnit* unit){
 ;
 
 const u32 Func_OrdersHoldPositionSuicidal = 0x004EB5B0;
-void makeToHoldPosition(CUnit* unit){
+void      makeToHoldPosition(CUnit* unit){
 
     __asm {PUSHAD MOV ESI, unit CALL Func_OrdersHoldPositionSuicidal POPAD}}
 

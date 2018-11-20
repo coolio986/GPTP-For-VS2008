@@ -14,7 +14,7 @@ struct CUnit;
  */
 struct Target {
     Point16 pt;  // official name
-    CUnit *unit;
+    CUnit * unit;
 };
 
 #pragma pack()

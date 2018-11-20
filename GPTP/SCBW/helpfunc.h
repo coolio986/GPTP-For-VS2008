@@ -16,16 +16,17 @@
 
 namespace helpers {
 
-void disconnectAddOn_Sub464930(CUnit* unit);                // 00464930  sub_464930
-void removeUnitRefsFromTarget(CUnit* unit, CUnit* target);  // 0049E590  sub_49E590
+void disconnectAddOn_Sub464930(CUnit* unit);  // 00464930  sub_464930
+void removeUnitRefsFromTarget(CUnit* unit,
+                              CUnit* target);  // 0049E590  sub_49E590
 void readUnitsArray_Sub49EFA0(CUnit* unit,
-                              u8 playerId_param,
-                              u32 unknown_param);        // 0049EFA0  sub_49EFA0
-void ordersRescuePassive(CUnit* unit);                   // 004A1EF0  orders_RescuePassive
+                              u8     playerId_param,
+                              u32    unknown_param);  // 0049EFA0  sub_49EFA0
+void ordersRescuePassive(CUnit* unit);  // 004A1EF0  orders_RescuePassive
 void changeUnitButtonSet(CUnit* unit, u16 buttonSetId);  // 004E5D60  sub_4E5D60
-void hideAndDisableUnit(CUnit* unit);                    // 004E6340  unitDeathSomething_0
-void showAndEnableUnit(CUnit* unit);                     // 004E6490  initUnitTrapDoodad
-void setNextWaypoint_Sub4EB290(CUnit* unit);             // 004EB290  sub_4EB290
+void hideAndDisableUnit(CUnit* unit);         // 004E6340  unitDeathSomething_0
+void showAndEnableUnit(CUnit* unit);          // 004E6490  initUnitTrapDoodad
+void setNextWaypoint_Sub4EB290(CUnit* unit);  // 004EB290  sub_4EB290
 
 }
 
@@ -77,8 +78,8 @@ void __declspec(naked) removeUnitRefsFromTargetWrapper() {
 // Originally 0049EFA0  sub_49EFA0
 void __declspec(naked) readUnitsArray_Sub49EFA0Wrapper() {
     static CUnit* unit;
-    static u8 playerId;
-    static u32 unknown_param;
+    static u8     playerId;
+    static u32    unknown_param;
 
     __asm {
 
@@ -126,7 +127,7 @@ void __declspec(naked) ordersRescuePassive() {
 // Originally 004E5D60 sub_4E5D60
 void __declspec(naked) changeUnitButtonSetWrapper() {
     static CUnit* unit;
-    static u16 buttonSetId;
+    static u16    buttonSetId;
 
     __asm {
 		PUSHAD

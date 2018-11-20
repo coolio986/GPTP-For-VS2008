@@ -5,13 +5,13 @@
 
 namespace {
 
-bool ordersSpell_Sub_4926D0(CUnit* unit,
-                            u32 techId,
-                            u16* techEnergyCost,
-                            u32 sightRange,
-                            u32 error_message_index);         // 926D0
-void UnitDestructor(CUnit* unit);                             // A0990
-bool function_004F66D0(CUnit* unit);                          // F66D0
+bool   ordersSpell_Sub_4926D0(CUnit* unit,
+                              u32    techId,
+                              u16*   techEnergyCost,
+                              u32    sightRange,
+                              u32    error_message_index);       // 926D0
+void   UnitDestructor(CUnit* unit);                           // A0990
+bool   function_004F66D0(CUnit* unit);                        // F66D0
 CUnit* createHallucinationUnit(CUnit* target, u32 playerId);  // F6B90
 
 }  // unnamed namespace
@@ -78,11 +78,11 @@ void orders_Hallucination1(CUnit* unit) {
 namespace {
 
 const u32 Func_Sub_4926D0 = 0x004926D0;
-bool ordersSpell_Sub_4926D0(CUnit* unit,
-                            u32 techId,
-                            u16* techEnergyCost,
-                            u32 sightRange,
-                            u32 error_message_index) {
+bool      ordersSpell_Sub_4926D0(CUnit* unit,
+                                 u32    techId,
+                                 u16*   techEnergyCost,
+                                 u32    sightRange,
+                                 u32    error_message_index) {
     static Bool32 bPreResult;
 
     __asm {
@@ -103,7 +103,7 @@ bool ordersSpell_Sub_4926D0(CUnit* unit,
 ;
 
 const u32 Func_UnitDestructor = 0x004A0990;
-void UnitDestructor(CUnit* unit){
+void      UnitDestructor(CUnit* unit){
 
     __asm {PUSHAD MOV ECX, unit CALL Func_UnitDestructor POPAD}
 
@@ -112,7 +112,7 @@ void UnitDestructor(CUnit* unit){
 ;
 
 const u32 Func_sub_4F66D0 = 0x004F66D0;
-bool function_004F66D0(CUnit* unit) {
+bool      function_004F66D0(CUnit* unit) {
     static Bool32 bPreResult;
 
     __asm {
@@ -129,7 +129,7 @@ bool function_004F66D0(CUnit* unit) {
 ;
 
 const u32 Func_sub_4F6B90 = 0x004F6B90;
-CUnit* createHallucinationUnit(CUnit* target, u32 playerId) {
+CUnit*    createHallucinationUnit(CUnit* target, u32 playerId) {
     static CUnit* return_value;
 
     __asm {

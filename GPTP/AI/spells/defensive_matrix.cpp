@@ -9,7 +9,7 @@ class DefensiveMatrixTargetFinderProc
     : public scbw::UnitFinderCallbackMatchInterface {
    private:
     CUnit* caster;
-    bool isUnderAttack;
+    bool   isUnderAttack;
 
    public:
     DefensiveMatrixTargetFinderProc(CUnit* caster, bool isUnderAttack)

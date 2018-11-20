@@ -11,10 +11,9 @@ enum Enum {
     Stop = 0x01, /**< Normal unit stop command. Stops current order chain, and
                   * then goes to idle. Default Requirements: Allow on
                   * hallucinated units. */
-    Guard =
-        0x02, /**< Generic Guard order. Determines what guard command a unit
-               * uses. Default Requirements: Unit responds to Battle Orders.
-               * Allow on hallucinated units. */
+    Guard = 0x02, /**< Generic Guard order. Determines what guard command a unit
+                   * uses. Default Requirements: Unit responds to Battle Orders.
+                   * Allow on hallucinated units. */
     PlayerGuard = 0x03, /**< Attacking Mobile unit guard order.
                          * Default Requirements: Unit responds to Battle Orders.
                          * Allow on hallucinated units. */
@@ -89,12 +88,11 @@ enum Enum {
         0x1B, /**< Move to Infest a unit.
                * Default Requirements: Unit must be Zerg Queen/Matriarch. */
     InfestMine3 =
-        0x1C, /**< Move to Infest shrouded unit
-               * Default Requirements: Unit must be Zerg Queen/Matriarch. */
-    InfestMine4 =
-        0x1D, /**< Infest Unit. Hides unit, runs infest 1 on target, then
-               * reshows unit. Default Requirements: Unit must be Zerg
-               * Queen/Matriarch. */
+        0x1C,           /**< Move to Infest shrouded unit
+                         * Default Requirements: Unit must be Zerg Queen/Matriarch. */
+    InfestMine4 = 0x1D, /**< Infest Unit. Hides unit, runs infest 1 on target,
+                         * then reshows unit. Default Requirements: Unit must be
+                         * Zerg Queen/Matriarch. */
     BuildTerran = 0x1E, /**< Move/Start Terran Building.
                          * Default Requirements: Unit must be Terran SCV. */
     BuildProtoss1 =
@@ -224,11 +222,10 @@ enum Enum {
                           * Default Requirements: Unused. */
     Upgrade = 0x4C,      /**< Building researching upgrade.
                           * Default Requirements: Unused. */
-    Larva =
-        0x4D, /**< Idle order for larva. Make sure it stays on creep, dies if
-               * off, and says within the range of the parent it came from.
-               * Default Requirements: Unit must be Zerg Larva. Allow on
-               * hallucinated units. */
+    Larva = 0x4D, /**< Idle order for larva. Make sure it stays on creep, dies
+                   * if off, and says within the range of the parent it came
+                   * from. Default Requirements: Unit must be Zerg Larva. Allow
+                   * on hallucinated units. */
     SpawningLarva =
         0x4E,           /**< Building is spawning larva.
                          * Default Requirements: Unit must be Hatchery/Lair/Hive. */

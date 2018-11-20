@@ -6,13 +6,13 @@
 namespace {
 
 CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId);  // 0x00488210
-void clearUnitSprites(CSprite* unit_sprite,
-                      CSprite* subunit_sprite);  // 0x00496F00
-void function_00497480(CSprite* thingySprite,
-                       u32 visibility_flags);  // 0x00497480
-void _UnitDestructor(CUnit* unit);             // 0x004A0740
-void UnitDestructor(CUnit* unit);              // 0x004A0990
-void hideAndDisableUnit(CUnit* unit);          // 0x004E6340
+void     clearUnitSprites(CSprite* unit_sprite,
+                          CSprite* subunit_sprite);  // 0x00496F00
+void     function_00497480(CSprite* thingySprite,
+                           u32      visibility_flags);  // 0x00497480
+void     _UnitDestructor(CUnit* unit);             // 0x004A0740
+void     UnitDestructor(CUnit* unit);              // 0x004A0990
+void     hideAndDisableUnit(CUnit* unit);          // 0x004E6340
 
 }  // unnamed namespace
 
@@ -37,7 +37,7 @@ void orders_Die(CUnit* unit) {
             unit->subunit->sprite->free();
 
             unit->subunit->sprite = NULL;
-            unit->subunit = NULL;
+            unit->subunit         = NULL;
         }
     }
 
@@ -97,9 +97,9 @@ namespace {
 // original referenced name was replaceSprite (but this one is probably
 // more accurate since it does create something rather than replacing)
 const u32 Func_CreateThingy = 0x00488210;
-CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId) {
+CThingy*  createThingy(u32 spriteId, s16 x, s16 y, u32 playerId) {
     static CThingy* thingy;
-    s32 x_ = x;
+    s32             x_ = x;
 
     __asm {
 		PUSHAD
@@ -118,9 +118,9 @@ CThingy* createThingy(u32 spriteId, s16 x, s16 y, u32 playerId) {
 ;
 
 const u32 Func_clearUnitSprites = 0x00496F00;
-void clearUnitSprites(CSprite* unit_sprite, CSprite* subunit_sprite){
+void      clearUnitSprites(CSprite* unit_sprite, CSprite* subunit_sprite){
 
-    __asm {PUSHAD MOV ECX,
+    __asm {PUSHAD MOV     ECX,
            subunit_sprite MOV ESI,
            unit_sprite CALL Func_clearUnitSprites POPAD}
 
@@ -129,9 +129,9 @@ void clearUnitSprites(CSprite* unit_sprite, CSprite* subunit_sprite){
 ;
 
 const u32 Func_Sub497480 = 0x00497480;
-void function_00497480(CSprite* thingySprite, u32 visibility_flags){
+void      function_00497480(CSprite* thingySprite, u32 visibility_flags){
 
-    __asm {PUSHAD MOV EBX,
+    __asm {PUSHAD MOV   EBX,
            thingySprite PUSH visibility_flags CALL Func_Sub497480 POPAD}
 
 }
@@ -139,7 +139,7 @@ void function_00497480(CSprite* thingySprite, u32 visibility_flags){
 ;
 
 const u32 Func__UnitDestructor = 0x004A0740;
-void _UnitDestructor(CUnit* unit){
+void      _UnitDestructor(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func__UnitDestructor POPAD}
 
@@ -148,7 +148,7 @@ void _UnitDestructor(CUnit* unit){
 ;
 
 const u32 Func_UnitDestructor = 0x004A0990;
-void UnitDestructor(CUnit* unit){
+void      UnitDestructor(CUnit* unit){
 
     __asm {PUSHAD MOV ECX, unit CALL Func_UnitDestructor POPAD}
 
@@ -157,7 +157,7 @@ void UnitDestructor(CUnit* unit){
 ;
 
 const u32 Func_unitDeathSomething_0 = 0x004E6340;
-void hideAndDisableUnit(CUnit* unit){
+void      hideAndDisableUnit(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_unitDeathSomething_0 POPAD}
 

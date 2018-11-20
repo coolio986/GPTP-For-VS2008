@@ -93,7 +93,7 @@ u16 getTechUseErrorMessageHook(CUnit* target, u8 castingPlayerId, u16 techId) {
 namespace {
 
 const u32 Func_IsInfestable = 0x00402210;
-bool isInfestableUnit(CUnit* unit) {
+bool      isInfestableUnit(CUnit* unit) {
     static Bool32 result;
 
     __asm {

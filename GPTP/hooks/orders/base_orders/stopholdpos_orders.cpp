@@ -5,18 +5,18 @@
 
 namespace {
 
-CUnit* MedicHeal_TargetAcquire(CUnit* medic);               // 0x004422A0
-CUnit* findBestAttackTarget(CUnit* unit);                   // 0x00443080
-u32 doMedicHeal(CUnit* unit, CUnit* target);                // 0x00463C40
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order);  // 0x004742D0
-void orderImmediate(CUnit* unit, u8 order);                 // 0x00474B40
-void function_00476FC0(CUnit* unit,
-                       CUnit* target,
-                       u32 unk1,
-                       u32 unk2);                  // 0x00476FC0
-Bool32 function_004770E0(CUnit* unit);             // 0x004770E0
-u32 RandBetween(u32 min, u32 max, u32 someIndex);  // 0x004DC550
-void setNextWaypoint_Sub4EB290(CUnit* unit);       // 0x004EB290
+CUnit* MedicHeal_TargetAcquire(CUnit* medic);                 // 0x004422A0
+CUnit* findBestAttackTarget(CUnit* unit);                     // 0x00443080
+u32    doMedicHeal(CUnit* unit, CUnit* target);               // 0x00463C40
+void   removeOrderFromUnitQueue(CUnit* unit, COrder* order);  // 0x004742D0
+void   orderImmediate(CUnit* unit, u8 order);                 // 0x00474B40
+void   function_00476FC0(CUnit* unit,
+                         CUnit* target,
+                         u32    unk1,
+                         u32    unk2);                   // 0x00476FC0
+Bool32 function_004770E0(CUnit* unit);                // 0x004770E0
+u32    RandBetween(u32 min, u32 max, u32 someIndex);  // 0x004DC550
+void   setNextWaypoint_Sub4EB290(CUnit* unit);        // 0x004EB290
 
 }  // unnamed namespace
 
@@ -62,7 +62,7 @@ void orders_MedicHoldPosition(CUnit* unit) {
     if (switchValue != 1) {
         // if timer is 0, seek a target in range
         if (unit->mainOrderTimer == 0) {
-            unit->mainOrderTimer = 15;
+            unit->mainOrderTimer   = 15;
             unit->orderTarget.unit = MedicHeal_TargetAcquire(unit);
 
             if (unit->orderTarget.unit != NULL) {
@@ -106,7 +106,7 @@ void orders_MedicHoldPosition(CUnit* unit) {
 ;
 
 void orders_ReaverStop(CUnit* unit) {
-    CUnit* outHangarChild = unit->carrier.outHangarChild;
+    CUnit*  outHangarChild = unit->carrier.outHangarChild;
     Point16 pos;
 
     // change move target destination to current position
@@ -272,7 +272,7 @@ void function_004774A0(CUnit* unit) {
 namespace {
 
 const u32 Func_MedicHeal_TargetAcquire = 0x004422A0;
-CUnit* MedicHeal_TargetAcquire(CUnit* medic) {
+CUnit*    MedicHeal_TargetAcquire(CUnit* medic) {
     static CUnit* target;
 
     __asm {
@@ -307,7 +307,7 @@ CUnit* findBestAttackTarget(CUnit* unit) {
 ;
 
 const u32 Func_doMedicHeal = 0x00463C40;
-u32 doMedicHeal(CUnit* unit, CUnit* target) {
+u32       doMedicHeal(CUnit* unit, CUnit* target) {
     static u32 return_value;
 
     __asm {
@@ -325,7 +325,7 @@ u32 doMedicHeal(CUnit* unit, CUnit* target) {
 ;
 
 const u32 Func_removeOrderFromUnitQueue = 0x004742D0;
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
+void      removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 
     __asm {PUSHAD MOV ECX,
            unit MOV EAX,
@@ -336,7 +336,7 @@ void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 ;
 
 const u32 Func_OrderImmediate = 0x00474B40;
-void orderImmediate(CUnit* unit, u8 order){
+void      orderImmediate(CUnit* unit, u8 order){
 
     __asm {PUSHAD MOV ECX, unit MOV AL, order CALL Func_OrderImmediate POPAD}
 
@@ -345,7 +345,7 @@ void orderImmediate(CUnit* unit, u8 order){
 ;
 
 const u32 Func_Sub476FC0 = 0x00476FC0;
-void function_00476FC0(CUnit* unit, CUnit* target, u32 unk1, u32 unk2){
+void      function_00476FC0(CUnit* unit, CUnit* target, u32 unk1, u32 unk2){
 
     __asm {PUSHAD PUSH unk1 PUSH unk2 MOV EAX,
            target MOV EDI,
@@ -356,7 +356,7 @@ void function_00476FC0(CUnit* unit, CUnit* target, u32 unk1, u32 unk2){
 ;
 
 const u32 Func_Sub4770E0 = 0x004770E0;
-Bool32 function_004770E0(CUnit* unit) {
+Bool32    function_004770E0(CUnit* unit) {
     static Bool32 return_value;
 
     __asm {
@@ -373,7 +373,7 @@ Bool32 function_004770E0(CUnit* unit) {
 ;
 
 const u32 Func_RandBetween = 0x004DC550;
-u32 RandBetween(u32 min, u32 max, u32 someIndex) {
+u32       RandBetween(u32 min, u32 max, u32 someIndex) {
     static u32 return_value;
 
     __asm {
@@ -393,7 +393,7 @@ u32 RandBetween(u32 min, u32 max, u32 someIndex) {
 
 // Related to path/movement decision
 const u32 Func_sub_4EB290 = 0x004EB290;
-void setNextWaypoint_Sub4EB290(CUnit* unit){
+void      setNextWaypoint_Sub4EB290(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_sub_4EB290 POPAD}}
 

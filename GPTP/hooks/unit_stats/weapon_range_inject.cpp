@@ -6,7 +6,7 @@ namespace {
 // Inject with jmpPatch()
 void __declspec(naked) getSeekRangeWrapper() {
     static CUnit* unit;
-    static u8 seekRange;
+    static u8     seekRange;
 
     __asm {
 		MOV unit, EDX
@@ -25,8 +25,8 @@ void __declspec(naked) getSeekRangeWrapper() {
 // Inject with jmpPatch()
 void __declspec(naked) getMaxWeaponRangeWrapper() {
     static CUnit* unit;
-    static u8 weaponId;
-    static u32 maxWeaponRange;
+    static u8     weaponId;
+    static u32    maxWeaponRange;
 
     __asm {
 		MOV unit, EAX

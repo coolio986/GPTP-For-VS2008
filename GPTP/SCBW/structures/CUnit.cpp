@@ -61,7 +61,7 @@ u8 CUnit::getArmor() const {
 }
 
 extern const u32 Func_GetArmorBonus = 0x00453FC0;
-u8 CUnit::getArmorBonus() const {
+u8               CUnit::getArmorBonus() const {
     assert(this);
 
     static u8 armorBonus;
@@ -77,7 +77,7 @@ u8 CUnit::getArmorBonus() const {
 }
 
 extern const u32 Func_GetMaxEnergy = 0x00491870;
-u16 CUnit::getMaxEnergy() const {
+u16              CUnit::getMaxEnergy() const {
     assert(this);
 
     static u16 result;
@@ -108,7 +108,7 @@ u32 CUnit::getMaxHpInGame() const {
 }
 
 extern const u32 Func_GetMaxWeaponRange = 0x00475870;
-u32 CUnit::getMaxWeaponRange(u8 weaponId) const {
+u32              CUnit::getMaxWeaponRange(u8 weaponId) const {
     assert(this);
     assert(weaponId < WEAPON_TYPE_COUNT);
 
@@ -161,7 +161,7 @@ RaceId::Enum CUnit::getRace(u16 unitId) {
 }
 
 extern const u32 Func_GetSeekRange = 0x00476000;
-u8 CUnit::getSeekRange() const {
+u8               CUnit::getSeekRange() const {
     assert(this);
 
     static u8 seekRange;
@@ -178,11 +178,11 @@ u8 CUnit::getSeekRange() const {
 }
 
 extern const u32 Func_GetSightRange = 0x004E5B40;
-u32 CUnit::getSightRange(bool isForSpellCasting) const {
+u32              CUnit::getSightRange(bool isForSpellCasting) const {
     assert(this);
 
     static u32 sightRange;
-    Bool32 ignoreStatusEffects = (isForSpellCasting ? 0 : 1);
+    Bool32     ignoreStatusEffects = (isForSpellCasting ? 0 : 1);
 
     __asm {
 		PUSHAD
@@ -241,7 +241,7 @@ bool CUnit::isFrozen() const {
 }
 
 extern const u32 Func_IsRemorphingBuilding = 0x0045CD00;
-bool CUnit::isRemorphingBuilding() const {
+bool             CUnit::isRemorphingBuilding() const {
     static Bool32 result;
     assert(this);
 
@@ -333,7 +333,7 @@ s16 CUnit::getBottom() const {
 //-------- Modifying unit state --------//
 
 const u32 Func_SetUnitHp = 0x00467340;
-void CUnit::setHp(s32 hitPoints) {
+void      CUnit::setHp(s32 hitPoints) {
     assert(this);
 
     __asm {
@@ -347,20 +347,20 @@ void CUnit::setHp(s32 hitPoints) {
 
 const u32 Func_DoWeaponDamage =
     0x00479930;  // Note: hooked in hooks/weapons/weapon_damage files
-void CUnit::damageWith(s32 damage,
-                       u8 weaponId,
+void CUnit::damageWith(s32    damage,
+                       u8     weaponId,
                        CUnit* attacker,
-                       u8 attackingPlayer,
-                       s8 direction,
-                       u8 damageDivisor) {
+                       u8     attackingPlayer,
+                       s8     direction,
+                       u8     damageDivisor) {
     assert(this);
     assert(weaponId < WEAPON_TYPE_COUNT);
     assert(damageDivisor != 0);
 
-    u32 weaponId_ = weaponId;
+    u32 weaponId_        = weaponId;
     s32 attackingPlayer_ = attackingPlayer;
-    s32 direction_ = direction;
-    s32 damageDivisor_ = damageDivisor;
+    s32 direction_       = direction;
+    s32 damageDivisor_   = damageDivisor;
 
     __asm {
 		PUSHAD
@@ -377,10 +377,10 @@ void CUnit::damageWith(s32 damage,
 }
 
 const u32 Func_DamageUnitHp = 0x004797B0;
-void CUnit::damageHp(s32 damage,
+void      CUnit::damageHp(s32    damage,
                      CUnit* attacker,
-                     s32 attackingPlayer,
-                     bool notify) {
+                     s32    attackingPlayer,
+                     bool   notify) {
     assert(this);
 
     u32 notify_ = notify ? 1 : 0;
@@ -406,7 +406,7 @@ void CUnit::reduceDefensiveMatrixHp(s32 amount) {
     else {
         CImage* current_image;
 
-        this->defensiveMatrixHp = 0;
+        this->defensiveMatrixHp    = 0;
         this->defensiveMatrixTimer = 0;
 
         this->removeOverlay(ImageId::DefensiveMatrixFront_Small,
@@ -436,7 +436,7 @@ void CUnit::reduceDefensiveMatrixHp(s32 amount) {
 }
 
 const u32 Func_RemoveUnit = 0x00475710;  // AKA orders_SelfDestructing()
-void CUnit::remove() {
+void      CUnit::remove() {
     assert(this);
 
     __asm {
@@ -448,7 +448,7 @@ void CUnit::remove() {
 }
 
 const u32 Func_RemoveLockdown = 0x00454D90;
-void CUnit::removeLockdown() {
+void      CUnit::removeLockdown() {
     assert(this);
 
     __asm {
@@ -460,7 +460,7 @@ void CUnit::removeLockdown() {
 }
 
 const u32 Func_RemoveMaelstrom = 0x00454D20;
-void CUnit::removeMaelstrom() {
+void      CUnit::removeMaelstrom() {
     assert(this);
 
     __asm {
@@ -472,7 +472,7 @@ void CUnit::removeMaelstrom() {
 }
 
 const u32 Func_RemoveStasisField = 0x004F62D0;
-void CUnit::removeStasisField() {
+void      CUnit::removeStasisField() {
     assert(this);
 
     __asm {
@@ -484,7 +484,7 @@ void CUnit::removeStasisField() {
 }
 
 const u32 Func_RemoveAcidSpores = 0x004F4160;
-void CUnit::removeAcidSpores() {
+void      CUnit::removeAcidSpores() {
     assert(this);
 
     __asm {
@@ -547,9 +547,9 @@ void CUnit::orderSimple(u8 orderId, bool stopPreviousOrders) {
 }
 
 // Equivalent to 00474D10 issueQueuedOrderTarget function
-void CUnit::issueQueuedOrderTarget(u8 orderId,
+void CUnit::issueQueuedOrderTarget(u8     orderId,
                                    CUnit* target,
-                                   bool stopPreviousOrders) {
+                                   bool   stopPreviousOrders) {
     if (target == NULL)
         this->order(orderId, 0, 0, NULL, UnitId::None, stopPreviousOrders);
     else
@@ -577,15 +577,15 @@ void CUnit::orderToIdle() {
 }
 
 const u32 Func_Order = 0x00474810;
-void CUnit::order(u8 orderId,
-                  u16 x,
-                  u16 y,
+void      CUnit::order(u8     orderId,
+                  u16    x,
+                  u16    y,
                   CUnit* target,
-                  u16 targetUnitId,
-                  bool stopPreviousOrders) {
+                  u16    targetUnitId,
+                  bool   stopPreviousOrders) {
     assert(this);
     static Point16 pos;
-    static u32 targetUnitId_;
+    static u32     targetUnitId_;
     pos.x = x, pos.y = y;
     targetUnitId_ = targetUnitId;
 
@@ -603,12 +603,12 @@ void CUnit::order(u8 orderId,
 }
 
 const u32 Func_PerformAnotherOrder = 0x004745F0;
-void CUnit::performAnotherOrder(u8 orderId,
-                                s16 x,
-                                s16 y,
+void      CUnit::performAnotherOrder(u8     orderId,
+                                s16    x,
+                                s16    y,
                                 CUnit* target,
-                                u16 targetUnitId,
-                                u32 unk) {
+                                u16    targetUnitId,
+                                u32    unk) {
     static Point16 pos;
     pos.x = x;
     pos.y = y;
@@ -630,10 +630,10 @@ void CUnit::performAnotherOrder(u8 orderId,
 void CUnit::setSecondaryOrder(u8 orderId) {
     assert(this);
     if (this->secondaryOrderId == orderId) return;
-    this->secondaryOrderId = orderId;
+    this->secondaryOrderId    = orderId;
     this->secondaryOrderPos.x = 0;
     this->secondaryOrderPos.y = 0;
-    this->currentBuildUnit = NULL;
+    this->currentBuildUnit    = NULL;
     this->secondaryOrderState = 0;
 }
 
@@ -789,7 +789,7 @@ u32 CUnit::getDistanceToTarget(CUnit* target) const {
 }
 
 const u32 Func_HasPathToPos = 0x0049CB60;  // AKA unitHasPathToDest()
-bool CUnit::hasPathToPos(u32 x, u32 y) const {
+bool      CUnit::hasPathToPos(u32 x, u32 y) const {
     assert(this);
     u32 result;
 
@@ -807,7 +807,7 @@ bool CUnit::hasPathToPos(u32 x, u32 y) const {
 }
 
 const u32 Func_HasPathToTarget = 0x0049CBB0;  // AKA unitHasPathToUnit()
-bool CUnit::hasPathToUnit(CUnit* target) const {
+bool      CUnit::hasPathToUnit(CUnit* target) const {
     assert(this);
     assert(target);
     u32 result;
@@ -825,7 +825,7 @@ bool CUnit::hasPathToUnit(CUnit* target) const {
 }
 
 const u32 Func_IsTargetWithinMinRange = 0x00430F10;
-bool CUnit::isTargetWithinMinRange(CUnit* target, u32 range) {
+bool      CUnit::isTargetWithinMinRange(CUnit* target, u32 range) {
     static Bool32 bPreResult;
 
     __asm {
@@ -844,9 +844,9 @@ bool CUnit::isTargetWithinMinRange(CUnit* target, u32 range) {
 //-------- DAT Requirements --------//
 
 const u32 Func_CanMakeUnit = 0x0046E1C0;
-int CUnit::canMakeUnit(u16 unitId, u8 playerId) const {
+int       CUnit::canMakeUnit(u16 unitId, u8 playerId) const {
     assert(this);
-    s32 playerId_ = playerId;
+    s32        playerId_ = playerId;
     static s32 result;
 
     __asm {
@@ -863,9 +863,9 @@ int CUnit::canMakeUnit(u16 unitId, u8 playerId) const {
 }
 
 const u32 Func_CanUseTech = 0x0046DD80;
-int CUnit::canUseTech(u8 techId, u8 playerId) const {
+int       CUnit::canUseTech(u8 techId, u8 playerId) const {
     assert(this);
-    s32 playerId_ = playerId;
+    s32        playerId_ = playerId;
     static s32 result;
 
     __asm {
@@ -884,11 +884,11 @@ int CUnit::canUseTech(u8 techId, u8 playerId) const {
 //-------- Utility methods --------//
 
 const u32 Func_CanUnitAttackTarget = 0x00476730;
-bool CUnit::canAttackTarget(CUnit* target, bool checkVisibility) const {
+bool      CUnit::canAttackTarget(CUnit* target, bool checkVisibility) const {
     assert(this);
     assert(target);
 
-    u32 _checkVisibility = checkVisibility ? 1 : 0;
+    u32        _checkVisibility = checkVisibility ? 1 : 0;
     static u32 result;
 
     __asm {
@@ -905,7 +905,7 @@ bool CUnit::canAttackTarget(CUnit* target, bool checkVisibility) const {
 }
 
 extern const u32 Func_FireUnitWeapon = 0x00479C90;
-void CUnit::fireWeapon(u8 weaponId) const {
+void             CUnit::fireWeapon(u8 weaponId) const {
     assert(this);
 
     static u32 weaponId_;
@@ -1002,7 +1002,7 @@ bool CUnit::isVisibleTo(u8 playerId) const {
 }
 
 const u32 Func_UpdateSpeed = 0x00454310;
-void CUnit::updateSpeed() {
+void      CUnit::updateSpeed() {
     assert(this);
 
     __asm {

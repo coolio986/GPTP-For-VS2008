@@ -9,7 +9,7 @@ class IrradiateTargetFinderProc
     : public scbw::UnitFinderCallbackMatchInterface {
    private:
     CUnit* caster;
-    bool isUnderAttack;
+    bool   isUnderAttack;
 
    public:
     IrradiateTargetFinderProc(CUnit* caster, bool isUnderAttack)

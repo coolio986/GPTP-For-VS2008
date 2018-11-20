@@ -6,7 +6,7 @@ namespace {
 
 void __declspec(naked) fireWeaponWrapper() {
     static CUnit* unit;
-    static u8 weaponId;
+    static u8     weaponId;
 
     __asm {
 		PUSH EBP

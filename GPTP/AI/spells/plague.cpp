@@ -8,7 +8,7 @@ namespace AI {
 class PlagueTargetFinderProc : public scbw::UnitFinderCallbackMatchInterface {
    private:
     CUnit* caster;
-    bool isUnderAttack;
+    bool   isUnderAttack;
 
    public:
     PlagueTargetFinderProc(CUnit* caster, bool isUnderAttack)

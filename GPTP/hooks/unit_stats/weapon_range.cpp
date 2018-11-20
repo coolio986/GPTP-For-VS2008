@@ -75,8 +75,8 @@ u8 getSeekRangeHook(CUnit* unit) {
 /// Note: Weapon ranges are measured in pixels.
 ///
 /// @param	weapon		The weapons.dat ID of the weapon.
-/// @param	unit			The unit that owns the weapon. Use this to check
-/// upgrades.
+/// @param	unit			The unit that owns the weapon. Use this to
+/// check upgrades.
 u32 getMaxWeaponRangeHook(CUnit* unit, u8 weaponId) {
     // Default StarCraft behavior
 

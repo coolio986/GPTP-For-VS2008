@@ -27,7 +27,7 @@ void GiveUnit(CUnit* unit, u32 playerId, u32 unkScore) {
     if (unit->playerId != playerId) {
         bool isMorphing = false;
         bool isSelected;
-        u32 selectionIndex = 0;
+        u32  selectionIndex = 0;
 
         function_004A1E50(unit, 0);
 
@@ -59,7 +59,7 @@ void GiveUnit(CUnit* unit, u32 playerId, u32 unkScore) {
 
         unit->player_link.prev = NULL;
         unit->player_link.next = NULL;
-        unit->playerId = playerId;
+        unit->playerId         = playerId;
 
         // maybe "if" not needed?
         if (isSelected) CreateUnitSelection(unit, selectionIndex);
@@ -118,7 +118,7 @@ void GiveUnit(CUnit* unit, u32 playerId, u32 unkScore) {
 namespace {
 
 const u32 Func_ApplySpeedUpgradeFromUnitType = 0x00454370;
-void ApplySpeedUpgradeFromUnitType(CUnit* unit){
+void      ApplySpeedUpgradeFromUnitType(CUnit* unit){
 
     __asm {PUSHAD MOV ESI, unit CALL Func_ApplySpeedUpgradeFromUnitType POPAD}
 
@@ -127,7 +127,7 @@ void ApplySpeedUpgradeFromUnitType(CUnit* unit){
 ;
 
 const u32 Func_Sub463040 = 0x00463040;
-void function_00463040(CUnit* unit){
+void      function_00463040(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub463040 POPAD}
 
@@ -136,7 +136,7 @@ void function_00463040(CUnit* unit){
 ;
 
 const u32 Func_Sub476D30 = 0x00476D30;
-void function_00476D30(CUnit* unit){
+void      function_00476D30(CUnit* unit){
 
     __asm {PUSHAD MOV EDI, unit CALL Func_Sub476D30 POPAD}
 
@@ -145,7 +145,7 @@ void function_00476D30(CUnit* unit){
 ;
 
 const u32 Func_incrementUnitScores = 0x00488BF0;
-void incrementUnitScores(CUnit* unit, s32 unkScore){
+void      incrementUnitScores(CUnit* unit, s32 unkScore){
 
     __asm {PUSHAD MOV EAX,
            unit PUSH unkScore CALL Func_incrementUnitScores POPAD}
@@ -155,7 +155,7 @@ void incrementUnitScores(CUnit* unit, s32 unkScore){
 ;
 
 const u32 Func_incrementUnitScoresEx = 0x00488D50;
-void incrementUnitScoresEx(CUnit* unit, s32 unkScore, s32 unk2){
+void      incrementUnitScoresEx(CUnit* unit, s32 unkScore, s32 unk2){
 
     __asm {PUSHAD MOV EDI,
            unit MOV ECX,
@@ -166,7 +166,7 @@ void incrementUnitScoresEx(CUnit* unit, s32 unkScore, s32 unk2){
 ;
 
 const u32 Func_Sub4A1E50 = 0x004A1E50;
-void function_004A1E50(CUnit* unit, u32 unk){
+void      function_004A1E50(CUnit* unit, u32 unk){
 
     __asm {PUSHAD MOV ECX, unit MOV EDX, unk CALL Func_Sub4A1E50 POPAD}
 
@@ -175,7 +175,7 @@ void function_004A1E50(CUnit* unit, u32 unk){
 ;
 
 const u32 Func_CreateUnitSelection = 0x004E6180;
-void CreateUnitSelection(CUnit* unit, u32 selectionIndex){
+void      CreateUnitSelection(CUnit* unit, u32 selectionIndex){
 
     __asm {PUSHAD MOV EAX,
            unit PUSH selectionIndex CALL Func_CreateUnitSelection POPAD}
@@ -185,7 +185,7 @@ void CreateUnitSelection(CUnit* unit, u32 selectionIndex){
 ;
 
 const u32 Func_DestroyUnitSelection = 0x004E6290;
-void DestroyUnitSelection(CUnit* unit){
+void      DestroyUnitSelection(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_DestroyUnitSelection POPAD}
 
@@ -194,7 +194,7 @@ void DestroyUnitSelection(CUnit* unit){
 ;
 
 const u32 Func_Sub4F3B70 = 0x004F3B70;
-void function_004F3B70(CUnit* powerup){
+void      function_004F3B70(CUnit* powerup){
 
     __asm {PUSHAD PUSH powerup CALL Func_Sub4F3B70 POPAD}}
 

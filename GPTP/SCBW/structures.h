@@ -4,18 +4,18 @@
 
 #pragma once
 
-const int PLAYER_COUNT = 12;
-const int PLAYABLE_PLAYER_COUNT = 8;
-const int UNIT_ARRAY_LENGTH = 1700;
-const int BULLET_ARRAY_LENGTH = 100;
-const int SPRITE_ARRAY_LENGTH = 2500;
+const int PLAYER_COUNT           = 12;
+const int PLAYABLE_PLAYER_COUNT  = 8;
+const int UNIT_ARRAY_LENGTH      = 1700;
+const int BULLET_ARRAY_LENGTH    = 100;
+const int SPRITE_ARRAY_LENGTH    = 2500;
 const int SELECTION_ARRAY_LENGTH = 12;
-const int UNIT_TYPE_COUNT = 228;
-const int TECH_TYPE_COUNT = 44;
-const int UPGRADE_TYPE_COUNT = 61;
-const int WEAPON_TYPE_COUNT = 130;
-const int FLINGY_TYPE_COUNT = 209;
-const int IMAGE_TYPE_COUNT = 999;
+const int UNIT_TYPE_COUNT        = 228;
+const int TECH_TYPE_COUNT        = 44;
+const int UPGRADE_TYPE_COUNT     = 61;
+const int WEAPON_TYPE_COUNT      = 130;
+const int FLINGY_TYPE_COUNT      = 209;
+const int IMAGE_TYPE_COUNT       = 999;
 
 #include "structures/CBullet.h"
 #include "structures/CImage.h"
@@ -36,18 +36,18 @@ struct UNITDEATHS {
 
 struct TEXT {
     char textdisplay[218][13];  //[last is text at bottom; ex: "Cheat enabled."]
-    UNK unknown1;
-    UNK unknown2;
-    u8 color[13];
-    UNK unknown3[3];  //[last is text at bottom; ex: "Cheat enabled."]
-    u8 timer[13];
+    UNK  unknown1;
+    UNK  unknown2;
+    u8   color[13];
+    UNK  unknown3[3];  //[last is text at bottom; ex: "Cheat enabled."]
+    u8   timer[13];
 };
 
 struct TILE {
     /*00*/ u16 index;
-    /*02*/ u8 buildability; /**< 8th bit should sign not buildable. */
-    /*03*/ u8 groundHeight; /**< Ground Height(4 lower bits) - Deprecated? Some
-                               values are incorrect. */
+    /*02*/ u8  buildability; /**< 8th bit should sign not buildable. */
+    /*03*/ u8  groundHeight; /**< Ground Height(4 lower bits) - Deprecated? Some
+                                values are incorrect. */
     /*04*/ u16 leftEdge;
     /*06*/ u16 topEdge;
     /*08*/ u16 rightEdge;
@@ -63,14 +63,14 @@ struct TILE {
 
 struct DOODAD {
     /*00*/ u16 index;
-    /*02*/ u8 buildability; /**< 8th bit should sign not buildable. */
-    /*03*/ u8 groundHeightAndOverlayFlags; /**< Ground Height(4 lower bits) -
-                                            * Deprecated? Some values are
-                                            * incorrect. Overlay Flags: o 0x0 -
-                                            * None o 0x1 - Sprites.dat Reference
-                                            * o 0x2 - Units.dat Reference (unit
-                                            * sprite) o 0x4 - Overlay is Flipped
-                                            */
+    /*02*/ u8  buildability; /**< 8th bit should sign not buildable. */
+    /*03*/ u8  groundHeightAndOverlayFlags; /**< Ground Height(4 lower bits) -
+                                             * Deprecated? Some values are
+                                             * incorrect. Overlay Flags: o 0x0 -
+                                             * None o 0x1 - Sprites.dat Reference
+                                             * o 0x2 - Units.dat Reference (unit
+                                             * sprite) o 0x4 - Overlay is Flipped
+                                             */
     /*04*/ u16 overlayID;
     /*06*/ u16 _1;
     /*08*/ u16 doodatGrupString;
@@ -85,7 +85,7 @@ struct DOODAD {
 struct CThingy {
     /*00*/ CThingy *prev;
     /*04*/ CThingy *next;
-    /*08*/ u32 unitType;
+    /*08*/ u32      unitType;
     /*0C*/ CSprite *sprite;
 };
 
@@ -98,8 +98,8 @@ struct MapSize {
 
 struct LOCATION {
     Box32 dimensions;
-    u16 stringId;
-    u16 flags;
+    u16   stringId;
+    u16   flags;
 };
 
 //---- Taken from buttons.cpp ----//
@@ -111,20 +111,20 @@ typedef void(__fastcall *ACT_FUNC)(u32, u32);
 //(u32 actVar, u32 shiftClick);
 
 struct BUTTON {
-    /*00*/ u16 position;
-    /*02*/ u16 iconID;
+    /*00*/ u16       position;
+    /*02*/ u16       iconID;
     /*04*/ REQ_FUNC *reqFunc;
     /*08*/ ACT_FUNC *actFunc;
-    /*0C*/ u16 reqVar;
-    /*0E*/ u16 actVar;
-    /*10*/ u16 reqStringID;
-    /*12*/ u16 actStringID;
+    /*0C*/ u16       reqVar;
+    /*0E*/ u16       actVar;
+    /*10*/ u16       reqStringID;
+    /*12*/ u16       actStringID;
 };
 
 struct BUTTON_SET {
-    u32 buttonsInSet;
+    u32     buttonsInSet;
     BUTTON *firstButton;
-    u32 connectedUnit;
+    u32     connectedUnit;
 };
 
 //---- Taken from triggers.h ----//
@@ -133,10 +133,10 @@ struct CONDITION {
     u32 player;
     u32 number;
     u16 unit;
-    u8 comparison;
-    u8 condition;
-    u8 type;
-    u8 flags;
+    u8  comparison;
+    u8  condition;
+    u8  type;
+    u8  flags;
 };
 
 typedef Bool32(__fastcall *ConditionPointer)(CONDITION *);
@@ -149,19 +149,19 @@ struct ACTION {
     u32 player;
     u32 number;
     u16 unit;
-    u8 action;
-    u8 number2;
-    u8 flags;
+    u8  action;
+    u8  number2;
+    u8  flags;
 };
 
 typedef Bool32(__fastcall *ActionPointer)(ACTION *);
 
 // GRP frame header
 struct GrpFrame {
-    s8 x;
-    s8 y;
-    s8 width;
-    s8 height;
+    s8  x;
+    s8  y;
+    s8  width;
+    s8  height;
     u32 dataOffset;  // might be u16* (but as a pointer, would still fit in u32)
 };
 
@@ -171,9 +171,9 @@ C_ASSERT(sizeof(GrpFrame) == 8);
 
 // GRP file header
 struct GrpHead {
-    u16 frameCount;
-    s16 width;
-    s16 height;
+    u16      frameCount;
+    s16      width;
+    s16      height;
     GrpFrame frames[1];
 };
 
@@ -199,9 +199,9 @@ C_ASSERT(sizeof(LO_Header) == 12);
 
 // Image Remapping Data
 struct ColorShiftData {
-    u32 index;
+    u32   index;
     void *data;
-    char name[12];
+    char  name[12];
 };
 
 C_ASSERT(sizeof(ColorShiftData) == 20);
@@ -214,10 +214,10 @@ C_ASSERT(sizeof(ColorShiftData) == 20);
 struct ActiveTile {
     /*00*/ u8 visibilityFlags;
     /*01*/ u8 exploredFlags;
-    /*02*/ u8 isWalkable : 1;  // Set on tiles that can be walked on
-    u8 unknown1 : 1;           // Unused?
-    u8 isUnwalkable : 1;       // Set on tiles that can't be walked on
-    u8 unknown2 : 1;           // Unused?
+    /*02*/ u8 isWalkable : 1;    // Set on tiles that can be walked on
+    u8        unknown1 : 1;      // Unused?
+    u8        isUnwalkable : 1;  // Set on tiles that can't be walked on
+    u8        unknown2 : 1;      // Unused?
     u8 hasDoodadCover : 1;  // Set when a doodad cover (trees) occupies the area
     u8 unknown3 : 1;        // Unused?
     u8 hasCreep : 1;        // Set when creep occupies the area
@@ -272,8 +272,8 @@ C_ASSERT(sizeof(TargetFlag) == 2);
 //-------- End of flag structures --------//
 
 struct UnitFinderData {
-    s32 unitIndex;
-    s32 position;
+    s32  unitIndex;
+    s32  position;
     bool operator<(const UnitFinderData &rhs) const {
         return this->position < rhs.position;
     }
@@ -291,30 +291,30 @@ C_ASSERT(sizeof(UnitFinderData) == 8);
 struct BinDlg {
     /*0x00*/ BinDlg *next;
     /*0x04*/ Bounds
-        bounds;  // 0x4 left,0x6 top,0x8 right,0xA bottom,0xC width,0xE height
-    /*0x10*/ u8 *buffer;
+                   bounds;  // 0x4 left,0x6 top,0x8 right,0xA bottom,0xC width,0xE height
+    /*0x10*/ u8 *  buffer;
     /*0x14*/ char *pszText;
-    /*0x18*/ u32 flags;  // use BinDlgFlags::Enum
-    /*0x1C*/ u32 unk_1c;
-    /*0x20*/ u16 index;
-    /*0x22*/ u16 controlType;  // use DialogControlTypes::Enum
-    /*0x24*/ u16 graphic;
+    /*0x18*/ u32   flags;  // use BinDlgFlags::Enum
+    /*0x1C*/ u32   unk_1c;
+    /*0x20*/ u16   index;
+    /*0x22*/ u16   controlType;  // use DialogControlTypes::Enum
+    /*0x24*/ u16   graphic;
 
     union {
-        /*0x26*/ u32 *user;
-        /*0x26*/ CUnit *unitUser;
+        /*0x26*/ u32 *   user;
+        /*0x26*/ CUnit * unitUser;
         /*0x26*/ BinDlg *dlgUser;
         /*0x26*/ BUTTON *buttonUser;
-        /*0x26*/ u32 nonUserValue;
+        /*0x26*/ u32     nonUserValue;
     };
 
-    /*0x2A*/ void *fxnInteract;
-    /*0x2E*/ void *fxnUpdate;
+    /*0x2A*/ void *  fxnInteract;
+    /*0x2E*/ void *  fxnUpdate;
     /*0x32*/ BinDlg *parent;
 
     union {
         struct {
-            /*0x36*/ Box16 responseArea;
+            /*0x36*/ Box16   responseArea;
             /*0x3E*/ BinDlg *unk_3e;
         } initialVersion0x36;
         struct {
@@ -323,67 +323,67 @@ struct BinDlg {
             /*0x3A*/ u32
                 *responseAreaBitArray;  // set with a memory allocation
                                         // function, bit array is a guess
-            /*0x3E*/ u32 *unk3e;  // unverified filler
+            /*0x3E*/ u32 *unk3e;        // unverified filler
         } onInitDialog0x36;
         struct {
-            /*0x36*/ void *unkFunc36;         // should be a function
-            /*0x3A*/ u16 scrollMinValue;      // guess to be confirmed if used
-            /*0x3C*/ u16 scrollMaxValue;      // guess to be confirmed if used
-            /*0x3E*/ u16 scrollCurrentValue;  // guess to be confirmed if used
-            /*0x40*/ u16 unk40;               // unverified filler
+            /*0x36*/ void *unkFunc36;           // should be a function
+            /*0x3A*/ u16   scrollMinValue;      // guess to be confirmed if used
+            /*0x3C*/ u16   scrollMaxValue;      // guess to be confirmed if used
+            /*0x3E*/ u16   scrollCurrentValue;  // guess to be confirmed if used
+            /*0x40*/ u16   unk40;               // unverified filler
         } scrollDialog0x36;  // probably for scrollbar involving dialogs?
         struct {
             /*0x36*/ BinDlg *unkDlg36;
-            /*0x3A*/ u32 unk3a;  // unverified filler
-            /*0x3E*/ u32 unk3e;  // unverified filler
+            /*0x3A*/ u32     unk3a;  // unverified filler
+            /*0x3E*/ u32     unk3e;  // unverified filler
         } dialogOn0x36;  // for when 0x36 is clearly BinDlg* but the rest is
                          // unknown
         struct {
             /*0x36*/ Bool32
-                unkBool32_36;    // based on the value only being compared to 0
-            /*0x3A*/ u32 unk3a;  // unverified filler
-            /*0x3E*/ u32 unk3e;  // unverified filler
-        } checkBox0x36;          // not completely sure
+                         unkBool32_36;  // based on the value only being compared to 0
+            /*0x3A*/ u32 unk3a;         // unverified filler
+            /*0x3E*/ u32 unk3e;         // unverified filler
+        } checkBox0x36;                 // not completely sure
         struct {
             /*0x36*/ u8
-                unkFlags36;         //"flag" because of possible unkFlags36 |= 1
-            /*0x37*/ UNK unk37[3];  // unverified filler
+                         unkFlags36;  //"flag" because of possible unkFlags36 |= 1
+            /*0x37*/ UNK unk37[3];    // unverified filler
             /*0x3A*/ u8 *
-                *unk3aArrayCharPtr;  // seen in a different context so may be
-                                     // wrong and belong to another category
-            /*0x3E*/ u8 pszTextLen;  // should be the length of pszText
-            /*0x3F*/ UNK unk3f[3];   // unverified filler
+                *unk3aArrayCharPtr;   // seen in a different context so may be
+                                      // wrong and belong to another category
+            /*0x3E*/ u8  pszTextLen;  // should be the length of pszText
+            /*0x3F*/ UNK unk3f[3];    // unverified filler
         } textDialog0x36;  // seems to apply to some text related dialogs
     };
 
     union {
-        /*0x42*/ void *childrenSmk;
+        /*0x42*/ void *  childrenSmk;
         /*0x42*/ BinDlg *childrenDlg;
     };
 
     union {
         struct {
             /*0x46*/ Point16 textPos;
-            /*0x4A*/ u16 responseAreaWidth;
-            /*0x4C*/ u16 responseAreaHeight;
-            /*0x4E*/ UNK unk_4e[8];
+            /*0x4A*/ u16     responseAreaWidth;
+            /*0x4C*/ u16     responseAreaHeight;
+            /*0x4E*/ UNK     unk_4e[8];
         } initialVersion0x46;
         struct {
             /*0x46*/ Point16 textPos;  // unverified filler
-            /*0x4A*/ u32 unk4a;
-            /*0x4E*/ UNK unk_4e[8];  // unverified filler
+            /*0x4A*/ u32     unk4a;
+            /*0x4E*/ UNK     unk_4e[8];  // unverified filler
         } onInitDialog0x46;
         struct {
-            /*0x46*/ u8 unk46;
-            /*0x47*/ u8 unk47;  // unverified filler
-            /*0x48*/ u8 unk48;
-            /*0x49*/ u8 unk49;
-            /*0x4A*/ u8 unk4a;
-            /*0x4B*/ u8 unk4b;
+            /*0x46*/ u8    unk46;
+            /*0x47*/ u8    unk47;  // unverified filler
+            /*0x48*/ u8    unk48;
+            /*0x49*/ u8    unk49;
+            /*0x4A*/ u8    unk4a;
+            /*0x4B*/ u8    unk4b;
             /*0x4C*/ Bool8 unk4c;
-            /*0x4D*/ u8 unk4d;
-            /*0x4E*/ u8 unk4e;
-            /*0x4F*/ UNK unk_4f[7];  // unverified filler
+            /*0x4D*/ u8    unk4d;
+            /*0x4E*/ u8    unk4e;
+            /*0x4F*/ UNK   unk_4f[7];  // unverified filler
         } alternateVersion0x46;
     };
 };
@@ -393,14 +393,14 @@ C_ASSERT(sizeof(BinDlg) == 86);  // 0x56
 // invalid");
 
 struct SMK_Structure {
-    /*0x00*/ u32 smkOverlayOffset;
-    /*0x04*/ u16 flags;  // use SmkFlags::Enum
-    /*0x06*/ u32 internalUse1;
-    /*0x0A*/ u32 smkFilenameOffset;
-    /*0x0E*/ u32 internalUse2;
+    /*0x00*/ u32     smkOverlayOffset;
+    /*0x04*/ u16     flags;  // use SmkFlags::Enum
+    /*0x06*/ u32     internalUse1;
+    /*0x0A*/ u32     smkFilenameOffset;
+    /*0x0E*/ u32     internalUse2;
     /*0x12*/ Point16 smkOverlayPosition;
-    /*0x16*/ u32 internalUse3;
-    /*0x1A*/ u32 internalUse4;
+    /*0x16*/ u32     internalUse3;
+    /*0x1A*/ u32     internalUse4;
 };
 
 C_ASSERT(sizeof(SMK_Structure) == 30);  // 0x1E
@@ -421,22 +421,22 @@ C_ASSERT(sizeof(GuiOverlay) == 44);  // 0x2C
 //-------- AI related stuff --------//
 
 struct AI_Main {
-    /*000*/ s32 oreCollection;
-    /*004*/ s32 gasCollection;
-    /*008*/ s32 supplyCollection;
-    /*00C*/ s32 ore;
-    /*010*/ s32 gas;
-    /*014*/ s32 supply;
-    /*018*/ u8 unknown_0x18;
-    /*019*/ u8 newBuildType;
-    /*01A*/ u16 nextBuildType;
+    /*000*/ s32   oreCollection;
+    /*004*/ s32   gasCollection;
+    /*008*/ s32   supplyCollection;
+    /*00C*/ s32   ore;
+    /*010*/ s32   gas;
+    /*014*/ s32   supply;
+    /*018*/ u8    unknown_0x18;
+    /*019*/ u8    newBuildType;
+    /*01A*/ u16   nextBuildType;
     /*01C*/ void *pTownMain;
-    /*020*/ u32 unknown_0x20[124];
-    /*210*/ u8 unknown_0x210;
-    /*211*/ u8 builtSomething;
-    /*212*/ u8 AI_NukeRate;
-    /*213*/ u8 AI_Attacks;
-    /*214*/ u32 AI_LastNukeTime;
+    /*020*/ u32   unknown_0x20[124];
+    /*210*/ u8    unknown_0x210;
+    /*211*/ u8    builtSomething;
+    /*212*/ u8    AI_NukeRate;
+    /*213*/ u8    AI_Attacks;
+    /*214*/ u32   AI_LastNukeTime;
     /*218*/ struct {
         u16 isSecureFinished : 1;  /*0001*/
         u16 isTownStarted : 1;     /*0002*/
@@ -448,35 +448,35 @@ struct AI_Main {
         u16 spreadCreep : 1;       /*0080*/
         u16 flag_0x100 : 1;        /*0100*/
         u16 hasStrongestGndArmy : 1;
-            /*0200*/  // Set if the AI's ground army is stronger than the total
-                      // strength of the strongest enemy force
+        /*0200*/  // Set if the AI's ground army is stronger than the total
+                  // strength of the strongest enemy force
         u16 bUpgradesFinished : 1; /*0400*/
         u16 bTargetExpansion : 1;  /*0800*/
     } AI_Flags;
-    /*21A*/ u16 AI_PanicBlock;
-    /*21C*/ u16 AI_MaxForce;
-    /*21E*/ u16 AI_AttackGroup;
-    /*220*/ u16 waitForceCount;
-    /*222*/ u8 AI_DefaultMin;
-    /*223*/ u8 unknown_0x223;
-    /*224*/ u32 lastIndividualUpdateTime;
-    /*228*/ u32 AI_AttackTimer;
-    /*22C*/ u8 unknown_0x22C;
-    /*22D*/ u8 spellcasterTimer;
-    /*22E*/ u8 attackManagerTimer;
-    /*22F*/ u8 AI_IfDif;
-    /*230*/ u16 AI_AttackGroups[64];
-    /*2B0*/ u32 AI_DefenseBuild_GG[10];
-    /*2D8*/ u32 AI_DefenseBuild_AG[10];
-    /*300*/ u32 AI_DefenseBuild_GA[10];
-    /*328*/ u32 AI_DefenseBuild_AA[10];
-    /*350*/ u32 AI_DefenseUse_GG[10];
-    /*378*/ u32 AI_DefenseUse_AG[10];
-    /*3A0*/ u32 AI_DefenseUse_GA[10];
-    /*3C8*/ u32 AI_DefenseUse_AA[10];
-    /*3F0*/ u8 AI_DefineMax[UNIT_TYPE_COUNT];
+    /*21A*/ u16    AI_PanicBlock;
+    /*21C*/ u16    AI_MaxForce;
+    /*21E*/ u16    AI_AttackGroup;
+    /*220*/ u16    waitForceCount;
+    /*222*/ u8     AI_DefaultMin;
+    /*223*/ u8     unknown_0x223;
+    /*224*/ u32    lastIndividualUpdateTime;
+    /*228*/ u32    AI_AttackTimer;
+    /*22C*/ u8     unknown_0x22C;
+    /*22D*/ u8     spellcasterTimer;
+    /*22E*/ u8     attackManagerTimer;
+    /*22F*/ u8     AI_IfDif;
+    /*230*/ u16    AI_AttackGroups[64];
+    /*2B0*/ u32    AI_DefenseBuild_GG[10];
+    /*2D8*/ u32    AI_DefenseBuild_AG[10];
+    /*300*/ u32    AI_DefenseBuild_GA[10];
+    /*328*/ u32    AI_DefenseBuild_AA[10];
+    /*350*/ u32    AI_DefenseUse_GG[10];
+    /*378*/ u32    AI_DefenseUse_AG[10];
+    /*3A0*/ u32    AI_DefenseUse_GA[10];
+    /*3C8*/ u32    AI_DefenseUse_AA[10];
+    /*3F0*/ u8     AI_DefineMax[UNIT_TYPE_COUNT];
     /*4D4*/ CUnit *mainMedic;
-    /*4D8*/ Box32 genCmdLoc;
+    /*4D8*/ Box32  genCmdLoc;
 };
 
 C_ASSERT(sizeof(AI_Main) == 1256); /*0x4E8*/
@@ -484,30 +484,30 @@ C_ASSERT(sizeof(AI_Main) == 1256); /*0x4E8*/
 // invalid");
 
 struct AiCaptain {
-    /*00*/ u16 region;
-    /*02*/ u16 unknown_0x2;
-    /*04*/ u8 playerId;
-    /*05*/ u8 captainType;
-    /*06*/ u8 unknown_0x6;
-    /*07*/ u8 unknown_0x7;
-    /*08*/ u8 captainFlags;
-    /*09*/ u8 unknown_0x9;
-    /*0A*/ u8 unknown_0xA;
-    /*0B*/ u8 unknown_0xB;
-    /*0C*/ u16 unknown_0xC;
-    /*0E*/ u16 unknown_0xE;
-    /*10*/ u16 regionGndStrength;
-    /*12*/ u16 regionAirStrength;
-    /*14*/ u16 fullGndStrength;
-    /*16*/ u16 fullAirStrength;
-    /*18*/ u16 unknown_0x18;
-    /*1A*/ u16 unknown_0x1A;
-    /*1C*/ u32 unknown_0x1C;
-    /*20*/ u32 unknown_0x20;
+    /*00*/ u16    region;
+    /*02*/ u16    unknown_0x2;
+    /*04*/ u8     playerId;
+    /*05*/ u8     captainType;
+    /*06*/ u8     unknown_0x6;
+    /*07*/ u8     unknown_0x7;
+    /*08*/ u8     captainFlags;
+    /*09*/ u8     unknown_0x9;
+    /*0A*/ u8     unknown_0xA;
+    /*0B*/ u8     unknown_0xB;
+    /*0C*/ u16    unknown_0xC;
+    /*0E*/ u16    unknown_0xE;
+    /*10*/ u16    regionGndStrength;
+    /*12*/ u16    regionAirStrength;
+    /*14*/ u16    fullGndStrength;
+    /*16*/ u16    fullAirStrength;
+    /*18*/ u16    unknown_0x18;
+    /*1A*/ u16    unknown_0x1A;
+    /*1C*/ u32    unknown_0x1C;
+    /*20*/ u32    unknown_0x20;
     /*24*/ CUnit *slowestUnit;
     /*28*/ CUnit *followTarget;
     /*2C*/ CUnit *mainMedic;
-    /*30*/ void *town;
+    /*30*/ void * town;
 };
 
 C_ASSERT(sizeof(AiCaptain) == 52);

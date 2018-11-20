@@ -17,7 +17,7 @@ void setUpgradeLevel(u32 playerId, u32 upgradeType, u8 upgradeLevel);  // CE770
 namespace hooks {
 
 void orders_Upgrade(CUnit* unit) {
-    bool bStopThere = false;
+    bool    bStopThere = false;
     CImage* current_image;
 
     if (unit->status & UnitStatus::GroundedBuilding &&
@@ -88,14 +88,14 @@ void orders_Upgrade(CUnit* unit) {
 				PUSHAD
 
 				MOV ESI, unit
-				MOVZX ECX, byte ptr [ESI+0xC9]            // unit->building.upgradeType
-				MOVZX EAX, byte ptr [ESI+0x4C]            // unit->playerId
+				MOVZX ECX, byte ptr [ESI+0xC9]  // unit->building.upgradeType
+				MOVZX EAX, byte ptr [ESI+0x4C]  // unit->playerId
 				MOV EDX, ECX
 				SHR EDX, 0x3
 				AND ECX, 0x80000007
 				LEA EAX, [EDX+EAX*0x8+0x0058F3E0]  // EAX =
-                                            // &(UpgradesBw->currentLevel[unit->playerId][unit->building.upgradeType
-                                            // CONVERTED?])
+                             // &(UpgradesBw->currentLevel[unit->playerId][unit->building.upgradeType
+                             // CONVERTED?])
 				JNS lbl547E7
 
 				DEC ECX
@@ -115,7 +115,7 @@ void orders_Upgrade(CUnit* unit) {
 
         }
 
-        unit->building.upgradeType = UpgradeId::None;
+        unit->building.upgradeType  = UpgradeId::None;
         unit->building.upgradeLevel = 0;
 
         if (unit->pAI != NULL) {
@@ -207,15 +207,15 @@ void orders_ResearchTech(CUnit* unit) {
 				PUSHAD
 
 				MOV ESI, unit
-				MOVZX ECX, byte ptr [ESI+0xC8]            // unit->building.techType
-				MOVZX EAX, byte ptr [ESI+0x4C]            // unit->playerId
+				MOVZX ECX, byte ptr [ESI+0xC8]  // unit->building.techType
+				MOVZX EAX, byte ptr [ESI+0x4C]  // unit->playerId
 				MOV EDX, ECX
 				SHR EDX, 0x3
 				AND ECX, 0x80000007
 				LEA EAX, [EAX+EAX*0x2]
 				LEA EAX, [EDX+EAX*0x2+0x0058F230]  // EAX =
-                                            // &(TechBw->isResearched[unit->playerId][unit->building.techType
-                                            // CONVERTED?])
+                             // &(TechBw->isResearched[unit->playerId][unit->building.techType
+                             // CONVERTED?])
 				JNS lbl549C7
 
 				DEC ECX
@@ -280,7 +280,7 @@ void orders_ResearchTech(CUnit* unit) {
 namespace {
 
 const u32 Func_isUnitUpgradeAvailable = 0x004033D0;
-bool isUnitUpgradeAvailable(CUnit* unit) {
+bool      isUnitUpgradeAvailable(CUnit* unit) {
     static Bool32 bPreResult;
 
     __asm {
@@ -297,10 +297,10 @@ bool isUnitUpgradeAvailable(CUnit* unit) {
 ;
 
 const u32 Func_ApplySpeedUpgradeFromUpgradeType = 0x00454540;
-void ApplySpeedUpgradeFromUpgradeType(CUnit* unit, u8 upgradeType){
+void      ApplySpeedUpgradeFromUpgradeType(CUnit* unit, u8 upgradeType){
 
     __asm {
-        PUSHAD MOV AL,
+        PUSHAD MOV  AL,
         upgradeType PUSH unit CALL Func_ApplySpeedUpgradeFromUpgradeType POPAD}
 
 }
@@ -308,7 +308,7 @@ void ApplySpeedUpgradeFromUpgradeType(CUnit* unit, u8 upgradeType){
 ;
 
 const u32 Func_removeOrderFromUnitQueue = 0x004742D0;
-void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
+void      removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 
     __asm {PUSHAD MOV ECX,
            unit MOV EAX,
@@ -319,7 +319,7 @@ void removeOrderFromUnitQueue(CUnit* unit, COrder* order){
 ;
 
 const u32 Func_playUpgradeCompleteSound = 0x0048F070;
-void playUpgradeCompleteSound(){
+void      playUpgradeCompleteSound(){
 
     __asm {PUSHAD CALL Func_playUpgradeCompleteSound POPAD}
 
@@ -328,7 +328,7 @@ void playUpgradeCompleteSound(){
 ;
 
 const u32 Func_playResearchCompleteSound = 0x0048F150;
-void playResearchCompleteSound(){
+void      playResearchCompleteSound(){
 
     __asm {PUSHAD CALL Func_playResearchCompleteSound POPAD}
 
@@ -337,9 +337,9 @@ void playResearchCompleteSound(){
 ;
 
 const u32 Func_setUpgradeLevel = 0x004CE770;
-void setUpgradeLevel(u32 playerId, u32 upgradeType, u8 upgradeLevel){
+void      setUpgradeLevel(u32 playerId, u32 upgradeType, u8 upgradeLevel){
 
-    __asm {PUSHAD MOV DL,
+    __asm {PUSHAD MOV   DL,
            upgradeLevel MOV ECX,
            upgradeType MOV EAX,
            playerId CALL Func_setUpgradeLevel POPAD}

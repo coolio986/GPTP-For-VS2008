@@ -5,33 +5,33 @@
 
 namespace {
 
-bool isDistanceGreaterThanHaltDistance(CUnit* unit,
-                                       int x,
-                                       int y,
-                                       u32 distance);             // 01240
-void function_0042D9A0(CUnit* unit);                              // 2D9A0
-void AI_TrainingOverlord(CUnit* main_unit, CUnit* created_unit);  // 35770
-bool function_00467030(CUnit* unit);                              // 67030
-CUnit* function_004678A0(CUnit* unit, u32 unitId);                // 678A0
-void function_00498D70(CSprite* sprite,
-                       u32 imageId,
-                       u32 unk1,
-                       u32 unk2,
-                       u32 unk3);  // 98D70
-void replaceSpriteImages(CSprite* sprite,
-                         u32 imageId,
-                         u32 imageDirection);               // 99BB0
-void displayLastNetErrForPlayer(u32 playerId);              // 9E530
-void updateUnitStrength(CUnit* unit);                       // 9FA40
-void function_004A01F0(CUnit* unit);                        // A01F0
+bool   isDistanceGreaterThanHaltDistance(CUnit* unit,
+                                         int    x,
+                                         int    y,
+                                         u32    distance);             // 01240
+void   function_0042D9A0(CUnit* unit);                              // 2D9A0
+void   AI_TrainingOverlord(CUnit* main_unit, CUnit* created_unit);  // 35770
+bool   function_00467030(CUnit* unit);                              // 67030
+CUnit* function_004678A0(CUnit* unit, u32 unitId);                  // 678A0
+void   function_00498D70(CSprite* sprite,
+                         u32      imageId,
+                         u32      unk1,
+                         u32      unk2,
+                         u32      unk3);  // 98D70
+void   replaceSpriteImages(CSprite* sprite,
+                           u32      imageId,
+                           u32      imageDirection);             // 99BB0
+void   displayLastNetErrForPlayer(u32 playerId);            // 9E530
+void   updateUnitStrength(CUnit* unit);                     // 9FA40
+void   function_004A01F0(CUnit* unit);                      // A01F0
 CUnit* createUnit(u32 unitId, int x, int y, u32 playerId);  // A09D0
-void iscript_OpcodeCases(CImage* image,
-                         u32 offset_,
-                         u32 unk1,
-                         u32 unk2);                 // D74C0
-void function_004D8500(CImage* image);              // D8500
-void makeToHoldPosition(CUnit* unit);               // EB5B0
-bool function_004EB9C0(CUnit* unit, int x, int y);  // EB9C0
+void   iscript_OpcodeCases(CImage* image,
+                           u32     offset_,
+                           u32     unk1,
+                           u32     unk2);                 // D74C0
+void   function_004D8500(CImage* image);              // D8500
+void   makeToHoldPosition(CUnit* unit);               // EB5B0
+bool   function_004EB9C0(CUnit* unit, int x, int y);  // EB9C0
 
 }  // unnamed namespace
 
@@ -70,7 +70,7 @@ void orders_ProbeBuild(CUnit* unit) {
 
     } else if (unit->mainOrderState == 2) {
         if (!(unit->movementFlags & MovementFlags::Accelerating)) {
-            u32 distance_wanted;
+            u32  distance_wanted;
             bool isBuildingAssimilator =
                 (unit->buildQueue[unit->buildQueueSlot] ==
                  UnitId::ProtossAssimilator);
@@ -136,7 +136,7 @@ void orders_ProbeBuild(CUnit* unit) {
         }
 
     } else if (unit->mainOrderState == 3) {
-        CUnit* target = unit->orderTarget.unit;
+        CUnit*  target = unit->orderTarget.unit;
         CImage* current_image;
 
         if (target == NULL || target->id != UnitId::ProtossAssimilator ||
@@ -174,7 +174,7 @@ void orders_BuildSelf2(CUnit* building) {
                     current_image->iscriptOffset =
                         *(u16*)(*u32_006D1200 +
                                 current_image->iscriptHeaderOffset + 0x22);
-                    current_image->wait = 0;
+                    current_image->wait      = 0;
                     current_image->unknown14 = 0;
                     iscript_OpcodeCases(
                         current_image,
@@ -188,7 +188,7 @@ void orders_BuildSelf2(CUnit* building) {
 
             scbw::playSound(SoundId::Protoss_SHUTTLE_pshBld03_wav, building);
             building->mainOrderState = 1;
-            jump_to_E50EE = true;
+            jump_to_E50EE            = true;
 
         } else
             jump_to_E50EE = true;
@@ -228,7 +228,7 @@ void orders_BuildSelf2(CUnit* building) {
                     current_image->iscriptOffset =
                         *(u16*)(*u32_006D1200 +
                                 current_image->iscriptHeaderOffset + 0x32);
-                    current_image->wait = 0;
+                    current_image->wait      = 0;
                     current_image->unknown14 = 0;
                     iscript_OpcodeCases(
                         current_image,
@@ -262,7 +262,7 @@ void orders_BuildSelf2(CUnit* building) {
                         current_image->iscriptOffset =
                             *(u16*)(*u32_006D1200 +
                                     current_image->iscriptHeaderOffset + 0x38);
-                        current_image->wait = 0;
+                        current_image->wait      = 0;
                         current_image->unknown14 = 0;
                         iscript_OpcodeCases(
                             current_image,
@@ -325,10 +325,10 @@ void orders_BuildSelf2(CUnit* building) {
 namespace {
 
 const u32 Func_isDistanceGreaterThanHaltDistance = 0x00401240;
-bool isDistanceGreaterThanHaltDistance(CUnit* unit,
-                                       int x,
-                                       int y,
-                                       u32 distance) {
+bool      isDistanceGreaterThanHaltDistance(CUnit* unit,
+                                            int    x,
+                                            int    y,
+                                            u32    distance) {
     static Bool32 bPreResult;
 
     __asm {
@@ -348,7 +348,7 @@ bool isDistanceGreaterThanHaltDistance(CUnit* unit,
 ;
 
 const u32 Func_Sub42D9A0 = 0x0042D9A0;
-void function_0042D9A0(CUnit* unit){
+void      function_0042D9A0(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub42D9A0 POPAD}
 
@@ -357,9 +357,9 @@ void function_0042D9A0(CUnit* unit){
 ;
 
 const u32 Func_AI_TrainingOverlord = 0x00435770;
-void AI_TrainingOverlord(CUnit* main_unit, CUnit* created_unit){
+void      AI_TrainingOverlord(CUnit* main_unit, CUnit* created_unit){
 
-    __asm {PUSHAD MOV EAX,
+    __asm {PUSHAD MOV   EAX,
            created_unit MOV ECX,
            main_unit CALL Func_AI_TrainingOverlord POPAD}
 
@@ -368,7 +368,7 @@ void AI_TrainingOverlord(CUnit* main_unit, CUnit* created_unit){
 ;
 
 const u32 Func_Sub467030 = 0x00467030;
-bool function_00467030(CUnit* unit) {
+bool      function_00467030(CUnit* unit) {
     static Bool32 bPreResult;
 
     __asm {
@@ -385,7 +385,7 @@ bool function_00467030(CUnit* unit) {
 ;
 
 const u32 Func_Sub4678A0 = 0x004678A0;
-CUnit* function_004678A0(CUnit* unit, u32 unitId) {
+CUnit*    function_004678A0(CUnit* unit, u32 unitId) {
     static CUnit* newUnit;
 
     __asm {
@@ -404,11 +404,11 @@ CUnit* function_004678A0(CUnit* unit, u32 unitId) {
 
 // imageId may not be really a parameter
 const u32 Func_Sub498D70 = 0x00498D70;
-void function_00498D70(CSprite* sprite,
-                       u32 imageId,
-                       u32 unk1,
-                       u32 unk2,
-                       u32 unk3){
+void      function_00498D70(CSprite* sprite,
+                            u32      imageId,
+                            u32      unk1,
+                            u32      unk2,
+                            u32      unk3){
 
     __asm {PUSHAD MOV EAX,
            sprite MOV ESI,
@@ -420,20 +420,20 @@ void function_00498D70(CSprite* sprite,
 
 // named based on old removed unit_morph hooks set
 const u32 Func_Sub499BB0 = 0x00499BB0;
-void replaceSpriteImages(CSprite* sprite, u32 imageId, u32 imageDirection){
+void      replaceSpriteImages(CSprite* sprite, u32 imageId, u32 imageDirection){
     __asm {PUSHAD PUSH imageDirection PUSH imageId MOV EAX,
            sprite CALL Func_Sub499BB0 POPAD}}
 
 ;
 
 const u32 Func_displayLastNetErrForPlayer = 0x0049E530;
-void displayLastNetErrForPlayer(u32 playerId){
+void      displayLastNetErrForPlayer(u32 playerId){
     __asm {PUSHAD PUSH playerId CALL Func_displayLastNetErrForPlayer POPAD}}
 
 ;
 
 const u32 Func_UpdateUnitStrength = 0x0049FA40;
-void updateUnitStrength(CUnit* unit){
+void      updateUnitStrength(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_UpdateUnitStrength POPAD}
 
@@ -442,7 +442,7 @@ void updateUnitStrength(CUnit* unit){
 ;
 
 const u32 Func_Sub4A01F0 = 0x004A01F0;
-void function_004A01F0(CUnit* unit){
+void      function_004A01F0(CUnit* unit){
 
     __asm {PUSHAD MOV EAX, unit CALL Func_Sub4A01F0 POPAD}
 
@@ -451,7 +451,7 @@ void function_004A01F0(CUnit* unit){
 ;
 
 const u32 Func_iscript_OpcodeCases = 0x004D74C0;
-void iscript_OpcodeCases(CImage* image, u32 offset_, u32 unk1, u32 unk2){
+void      iscript_OpcodeCases(CImage* image, u32 offset_, u32 unk1, u32 unk2){
 
     __asm {PUSHAD PUSH unk1 PUSH unk2 PUSH offset_ MOV ECX,
            image CALL Func_iscript_OpcodeCases POPAD}
@@ -461,7 +461,7 @@ void iscript_OpcodeCases(CImage* image, u32 offset_, u32 unk1, u32 unk2){
 ;
 
 const u32 Func_Sub4D8500 = 0x004D8500;
-void function_004D8500(CImage* image){
+void      function_004D8500(CImage* image){
 
     __asm {PUSHAD MOV EAX, image CALL Func_Sub4D8500 POPAD}
 
@@ -470,7 +470,7 @@ void function_004D8500(CImage* image){
 ;
 
 const u32 Func_CreateUnit = 0x004A09D0;
-CUnit* createUnit(u32 unitId, int x, int y, u32 playerId) {
+CUnit*    createUnit(u32 unitId, int x, int y, u32 playerId) {
     static CUnit* unit_created;
 
     __asm {
@@ -492,7 +492,7 @@ CUnit* createUnit(u32 unitId, int x, int y, u32 playerId) {
 // not related with assigning orders, but only with
 // destinations of orders
 const u32 Func_OrdersHoldPositionSuicidal = 0x004EB5B0;
-void makeToHoldPosition(CUnit* unit){
+void      makeToHoldPosition(CUnit* unit){
 
     __asm {PUSHAD MOV ESI, unit CALL Func_OrdersHoldPositionSuicidal POPAD}
 
@@ -501,7 +501,7 @@ void makeToHoldPosition(CUnit* unit){
 ;
 
 const u32 Func_Sub4EB9C0 = 0x004EB9C0;
-bool function_004EB9C0(CUnit* unit, int x, int y) {
+bool      function_004EB9C0(CUnit* unit, int x, int y) {
     static Bool32 bPreResult;
 
     __asm {

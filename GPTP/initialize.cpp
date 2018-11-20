@@ -110,7 +110,7 @@ BOOL WINAPI Plugin::InitializePlugin(IMPQDraftServer *lpMPQDraftServer) {
     runWMode();
 
     // StarCraft.exe version check
-    char exePath[300];
+    char        exePath[300];
     const DWORD pathLen = GetModuleFileName(NULL, exePath, sizeof(exePath));
 
     if (pathLen == sizeof(exePath)) {

@@ -5,9 +5,9 @@ namespace {
 
 // 004BFA80
 void __declspec(naked) templarMergePartnerWrapper() {
-    static CUnit* unit;            // 2nd push
-    static CUnit** units_list;     // 1st push
-    static u32 units_list_length;  // eax
+    static CUnit*  unit;               // 2nd push
+    static CUnit** units_list;         // 1st push
+    static u32     units_list_length;  // eax
 
     static CUnit* nearestPartner;
 

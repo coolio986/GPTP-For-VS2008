@@ -6,7 +6,7 @@
 
 // Functionally identical to playSpriteIscript() (offset 0x00499D00)
 void CSprite::playIscriptAnim(IscriptAnimation::Enum animation,
-                              bool bReplaceCurrentScript) {
+                              bool                   bReplaceCurrentScript) {
     assert(this);
 
     if (bReplaceCurrentScript || !(this->flags & CSprite_Flags::IscriptCode))
@@ -19,7 +19,7 @@ void CSprite::free() {
     assert(this);
 
     CImage *image = this->images.head;
-    s32 sprite_row_position;
+    s32     sprite_row_position;
 
     while (image != NULL) {
         CImage *nextImage = image->link.next;

@@ -35,9 +35,9 @@ namespace {
 // 0x00429210
 void __declspec(naked) cloakingTechWrapper_IsCloaked() {
     static Bool32 return_value;
-    static u32 playerId;
-    static CUnit* unit;  // unused in original function
-    static u16 reqVar;   // unused in original function
+    static u32    playerId;
+    static CUnit* unit;    // unused in original function
+    static u16    reqVar;  // unused in original function
 
     __asm {
 		PUSH EBP
@@ -65,9 +65,9 @@ void __declspec(naked) cloakingTechWrapper_IsCloaked() {
 // 0x004292C0
 void __declspec(naked) cloakingTechWrapper_CanCloak() {
     static Bool32 return_value;
-    static u32 playerId;
-    static CUnit* unit;  // unused in original function
-    static u16 reqVar;   // unused in original function
+    static u32    playerId;
+    static CUnit* unit;    // unused in original function
+    static u16    reqVar;  // unused in original function
 
     __asm {
 		PUSH EBP
@@ -165,7 +165,7 @@ void __cdecl cloakingTechWrapper_CMDRECV_Decloak() {
 
 void __declspec(naked) getCloakingTechWrapper() {
     static CUnit* unit;
-    static u8 result;
+    static u8     result;
 
     __asm {
 		MOV unit, EAX
