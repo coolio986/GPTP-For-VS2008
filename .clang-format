@@ -1,0 +1,6 @@
+BasedOnStyle: Google
+IndentWidth: 4
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackArguments: false
+BinPackParameters: false
+UseTab: Never
