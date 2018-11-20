@@ -2,127 +2,107 @@
 #include <SCBW/scbwdata.h>
 #include "../SCBW/enumerations.h"
 
-//Helper function declarations. Do NOT modify!
+// Helper function declarations. Do NOT modify!
 namespace {
 
-CUnit* findRandomAttackTarget(CUnit* unit);							//0x00442FC0
-Bool32 attackApplyCooldown(CUnit* unit);							//0x00478B40
-void setThingyVisibilityFlags(CThingy *thingy);						//0x004878F0
-CThingy* createThingy(u16 spriteId, s16 x, s16 y, u8 playerId = 0);	//0x00488210
-void setImageDirection(CImage *image, s8 direction);				//0x004D5F80
+CUnit* findRandomAttackTarget(CUnit* unit);      // 0x00442FC0
+Bool32 attackApplyCooldown(CUnit* unit);         // 0x00478B40
+void setThingyVisibilityFlags(CThingy* thingy);  // 0x004878F0
+CThingy* createThingy(u16 spriteId,
+                      s16 x,
+                      s16 y,
+                      u8 playerId = 0);               // 0x00488210
+void setImageDirection(CImage* image, s8 direction);  // 0x004D5F80
 
-
-} //unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
 /// Checks whether the unit can attack from inside a bunker.
 void unitAttackFromInsideBunkerHook(CUnit* unit) {
+    if (unit->id == UnitId::TerranMarine ||
+        unit->id == UnitId::Hero_JimRaynorMarine ||
+        unit->id == UnitId::TerranGhost ||
+        unit->id == UnitId::Hero_SarahKerrigan ||
+        unit->id == UnitId::Hero_AlexeiStukov ||
+        unit->id == UnitId::Hero_SamirDuran ||
+        unit->id == UnitId::Hero_InfestedDuran ||
+        unit->id == UnitId::TerranFirebat ||
+        unit->id == UnitId::Hero_GuiMontag) {
+        Bool32 resultApplyCooldown;
 
-	if (
-		unit->id == UnitId::TerranMarine ||
-		unit->id == UnitId::Hero_JimRaynorMarine ||
-		unit->id == UnitId::TerranGhost ||
-		unit->id == UnitId::Hero_SarahKerrigan ||
-		unit->id == UnitId::Hero_AlexeiStukov ||
-		unit->id == UnitId::Hero_SamirDuran ||
-		unit->id == UnitId::Hero_InfestedDuran ||
-		unit->id == UnitId::TerranFirebat ||
-		unit->id == UnitId::Hero_GuiMontag
-	)
-	{
+        unit->status |= UnitStatus::HoldingPosition;
 
-		Bool32 resultApplyCooldown;
+        if (unit->subunit != NULL)
+            (unit->subunit)->status |= UnitStatus::HoldingPosition;
 
-		unit->status |= UnitStatus::HoldingPosition;
+        resultApplyCooldown = attackApplyCooldown(unit);
 
-		if(unit->subunit != NULL)
-			(unit->subunit)->status |= UnitStatus::HoldingPosition;
+        if (resultApplyCooldown != 0) {
+            if (unit->orderTarget.pt.x != unit->nextTargetWaypoint.x ||
+                unit->orderTarget.pt.y != unit->nextTargetWaypoint.y) {
+                unit->nextTargetWaypoint.x = unit->orderTarget.pt.x;
+                unit->nextTargetWaypoint.y = unit->orderTarget.pt.y;
+            }
 
-		resultApplyCooldown = attackApplyCooldown(unit);
+        } else {
+            if (unit->mainOrderTimer == 0) {
+                unit->mainOrderTimer = 15;
 
-		if(resultApplyCooldown != 0) {
+                unit->orderTarget.unit = findRandomAttackTarget(unit);
 
-			if(
-				unit->orderTarget.pt.x != unit->nextTargetWaypoint.x ||
-				unit->orderTarget.pt.y != unit->nextTargetWaypoint.y
-			)
-			{
-				unit->nextTargetWaypoint.x = unit->orderTarget.pt.x;
-				unit->nextTargetWaypoint.y = unit->orderTarget.pt.y;
-			}
+                if (unit->orderTarget.unit != NULL) unit->orderQueueTimer = 0;
 
-		}
-		else {
+            }  // if(unit->mainOrderTimer == 0)
 
-			if(unit->mainOrderTimer == 0) {
+        }  // if(resultApplyCooldown == 0)
 
-				unit->mainOrderTimer = 15;
-
-				unit->orderTarget.unit = findRandomAttackTarget(unit);
-
-				if(unit->orderTarget.unit != NULL)
-					unit->orderQueueTimer = 0;
-
-			} //if(unit->mainOrderTimer == 0)
-
-		} //if(resultApplyCooldown == 0)
-
-	} //if valid id
-
+    }  // if valid id
 }
 
 ;
 
-//not checked against original code by UndeadStar
+// not checked against original code by UndeadStar
 void createBunkerAttackThingyHook(CUnit* unit) {
+    CImage* bunkerImage = unit->connectedUnit->sprite->mainGraphic;
 
-	CImage *bunkerImage = unit->connectedUnit->sprite->mainGraphic;
+    u8 frameDirection = (unit->currentDirection1 + 16) / 32 % 8;
 
-	u8 frameDirection = (unit->currentDirection1 + 16) / 32 % 8;
+    const LO_Header* loFile = lo_files->attackOverlays[bunkerImage->id];
 
-	const LO_Header *loFile = lo_files->attackOverlays[bunkerImage->id];
+    Point8 offset = loFile->getOffset(bunkerImage->frameIndex, frameDirection);
 
-	Point8 offset = loFile->getOffset(bunkerImage->frameIndex, frameDirection);
-	
-	if (bunkerImage->flags & CImage_Flags::Mirrored) //Is inverted
-		offset.x = -offset.x;
+    if (bunkerImage->flags & CImage_Flags::Mirrored)  // Is inverted
+        offset.x = -offset.x;
 
-	u8 frameAngle;
-	u16 spriteId;
+    u8 frameAngle;
+    u16 spriteId;
 
-	if (unit->id == UnitId::firebat || unit->id == UnitId::gui_montag) {
-		frameAngle = ((unit->currentDirection1 + 8) / 16 % 16) * 16;
-		spriteId = 378; //Firebat flamethrower graphics
-	}
-	else {
-		frameAngle = frameDirection * 32;
-		spriteId = 377; //Bunker attack overlay
-	}
+    if (unit->id == UnitId::firebat || unit->id == UnitId::gui_montag) {
+        frameAngle = ((unit->currentDirection1 + 8) / 16 % 16) * 16;
+        spriteId = 378;  // Firebat flamethrower graphics
+    } else {
+        frameAngle = frameDirection * 32;
+        spriteId = 377;  // Bunker attack overlay
+    }
 
-	CThingy *bunkerAttackEffect = 
-		createThingy( spriteId, offset.x + unit->getX(), offset.y + unit->getY() );
+    CThingy* bunkerAttackEffect = createThingy(
+        spriteId, offset.x + unit->getX(), offset.y + unit->getY());
 
-	if (!bunkerAttackEffect) 
-		return;
+    if (!bunkerAttackEffect) return;
 
-	bunkerAttackEffect->sprite->elevationLevel = unit->sprite->elevationLevel + 1;
+    bunkerAttackEffect->sprite->elevationLevel =
+        unit->sprite->elevationLevel + 1;
 
-	for (	
-			CImage *image = bunkerAttackEffect->sprite->images.head;
-			image != NULL; 
-			image = image->link.next
-		) 
-	{
-		setImageDirection(image, frameAngle);
-	}
+    for (CImage* image = bunkerAttackEffect->sprite->images.head; image != NULL;
+         image = image->link.next) {
+        setImageDirection(image, frameAngle);
+    }
 
-	setThingyVisibilityFlags(bunkerAttackEffect);
-
+    setThingyVisibilityFlags(bunkerAttackEffect);
 }
 
-} //hooks
-
+}  // namespace hooks
 
 //-------- Helper function definitions. Do NOT modify! --------//
 
@@ -130,48 +110,38 @@ namespace {
 
 const u32 Func_findRandomAttackTarget = 0x00442FC0;
 CUnit* findRandomAttackTarget(CUnit* unit) {
+    static CUnit* target;
 
-	static CUnit* target;
-
-	__asm {
+    __asm {
 		PUSHAD
 		MOV ESI, unit
 		CALL Func_findRandomAttackTarget
 		MOV target, EAX
 		POPAD
-	}
+    }
 
-	return target;
-
+    return target;
 }
-
 
 const u32 Func_attackApplyCooldown = 0x00478B40;
 Bool32 attackApplyCooldown(CUnit* unit) {
+    static u32 result;
 
-	static u32 result;
-
-	__asm {
+    __asm {
 		PUSHAD
 		MOV EAX, unit
 		CALL Func_attackApplyCooldown
 		MOV result, EAX
 		POPAD
-	}
+    }
 
-	return result;
-
+    return result;
 }
 
 const u32 Func_SetThingyVisibilityFlags = 0x004878F0;
-void setThingyVisibilityFlags(CThingy *thingy) {
+void setThingyVisibilityFlags(CThingy* thingy){
 
-	__asm {
-		PUSHAD
-		MOV ESI, thingy
-		CALL Func_SetThingyVisibilityFlags
-		POPAD
-	}
+    __asm {PUSHAD MOV ESI, thingy CALL Func_SetThingyVisibilityFlags POPAD}
 
 }
 
@@ -179,17 +149,16 @@ void setThingyVisibilityFlags(CThingy *thingy) {
 
 const u32 Func_CreateThingy = 0x00488210;
 CThingy* createThingy(u16 spriteId, s16 x, s16 y, u8 playerId) {
+    static CThingy* thingy;
+    static s32 x_;
+    static s32 playerId_;
+    static u32 spriteId_;
 
-	static CThingy* thingy;
-	static s32 x_;
-	static s32 playerId_;
-	static u32 spriteId_;
+    x_ = x;
+    playerId_ = playerId;
+    spriteId_ = spriteId;
 
-	x_ = x;
-	playerId_ = playerId;
-	spriteId_ = spriteId;
-
-	__asm {
+    __asm {
 		PUSHAD
 		PUSH playerId_
 		MOV DI, y
@@ -198,31 +167,28 @@ CThingy* createThingy(u16 spriteId, s16 x, s16 y, u8 playerId) {
 		CALL Func_CreateThingy
 		MOV thingy, EAX
 		POPAD
-	}
+    }
 
-	return thingy;
-
+    return thingy;
 }
 
 ;
 
 const u32 Func_SetImageDirection = 0x004D5F80;
-void setImageDirection(CImage *image, s8 direction) {
+void setImageDirection(CImage* image, s8 direction) {
+    static u32 direction_;
 
-	static u32 direction_;
+    direction_ = direction;
 
-	direction_ = direction;
-
-	__asm {
+    __asm {
 		PUSHAD
 		PUSH direction_
 		MOV ESI, image
 		CALL Func_SetImageDirection
 		POPAD
-	}
-
+    }
 }
 
 ;
 
-};
+};  // namespace

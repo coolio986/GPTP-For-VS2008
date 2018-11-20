@@ -4,4 +4,4 @@ namespace hooks {
 
 void injectUnitDestructorSpecial();
 
-} //hooks
+}  // namespace hooks

@@ -1,57 +1,54 @@
-#include "spells.h"
 #include <AI/ai_common.h>
+#include "spells.h"
 
-//V241 for VS2008
+// V241 for VS2008
 
 namespace AI {
 
-	class PsiStormTargetFinderProc: public scbw::UnitFinderCallbackMatchInterface {
+class PsiStormTargetFinderProc : public scbw::UnitFinderCallbackMatchInterface {
+   private:
+    CUnit* caster;
+    bool isUnderAttack;
 
-	  private:
-		CUnit* caster;
-		bool isUnderAttack;
+   public:
+    PsiStormTargetFinderProc(CUnit* caster, bool isUnderAttack)
+        : caster(caster), isUnderAttack(isUnderAttack) {}
 
-	  public:
-		PsiStormTargetFinderProc(CUnit* caster, bool isUnderAttack)
-		  : caster(caster), isUnderAttack(isUnderAttack) {}
+    bool match(CUnit* target) {
+        if (!isTargetWorthHitting(target, caster)) return false;
 
-		bool match(CUnit* target) {
+        if (!scbw::canWeaponTargetUnit(WeaponId::PsiStorm, target, caster))
+            return false;
 
-			if (!isTargetWorthHitting(target, caster))
-			  return false;
+        const int totalEnemyLife = getTotalEnemyLifeInArea(
+            target->getX(), target->getY(), 96, caster, WeaponId::PsiStorm);
+        if (!isUnderAttack && totalEnemyLife < 250) return false;
 
-			if (!scbw::canWeaponTargetUnit(WeaponId::PsiStorm, target, caster))
-			  return false;
+        const int totalAllyLife = getTotalAllyLifeInArea(
+            target->getX(), target->getY(), 96, caster, WeaponId::PsiStorm);
+        if (totalAllyLife * 2 >= totalEnemyLife) return false;
 
-			const int totalEnemyLife = getTotalEnemyLifeInArea(target->getX(), target->getY(), 96, caster, WeaponId::PsiStorm);
-			if (!isUnderAttack && totalEnemyLife < 250)
-			  return false;
+        return true;
+    }
+};
 
-			const int totalAllyLife = getTotalAllyLifeInArea(target->getX(), target->getY(), 96, caster, WeaponId::PsiStorm);
-			if (totalAllyLife * 2 >= totalEnemyLife)
-			  return false;
+CUnit* findBestPsiStormTarget(CUnit* caster, bool isUnderAttack) {
+    int bounds;
 
-			return true;
+    if (isUnderAttack)
+        bounds = 32 * 9;
+    else if (isUmsMode(caster->playerId))
+        bounds = 32 * 64;
+    else
+        bounds = 32 * 32;
 
-		}
-	};
+    return scbw::UnitFinder::getNearestTarget(
+        caster->getX() - bounds,
+        caster->getY() - bounds,
+        caster->getX() + bounds,
+        caster->getY() + bounds,
+        caster,
+        PsiStormTargetFinderProc(caster, isUnderAttack));
+}
 
-	CUnit* findBestPsiStormTarget(CUnit* caster, bool isUnderAttack) {
-
-	  int bounds;
-
-	  if (isUnderAttack)
-		bounds = 32 * 9;
-	  else if (isUmsMode(caster->playerId))
-		bounds = 32 * 64;
-	  else
-		bounds = 32 * 32;
-
-
-	  return scbw::UnitFinder::getNearestTarget(
-		caster->getX() - bounds, caster->getY() - bounds,
-		caster->getX() + bounds, caster->getY() + bounds,
-		caster, PsiStormTargetFinderProc(caster,isUnderAttack));
-	}
-
-} //AI
+}  // namespace AI

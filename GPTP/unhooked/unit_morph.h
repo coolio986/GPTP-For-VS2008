@@ -12,4 +12,4 @@ bool hasSuppliesForUnitHook(u8 playerId, u16 unitId, bool canShowErrorMessage);
 
 void injectUnitMorphHooks();
 
-} //hooks
+}  // namespace hooks

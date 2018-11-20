@@ -1,17 +1,16 @@
-#include "sight_range.h"
 #include <hook_tools.h>
+#include "sight_range.h"
 
-extern const u32 Func_GetSightRange;	//Defined in CUnit.cpp
+extern const u32 Func_GetSightRange;  // Defined in CUnit.cpp
 
 namespace {
 
 void __declspec(naked) getSightRangeWrapper() {
+    static CUnit* unit;
+    static Bool32 isForSpellCasting;
+    static u32 sightRange;
 
-	static CUnit* unit;
-	static Bool32 isForSpellCasting;
-	static u32 sightRange;
-
-	__asm {
+    __asm {
 
 		PUSH EBP
 		MOV EBP, ESP
@@ -23,25 +22,24 @@ void __declspec(naked) getSightRangeWrapper() {
 
 		PUSHAD
 
-	}
+    }
 
-	sightRange = hooks::getSightRangeHook(unit, isForSpellCasting != 0);
+    sightRange = hooks::getSightRangeHook(unit, isForSpellCasting != 0);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV EAX, sightRange
 		POP EBP
 		RETN 4
-	}
-
+    }
 }
 
-} //unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
 void injectSightRangeHook() {
-	jmpPatch(getSightRangeWrapper, Func_GetSightRange, 4);
+    jmpPatch(getSightRangeWrapper, Func_GetSightRange, 4);
 }
 
-} //hooks
+}  // namespace hooks

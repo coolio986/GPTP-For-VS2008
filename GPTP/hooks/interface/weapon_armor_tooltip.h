@@ -9,4 +9,4 @@ const char* getSpecialTooltipString(u16 iconUnitId, CUnit* unit);
 
 void injectUnitTooltipHook();
 
-} //hooks
+}  // namespace hooks

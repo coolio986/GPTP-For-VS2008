@@ -1,63 +1,59 @@
-#include "unit_morph.h"
 #include <hook_tools.h>
+#include "unit_morph.h"
 
 namespace {
 
 void __declspec(naked) orders_ZergBirthWrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		MOV unit, EAX
 		PUSHAD
-	}
+    }
 
-	hooks::orders_ZergBirth(unit);
+    hooks::orders_ZergBirth(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV ESP, EBP
 		POP EBP
 		RETN
-	}
-
+    }
 }
 
 ;
 
 void __declspec(naked) orders_Morph1Wrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		MOV unit, EAX
 		PUSHAD
-	}
+    }
 
-	hooks::orders_Morph1(unit);
+    hooks::orders_Morph1(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV ESP, EBP
 		POP EBP
 		RETN
-	}
-
+    }
 }
 
 ;
 
-}; //unnamed namespace
+};  // unnamed namespace
 
 namespace hooks {
 
-	void injectUnitMorphHooks() {
-		jmpPatch(orders_ZergBirthWrapper,	0x0045DD60, 1);
-		jmpPatch(orders_Morph1Wrapper,		0x0045DEA0, 0);
-	}
+void injectUnitMorphHooks() {
+    jmpPatch(orders_ZergBirthWrapper, 0x0045DD60, 1);
+    jmpPatch(orders_Morph1Wrapper, 0x0045DEA0, 0);
+}
 
-}; //hooks
+};  // namespace hooks

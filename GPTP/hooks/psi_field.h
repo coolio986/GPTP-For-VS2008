@@ -4,7 +4,7 @@
 ///   hooks/unit_destructor_special.cpp
 ///   hooks/unit_selection_graphics.cpp
 
-//NOT FULLY REVALIDATED BY UNDEADSTAR
+// NOT FULLY REVALIDATED BY UNDEADSTAR
 
 #pragma once
 #include "../SCBW/structures/CUnit.h"
@@ -19,7 +19,7 @@ bool canMakePsiField(u16 unitId);
 /// This uses canMakePsiField() and isReadyToMakePsiField() internally.
 void updatePsiFieldProviders();
 
-//Call this in initialize.h.
+// Call this in initialize.h.
 void injectPsiFieldHooks();
 
-} //hooks
+}  // namespace hooks

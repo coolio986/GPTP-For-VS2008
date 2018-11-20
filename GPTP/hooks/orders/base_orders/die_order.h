@@ -3,8 +3,8 @@
 
 namespace hooks {
 
-void orders_Die(CUnit* unit);		//00479480
+void orders_Die(CUnit* unit);  // 00479480
 
 void injectDieOrderHook();
 
-} //hooks
+}  // namespace hooks

@@ -3,9 +3,9 @@
 
 namespace hooks {
 
-	void orders_ZergBirth(CUnit* unit);	//0x0045DD60
-	void orders_Morph1(CUnit* unit);	//0x0045DEA0
+void orders_ZergBirth(CUnit* unit);  // 0x0045DD60
+void orders_Morph1(CUnit* unit);     // 0x0045DEA0
 
-	void injectUnitMorphHooks();
+void injectUnitMorphHooks();
 
-} //hooks
+}  // namespace hooks

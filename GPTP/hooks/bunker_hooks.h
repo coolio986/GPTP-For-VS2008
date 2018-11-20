@@ -8,4 +8,4 @@ void createBunkerAttackThingyHook(CUnit* unit);
 
 void injectBunkerHooks();
 
-} //hooks
+}  // namespace hooks

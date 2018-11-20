@@ -1,147 +1,129 @@
 #include "enter_nydus.h"
 #include <SCBW/api.h>
 
-//helper functions def
+// helper functions def
 
 namespace {
-	bool orderToMoveToTarget(CUnit* unit, CUnit* target);	//0x004EB980
-} //unnamed namespace
+bool orderToMoveToTarget(CUnit* unit, CUnit* target);  // 0x004EB980
+}  // unnamed namespace
 
 namespace hooks {
 
-	//Originally known as sub_4E8C20.
-	//Necessary to assign enterNydusCanal order to units that
-	//normally can't use it (without changing this here,
-	//changing identical tests in order function is useless
-	//since the unit won't even use that function)
-	bool canEnterNydusCanal(CUnit* unit, CUnit* nydusCanal) {
+// Originally known as sub_4E8C20.
+// Necessary to assign enterNydusCanal order to units that
+// normally can't use it (without changing this here,
+// changing identical tests in order function is useless
+// since the unit won't even use that function)
+bool canEnterNydusCanal(CUnit* unit, CUnit* nydusCanal) {
+    bool bReturnValue;
+    CUnit* const nydusExit = nydusCanal->building.nydusExit;
 
-		bool bReturnValue;
-		CUnit* const nydusExit = nydusCanal->building.nydusExit;
+    bReturnValue =
+        (nydusCanal->status & UnitStatus::Completed) && nydusExit != NULL &&
+        (nydusExit->status & UnitStatus::Completed) &&
+        unit->playerId == nydusCanal->playerId &&
+        !(unit->status & UnitStatus::InAir) && unit->getRace() == RaceId::Zerg;
 
-		bReturnValue =
-			(nydusCanal->status & UnitStatus::Completed) &&
-			nydusExit != NULL &&
-			(nydusExit->status & UnitStatus::Completed) &&
-			unit->playerId == nydusCanal->playerId &&
-			!(unit->status & UnitStatus::InAir) &&
-			unit->getRace() == RaceId::Zerg;
+    return bReturnValue;
 
-		return bReturnValue;
+}  // bool canEnterNydusCanal(CUnit* unit, CUnit* nydusCanal)
 
-	} //bool canEnterNydusCanal(CUnit* unit, CUnit* nydusCanal)
+;
 
-	;
+// Originally known as sub_4EA180.
+// Perform the Nydus Canal teleport effect on an
+// unit that validated the conditions within the
+// orders_EnterNydusCanal function
+void enterNydusCanal_Effect(CUnit* unit, CUnit* nydusCanal) {
+    Point16 oldPos, aimedPos, finalPos;
 
-	//Originally known as sub_4EA180.
-	//Perform the Nydus Canal teleport effect on an
-	//unit that validated the conditions within the
-	//orders_EnterNydusCanal function
-	void enterNydusCanal_Effect(CUnit* unit, CUnit* nydusCanal) {
+    oldPos.x = unit->sprite->position.x;
+    oldPos.y = unit->sprite->position.y;
+    aimedPos.x = (nydusCanal->building.nydusExit)->sprite->position.x;
+    aimedPos.y = (nydusCanal->building.nydusExit)->sprite->position.y;
 
-		Point16 oldPos,aimedPos,finalPos;
+    scbw::prepareUnitMove(unit, true);
+    scbw::setUnitPosition(unit, aimedPos.x, aimedPos.y);
 
-		oldPos.x = unit->sprite->position.x;
-		oldPos.y = unit->sprite->position.y;
-		aimedPos.x = (nydusCanal->building.nydusExit)->sprite->position.x;
-		aimedPos.y = (nydusCanal->building.nydusExit)->sprite->position.y;
+    if (scbw::checkUnitCollisionPos(
+            unit, &aimedPos, &finalPos, NULL, false, 0)) {  // EA201
 
-		scbw::prepareUnitMove(unit,true);
-		scbw::setUnitPosition(unit,aimedPos.x,aimedPos.y);
+        scbw::playSound(SoundId::Misc_IntoNydus_wav, nydusCanal);
 
-		if(scbw::checkUnitCollisionPos(unit,&aimedPos,&finalPos,NULL,false,0)) { //EA201
+        scbw::setUnitPosition(unit, finalPos.x, finalPos.y);
+        scbw::refreshUnitAfterMove(unit);
 
-			scbw::playSound(SoundId::Misc_IntoNydus_wav,nydusCanal);
+        scbw::playSound(SoundId::Misc_IntoNydus_wav,
+                        nydusCanal->building.nydusExit);
 
-			scbw::setUnitPosition(unit,finalPos.x,finalPos.y);
-			scbw::refreshUnitAfterMove(unit);
+        if (unit->orderQueueHead != NULL) {
+            unit->userActionFlags |= 1;
+            prepareForNextOrder(unit);
+        } else {  // EA253
 
-			scbw::playSound(SoundId::Misc_IntoNydus_wav,nydusCanal->building.nydusExit);
+            if (unit->pAI != NULL)
+                unit->orderComputerCL(OrderId::ComputerAI);
+            else
+                unit->orderComputerCL(units_dat::ReturnToIdleOrder[unit->id]);
+        }
 
-			if(unit->orderQueueHead != NULL) {
-				unit->userActionFlags |= 1;
-				prepareForNextOrder(unit);
-			}
-			else { //EA253
+    } else {  // collision detected, restore old position
+        scbw::setUnitPosition(unit, oldPos.x, oldPos.y);
+        scbw::refreshUnitAfterMove(unit);
+    }
 
-				if(unit->pAI != NULL)
-					unit->orderComputerCL(OrderId::ComputerAI);
-				else
-					unit->orderComputerCL(units_dat::ReturnToIdleOrder[unit->id]);
+}  // void enterNydusCanal_Effect(CUnit* unit, CUnit* nydusCanal)
 
-			}
+;
 
-		}
-		else {	//collision detected, restore old position
-			scbw::setUnitPosition(unit,oldPos.x,oldPos.y);
-			scbw::refreshUnitAfterMove(unit);
-		}
+void orders_EnterNydusCanal(CUnit* unit) {
+    CUnit* nydusCanal;
 
-	} //void enterNydusCanal_Effect(CUnit* unit, CUnit* nydusCanal)
+    nydusCanal = unit->orderTarget.unit;
 
-	;
+    if (/*same tests as canEnterNydusCanal but left hardcoded like the original
+           code*/
+        nydusCanal == NULL || !(nydusCanal->status & UnitStatus::Completed) ||
+        nydusCanal->building.nydusExit == NULL ||
+        !((nydusCanal->building.nydusExit)->status & UnitStatus::Completed) ||
+        unit->playerId != nydusCanal->playerId ||
+        unit->status & UnitStatus::InAir ||
+        unit->getRace() != RaceId::Zerg) {  // EA478
 
-	void orders_EnterNydusCanal(CUnit* unit) {
+        if (unit->orderQueueHead != NULL) {
+            unit->userActionFlags |= 1;
+            prepareForNextOrder(unit);
+        } else {  // EA497
 
-		CUnit* nydusCanal;
+            if (unit->pAI != NULL)
+                unit->orderComputerCL(OrderId::ComputerAI);
+            else
+                unit->orderComputerCL(units_dat::ReturnToIdleOrder[unit->id]);
+        }
 
-		nydusCanal = unit->orderTarget.unit;
+    } else {  // EA428
 
-		if( /*same tests as canEnterNydusCanal but left hardcoded like the original code*/
-			nydusCanal == NULL || 
-			!(nydusCanal->status & UnitStatus::Completed) ||
-			nydusCanal->building.nydusExit == NULL ||
-			!((nydusCanal->building.nydusExit)->status & UnitStatus::Completed) ||
-			unit->playerId != nydusCanal->playerId ||
-			unit->status & UnitStatus::InAir ||
-			unit->getRace() != RaceId::Zerg
-		)
-		{ //EA478
+        if (unit->mainOrderState == 0) {  // EA464
+            if (orderToMoveToTarget(unit, nydusCanal)) unit->mainOrderState = 1;
+        } else if (unit->mainOrderState == 1) {  // EA43B
 
-			if(unit->orderQueueHead != NULL) {
-				unit->userActionFlags |= 1;
-				prepareForNextOrder(unit);
-			}
-			else { //EA497
+            u8 movableState = unit->getMovableState();
 
-				if(unit->pAI != NULL)
-					unit->orderComputerCL(OrderId::ComputerAI);
-				else
-					unit->orderComputerCL(units_dat::ReturnToIdleOrder[unit->id]);
+            if (movableState == 1)  // reached destination
+                unit->mainOrderState = 2;
+            else if (movableState != 0)  //(value is probably 2 == unmovable)
+                unit->orderToIdle();
+        }
 
-			}
+        if (unit->mainOrderState == 2)  // EA458
+            enterNydusCanal_Effect(unit, nydusCanal);
+    }
 
-		}
-		else
-		{ //EA428
+}  // void orders_EnterNydusCanal(CUnit* unit)
 
-			if(unit->mainOrderState == 0) {	//EA464
-				if(orderToMoveToTarget(unit,nydusCanal))
-					unit->mainOrderState = 1;			
-			}
-			else
-			if(unit->mainOrderState == 1) { //EA43B
+;
 
-				u8 movableState = unit->getMovableState();
-
-				if(movableState == 1)	//reached destination
-					unit->mainOrderState = 2;
-				else
-				if(movableState != 0)	//(value is probably 2 == unmovable)
-					unit->orderToIdle();
-
-			}
-
-			if(unit->mainOrderState == 2) //EA458
-				enterNydusCanal_Effect(unit,nydusCanal);
-
-		}
-
-	} //void orders_EnterNydusCanal(CUnit* unit)
-
-	;
-
-} //namespace hooks
+}  // namespace hooks
 
 ;
 
@@ -149,26 +131,24 @@ namespace hooks {
 
 namespace {
 
-	const u32 Func__moveToTarget = 0x004EB980;
-	bool orderToMoveToTarget(CUnit* unit, CUnit* target) {
+const u32 Func__moveToTarget = 0x004EB980;
+bool orderToMoveToTarget(CUnit* unit, CUnit* target) {
+    static Bool32 bPreResult;
 
-		static Bool32 bPreResult;
-	  
-		__asm {
+    __asm {
 			PUSHAD
 			MOV EAX, target
 			MOV ECX, unit
 			CALL Func__moveToTarget
 			MOV bPreResult, EAX
 			POPAD
-		}
+    }
 
-		return bPreResult != 0;
+    return bPreResult != 0;
+}
 
-	}
+;
 
-	;
+}  // Unnamed namespace
 
-} //Unnamed namespace
-
-//End of helper functions
+// End of helper functions

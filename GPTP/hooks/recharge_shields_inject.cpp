@@ -1,56 +1,52 @@
-#include "recharge_shields.h"
 #include "../hook_tools.h"
+#include "recharge_shields.h"
 
 namespace {
 
 void __declspec(naked) unitCanRechargeShieldsWrapper() {
+    static CUnit* target;
+    static CUnit* battery;
+    static Bool32 result;
 
-	static CUnit* target;
-	static CUnit* battery;
-	static Bool32 result;
-
-	__asm {
+    __asm {
 		MOV battery, EDI
 		MOV target, EAX
 		PUSHAD
-	}
+    }
 
-	result = hooks::unitCanRechargeShieldsHook(target, battery);
+    result = hooks::unitCanRechargeShieldsHook(target, battery);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV EAX, result
 		RETN
-	}
-
+    }
 }
 
-//Inject with callPatch
+// Inject with callPatch
 void __declspec(naked) orderRechargeShieldsWrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		MOV unit, EDI
 		PUSHAD
-	}
+    }
 
-	hooks::orderRechargeShieldsHook(unit);
+    hooks::orderRechargeShieldsHook(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		RETN
-	}
-
+    }
 }
 
-} //unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
 void injectRechargeShieldsHooks() {
-	jmpPatch(unitCanRechargeShieldsWrapper,	0x00493520, 1);
-	jmpPatch(orderRechargeShieldsWrapper,	0x00493DD0, 1);
+    jmpPatch(unitCanRechargeShieldsWrapper, 0x00493520, 1);
+    jmpPatch(orderRechargeShieldsWrapper, 0x00493DD0, 1);
 }
 
-} //hooks
+}  // namespace hooks

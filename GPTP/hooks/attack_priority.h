@@ -8,4 +8,4 @@ CUnit* findRandomAttackTargetHook(CUnit* unit);
 
 void injectAttackPriorityHooks();
 
-} //hooks
+}  // namespace hooks

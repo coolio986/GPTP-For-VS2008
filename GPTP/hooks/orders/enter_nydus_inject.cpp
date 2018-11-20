@@ -1,90 +1,82 @@
-//Injector source file for the Enter Nydus Order hook module.
-#include "enter_nydus.h"
+// Injector source file for the Enter Nydus Order hook module.
 #include <hook_tools.h>
+#include "enter_nydus.h"
 
 namespace {
 
-	void __declspec(naked) canEnterNydusCanalWrapper() {
+void __declspec(naked) canEnterNydusCanalWrapper() {
+    static CUnit* unit;
+    static CUnit* nydusCanal;
+    static Bool32 bReturnValue;
 
-		static CUnit* unit;
-		static CUnit* nydusCanal;
-		static Bool32 bReturnValue;
-
-		__asm {
+    __asm {
 			MOV unit, EAX
 			MOV nydusCanal, EDX
 			PUSHAD
-		}
+    }
 
-		if(hooks::canEnterNydusCanal(unit,nydusCanal))
-			bReturnValue = 1;
-		else
-			bReturnValue = 0;
+    if (hooks::canEnterNydusCanal(unit, nydusCanal)) bReturnValue = 1;
+    else bReturnValue = 0;
 
-		__asm {
+    __asm {
 			POPAD
 			MOV EAX, bReturnValue
 			RETN
-		}
+    }
+}
 
-	}
+;
 
-	;
+void __declspec(naked) enterNydusCanal_EffectWrapper() {
+    static CUnit* unit;
+    static CUnit* nydusCanal;
 
-	void __declspec(naked) enterNydusCanal_EffectWrapper() {
-
-		static CUnit* unit;
-		static CUnit* nydusCanal;
-
-		__asm {
+    __asm {
 			PUSH EBP
 			MOV EBP, ESP
 			MOV unit, ECX
 			MOV nydusCanal, EAX
 			PUSHAD
-		}
+    }
 
-		hooks::enterNydusCanal_Effect(unit,nydusCanal);
+    hooks::enterNydusCanal_Effect(unit, nydusCanal);
 
-		__asm {
+    __asm {
 			POPAD
 			MOV ESP, EBP
 			POP EBP
 			RETN
-		}
+    }
+}
 
-	}
+;
 
-	;
+void __declspec(naked) orders_EnterNydusCanalWrapper() {
+    static CUnit* unit;
 
-	void __declspec(naked) orders_EnterNydusCanalWrapper() {
-
-		static CUnit* unit;
-
-		__asm {
+    __asm {
 			MOV unit, EAX
 			PUSHAD
-		}
+    }
 
-		hooks::orders_EnterNydusCanal(unit);
+    hooks::orders_EnterNydusCanal(unit);
 
-		__asm {
+    __asm {
 			POPAD
 			RETN
-		}
+    }
+}
 
-	}
+;
 
-	;
-
-}//unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-	void injectEnterNydusHooks() {
-		jmpPatch(canEnterNydusCanalWrapper,		0x004E8C20, 2);
-		jmpPatch(enterNydusCanal_EffectWrapper,	0x004EA180, 1);
-		jmpPatch(orders_EnterNydusCanalWrapper,	0x004EA3E0, 0);
-	}
+void injectEnterNydusHooks() {
+    jmpPatch(canEnterNydusCanalWrapper, 0x004E8C20, 2);
+    jmpPatch(enterNydusCanal_EffectWrapper, 0x004EA180, 1);
+    jmpPatch(orders_EnterNydusCanalWrapper, 0x004EA3E0, 0);
+}
 
-} //hooks
+}  // namespace hooks

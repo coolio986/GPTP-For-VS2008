@@ -1,110 +1,102 @@
-//Injector source file for the Infestation hook module.
-#include "infestation.h"
+// Injector source file for the Infestation hook module.
 #include <hook_tools.h>
+#include "infestation.h"
 
 namespace {
 
-//Inject with jmpPatch()
+// Inject with jmpPatch()
 void __declspec(naked) unitCanInfestWrapper() {
+    static CUnit* unit;
+    static u32 result;
 
-  static CUnit* unit;
-  static u32 result;
-
-  __asm {
+    __asm {
     PUSHAD
 	MOV EBP, ESP
     MOV unit, EAX
-  }
+    }
 
-  result = hooks::unitCanInfest(unit) ? 1 : 0;
+    result = hooks::unitCanInfest(unit) ? 1 : 0;
 
-  __asm {
+    __asm {
     POPAD
     MOV EAX, result
     RETN
-  }
-
+    }
 }
 
 ;
 
-//Inject with jmpPatch()
+// Inject with jmpPatch()
 void __declspec(naked) unitCanBeInfestedWrapper() {
+    static CUnit* unit;
+    static u32 result;
 
-  static CUnit* unit;
-  static u32 result;
-
-  __asm {
+    __asm {
     PUSHAD
 	MOV EBP, ESP
     MOV unit, EDX
-  }
+    }
 
-  result = hooks::isInfestableUnit(unit) ? 1 : 0;
+    result = hooks::isInfestableUnit(unit) ? 1 : 0;
 
-  __asm {
+    __asm {
     POPAD
     MOV EAX, result
     RETN
-  }
-
+    }
 }
 
 ;
 
-//Inject with jmpPatch()
+// Inject with jmpPatch()
 void __declspec(naked) unitMorphIntoInfestedOrder() {
+    static CUnit* unitInfested;
 
-	static CUnit* unitInfested; 
-
-	__asm {
+    __asm {
 		PUSHAD
 		MOV EBP, ESP
 		MOV unitInfested, EAX
-	}
+    }
 
-	hooks::orderMorphIntoInfested(unitInfested);
+    hooks::orderMorphIntoInfested(unitInfested);
 
-	__asm {
+    __asm {
 		POPAD
 		RETN
-	}
-
+    }
 }
 
 ;
 
-//Inject with jmpPatch()
+// Inject with jmpPatch()
 void __declspec(naked) unitInfestOrder() {
+    static CUnit* unitInfesting;
 
-	static CUnit* unitInfesting;
-
-	__asm {
+    __asm {
 		PUSHAD
 		MOV EBP, ESP
 		MOV unitInfesting, EAX
-	}
+    }
 
-	hooks::orderInfestTarget(unitInfesting);
+    hooks::orderInfestTarget(unitInfesting);
 
-	__asm {
+    __asm {
 		POPAD
 		RETN
-	}
-
+    }
 }
 
 ;
 
-} //unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-	void injectInfestationHooks() {
-		jmpPatch(unitCanBeInfestedWrapper,		0x00402210);
-		jmpPatch(unitCanInfestWrapper,			0x00402750);
-		jmpPatch(unitInfestOrder,				0x004EA290);
-		jmpPatch(unitMorphIntoInfestedOrder,	0x004EA4C0);
-	}
-
+void injectInfestationHooks() {
+    jmpPatch(unitCanBeInfestedWrapper, 0x00402210);
+    jmpPatch(unitCanInfestWrapper, 0x00402750);
+    jmpPatch(unitInfestOrder, 0x004EA290);
+    jmpPatch(unitMorphIntoInfestedOrder, 0x004EA4C0);
 }
+
+}  // namespace hooks

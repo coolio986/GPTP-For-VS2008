@@ -1,38 +1,36 @@
-#include "make_nydus_exit.h"
 #include <hook_tools.h>
+#include "make_nydus_exit.h"
 
 namespace {
 
-	void __declspec(naked) orders_Build5Wrapper() {
+void __declspec(naked) orders_Build5Wrapper() {
+    static CUnit* nydus_canal;
 
-		static CUnit* nydus_canal;
-
-		__asm {
+    __asm {
 			PUSH EBP
 			MOV EBP, ESP
 			MOV nydus_canal, EBX
 			PUSHAD
-		}
+    }
 
-		hooks::orders_Build5(nydus_canal);
+    hooks::orders_Build5(nydus_canal);
 
-		__asm {
+    __asm {
 			POPAD
 			MOV ESP, EBP
 			POP EBP
 			RETN
-		}
+    }
+}
 
-	}
+;
 
-	;
-
-}; //unnamed namespace
+};  // unnamed namespace
 
 namespace hooks {
 
-	void injectMakeNydusExitHook() {
-		jmpPatch(orders_Build5Wrapper,		0x0045DC20, 2);
-	}
+void injectMakeNydusExitHook() {
+    jmpPatch(orders_Build5Wrapper, 0x0045DC20, 2);
+}
 
-}; //hooks
+};  // namespace hooks

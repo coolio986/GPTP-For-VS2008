@@ -3,9 +3,9 @@
 
 namespace hooks {
 
-void CMDRECV_TrainFighter();		//004C1800
-void CMDRECV_Train(u16 wUnitType);	//004C1C20
+void CMDRECV_TrainFighter();        // 004C1800
+void CMDRECV_Train(u16 wUnitType);  // 004C1C20
 
 void injectTrainCmdRecvHooks();
 
-} //hooks
+}  // namespace hooks

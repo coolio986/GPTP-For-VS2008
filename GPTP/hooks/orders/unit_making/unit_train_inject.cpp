@@ -1,53 +1,49 @@
-#include "unit_train.h"
 #include <hook_tools.h>
+#include "unit_train.h"
 
 namespace {
 
 void __declspec(naked) secondaryOrd_TrainFighterWrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		MOV unit, EAX
 		PUSHAD
-	}
+    }
 
-	hooks::secondaryOrd_TrainFighter(unit);
+    hooks::secondaryOrd_TrainFighter(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		RETN
-	}
-
+    }
 }
 
 ;
 
 void __declspec(naked) function_00468420Wrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		MOV unit, EAX
 		PUSHAD
-	}
+    }
 
-	hooks::function_00468420(unit);
+    hooks::function_00468420(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		RETN
-	}
-
+    }
 }
 
-}; //unnamed namespace
+};  // unnamed namespace
 
 namespace hooks {
 
-	void injectUnitTrainHooks() {
-		jmpPatch(secondaryOrd_TrainFighterWrapper,	0x00466790, 2);
-		jmpPatch(function_00468420Wrapper,			0x00468420, 4);
-	}
+void injectUnitTrainHooks() {
+    jmpPatch(secondaryOrd_TrainFighterWrapper, 0x00466790, 2);
+    jmpPatch(function_00468420Wrapper, 0x00468420, 4);
+}
 
-}; //hooks
+};  // namespace hooks

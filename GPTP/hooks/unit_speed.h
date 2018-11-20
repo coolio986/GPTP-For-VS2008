@@ -9,4 +9,4 @@ u32 getModifiedUnitTurnSpeedHook(CUnit* unit);
 
 void injectUnitSpeedHooks();
 
-} //hooks
+}  // namespace hooks

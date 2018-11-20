@@ -1,55 +1,49 @@
-#include "spells.h"
 #include <AI/ai_common.h>
+#include "spells.h"
 
-//V241 for VS2008
+// V241 for VS2008
 
 namespace AI {
 
-	class OpticalFlareTargetFinderProc: public scbw::UnitFinderCallbackMatchInterface {
+class OpticalFlareTargetFinderProc
+    : public scbw::UnitFinderCallbackMatchInterface {
+   private:
+    CUnit* caster;
 
-	  private:
-		CUnit* caster;
+   public:
+    OpticalFlareTargetFinderProc(CUnit* caster) : caster(caster) {}
 
-	  public:
-		OpticalFlareTargetFinderProc(CUnit* caster)
-		  : caster(caster) {}
+    bool match(CUnit* target) {
+        if (!isTargetWorthHitting(target, caster)) return false;
 
-		bool match(CUnit* target) {
+        if (units_dat::BaseProperty[target->id] & UnitProperty::Building)
+            return false;
 
-			if (!isTargetWorthHitting(target, caster))
-			  return false;
+        if (target->isBlind) return false;
 
-			if (units_dat::BaseProperty[target->id] & UnitProperty::Building)
-			  return false;
+        if (target->canDetect()) return true;
 
-			if (target->isBlind)
-			  return false;
+        if (target->getCurrentLifeInGame() > 80) return true;
 
-			if (target->canDetect())
-			  return true;
+        return false;
+    }
+};
 
-			if (target->getCurrentLifeInGame() > 80)
-			  return true;
+CUnit* findBestOpticalFlareTarget(CUnit* caster, bool isUnderAttack) {
+    int bounds;
 
-			return false;
+    if (isUnderAttack)
+        bounds = 32 * 9;
+    else
+        bounds = 32 * 32;
 
-		}
-	};
+    return scbw::UnitFinder::getNearestTarget(
+        caster->getX() - bounds,
+        caster->getY() - bounds,
+        caster->getX() + bounds,
+        caster->getY() + bounds,
+        caster,
+        OpticalFlareTargetFinderProc(caster));
+}
 
-	CUnit* findBestOpticalFlareTarget(CUnit* caster, bool isUnderAttack) {
-
-	  int bounds;
-
-	  if (isUnderAttack)
-		bounds = 32 * 9;
-	  else
-		bounds = 32 * 32;
-
-	  return scbw::UnitFinder::getNearestTarget(
-		caster->getX() - bounds, caster->getY() - bounds,
-		caster->getX() + bounds, caster->getY() + bounds,
-		caster, OpticalFlareTargetFinderProc(caster));
-	}
-
-
-} //AI
+}  // namespace AI

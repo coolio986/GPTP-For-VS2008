@@ -1,34 +1,32 @@
-//Injector source file for the Apply Upgrade Flags hook module.
-#include "apply_upgrade_flags.h"
+// Injector source file for the Apply Upgrade Flags hook module.
 #include <hook_tools.h>
+#include "apply_upgrade_flags.h"
 
 namespace {
 
 void __declspec(naked) applyUpgradeFlagsToNewUnitWrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		MOV unit, ESI
 		PUSHAD
-	}
+    }
 
-	hooks::applyUpgradeFlagsToNewUnitHook(unit);
+    hooks::applyUpgradeFlagsToNewUnitHook(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		RETN
-	}
+    }
 }
 
 ;
 
 void __declspec(naked) applyUpgradeFlagsToExistingUnitsWrapper() {
+    static CUnit* unit;
+    static u8 upgradeId;
 
-	static CUnit* unit;
-	static u8 upgradeId;
-
-	__asm {
+    __asm {
 
 		PUSH EBP
 		MOV EBP, ESP
@@ -40,27 +38,27 @@ void __declspec(naked) applyUpgradeFlagsToExistingUnitsWrapper() {
 
 		PUSHAD
 
-	}
+    }
 
-	hooks::applyUpgradeFlagsToExistingUnitsHook(unit, upgradeId);
+    hooks::applyUpgradeFlagsToExistingUnitsHook(unit, upgradeId);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV ESP, EBP
 		POP EBP
 		RETN 4
-	}
+    }
 }
 
-} //Unnamed namespace
+}  // Unnamed namespace
 
 namespace hooks {
 
 void injectApplyUpgradeFlags() {
-	jmpPatch(applyUpgradeFlagsToNewUnitWrapper,			0x00454370, 2);
-	jmpPatch(applyUpgradeFlagsToExistingUnitsWrapper,	0x00454540, 2);
+    jmpPatch(applyUpgradeFlagsToNewUnitWrapper, 0x00454370, 2);
+    jmpPatch(applyUpgradeFlagsToExistingUnitsWrapper, 0x00454540, 2);
 }
-	
+
 ;
 
-} //hooks
+}  // namespace hooks

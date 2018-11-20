@@ -1,14 +1,13 @@
-//Injector source file for the Attack Orders hook module.
-#include "die_order.h"
+// Injector source file for the Attack Orders hook module.
 #include <hook_tools.h>
+#include "die_order.h"
 
 namespace {
 
 void __declspec(naked) orders_DieWrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 
@@ -16,25 +15,21 @@ void __declspec(naked) orders_DieWrapper() {
 		MOV unit, EAX
 
 		PUSHAD
-	}
+    }
 
-	hooks::orders_Die(unit);
+    hooks::orders_Die(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		POP EBP
 		RETN 4
-	}
-		
-
+    }
 }
 
-}//unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-void injectDieOrderHook() {
-	jmpPatch(orders_DieWrapper, 0x00479480, 2);
-}
+void injectDieOrderHook() { jmpPatch(orders_DieWrapper, 0x00479480, 2); }
 
-} //hooks
+}  // namespace hooks

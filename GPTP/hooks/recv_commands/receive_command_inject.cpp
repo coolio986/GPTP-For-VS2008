@@ -1,19 +1,18 @@
-//Injector source file for the Receive Command hook module.
-#include "receive_command.h"
+// Injector source file for the Receive Command hook module.
 #include <hook_tools.h>
+#include "receive_command.h"
 
 namespace {
 
-	void __declspec(naked) receive_commandWrapper() {
+void __declspec(naked) receive_commandWrapper() {
+    static int x;
+    static int y;
+    static CUnit* unitParam;
+    static u32 wUnitType;
+    static u32 bActionOrder;
+    static u32 bCommandType;
 
-		static int x;
-		static int y;
-		static CUnit* unitParam;
-		static u32 wUnitType;
-		static u32 bActionOrder;
-		static u32 bCommandType;
-
-		__asm {
+    __asm {
 
 			PUSH EBP
 			MOV EBP, ESP
@@ -38,27 +37,25 @@ namespace {
 
 			PUSHAD
 
-		}
+    }
 
-		hooks::receive_command(x,y,unitParam,wUnitType,bActionOrder,bCommandType);
+    hooks::receive_command(
+        x, y, unitParam, wUnitType, bActionOrder, bCommandType);
 
-		__asm {
+    __asm {
 			POPAD
 			MOV ESP, EBP
 			POP EBP
 			RETN 0x18
-		}
+    }
+}
 
-	}
+;
 
-	;
-
-}//unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-	void injectRecvCmdHook() {
-		jmpPatch(receive_commandWrapper,	0x0049AB00, 1);
-	}
+void injectRecvCmdHook() { jmpPatch(receive_commandWrapper, 0x0049AB00, 1); }
 
-} //hooks
+}  // namespace hooks

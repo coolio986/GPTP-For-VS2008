@@ -3,9 +3,9 @@
 
 namespace hooks {
 
-void CMDRECV_MergeDarkArchon();	//004C0CD0
-void CMDRECV_MergeArchon();		//004C0E90
+void CMDRECV_MergeDarkArchon();  // 004C0CD0
+void CMDRECV_MergeArchon();      // 004C0E90
 
 void injectCMDRECV_MergeArchonHooks();
 
-} //hooks
+}  // namespace hooks

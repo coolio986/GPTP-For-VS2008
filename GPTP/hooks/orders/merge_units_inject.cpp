@@ -1,18 +1,17 @@
-#include "merge_units.h"
 #include <hook_tools.h>
+#include "merge_units.h"
 
 namespace {
 
-//004BFA80
+// 004BFA80
 void __declspec(naked) templarMergePartnerWrapper() {
+    static CUnit* unit;            // 2nd push
+    static CUnit** units_list;     // 1st push
+    static u32 units_list_length;  // eax
 
-	static CUnit* unit;				//2nd push
-	static CUnit** units_list;		//1st push
-	static u32 units_list_length;	//eax
+    static CUnit* nearestPartner;
 
-	static CUnit* nearestPartner;
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		SUB ESP, 0x08
@@ -22,91 +21,85 @@ void __declspec(naked) templarMergePartnerWrapper() {
 		MOV EAX, [EBP+0x08]
 		MOV unit, EAX
 		PUSHAD
-	}
+    }
 
-	nearestPartner = hooks::templarMergePartner(unit, units_list, units_list_length);
+    nearestPartner =
+        hooks::templarMergePartner(unit, units_list, units_list_length);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV EAX, nearestPartner
 		MOV ESP, EBP
 		POP EBP
 		RETN 0x0008
-	}
-
+    }
 }
 
-//00493B10
+// 00493B10
 void __declspec(naked) orders_CompletingArchonSummonWrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		SUB ESP, 0x08
 		MOV unit, ESI
 		PUSHAD
-	}
+    }
 
-	hooks::orders_CompletingArchonSummon(unit);
+    hooks::orders_CompletingArchonSummon(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV ESP, EBP
 		POP EBP
 		RET
-	}
-
+    }
 }
 
-//00494690
+// 00494690
 void __declspec(naked) orders_WarpingDarkArchonWrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		MOV unit, EAX
 		PUSHAD
-	}
+    }
 
-	hooks::orders_WarpingDarkArchon(unit);
+    hooks::orders_WarpingDarkArchon(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		RET
-	}
-
+    }
 }
 
-//004948B0
+// 004948B0
 void __declspec(naked) orders_WarpingArchonWrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		MOV unit, EAX
 		PUSHAD
-	}
+    }
 
-	hooks::orders_WarpingArchon(unit);
+    hooks::orders_WarpingArchon(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		RET
-	}
-
+    }
 }
 
-} //unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-	void injectMergeUnitsHooks() {
-		jmpPatch(templarMergePartnerWrapper,			0x004BFA80, 1);
-		jmpPatch(orders_CompletingArchonSummonWrapper,	0x00493B10, 1);
-		jmpPatch(orders_WarpingDarkArchonWrapper,		0x00494690, 2);
-		jmpPatch(orders_WarpingArchonWrapper,			0x004948B0, 2);	
-	}
-
+void injectMergeUnitsHooks() {
+    jmpPatch(templarMergePartnerWrapper, 0x004BFA80, 1);
+    jmpPatch(orders_CompletingArchonSummonWrapper, 0x00493B10, 1);
+    jmpPatch(orders_WarpingDarkArchonWrapper, 0x00494690, 2);
+    jmpPatch(orders_WarpingArchonWrapper, 0x004948B0, 2);
 }
+
+}  // namespace hooks

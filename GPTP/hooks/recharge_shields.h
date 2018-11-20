@@ -8,4 +8,4 @@ void orderRechargeShieldsHook(CUnit* unit);
 
 void injectRechargeShieldsHooks();
 
-} //hooks
+}  // namespace hooks

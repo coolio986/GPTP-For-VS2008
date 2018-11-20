@@ -7,4 +7,4 @@ void updateStatusEffects(CUnit* unit);
 
 void injectUpdateStatusEffects();
 
-} //hooks
+}  // namespace hooks

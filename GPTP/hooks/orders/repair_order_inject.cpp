@@ -1,38 +1,34 @@
-#include "repair_order.h"
 #include <hook_tools.h>
+#include "repair_order.h"
 
 namespace {
 
-	void __declspec(naked) orders_Repair1Wrapper() {
+void __declspec(naked) orders_Repair1Wrapper() {
+    static CUnit* unit;
 
-		static CUnit* unit;
-
-		__asm {
+    __asm {
 			PUSH EBP
 			MOV EBP, ESP
 			MOV unit, EAX
 			PUSHAD
-		}
+    }
 
-		hooks::orders_Repair1(unit);
+    hooks::orders_Repair1(unit);
 
-		__asm {
+    __asm {
 			POPAD
 			MOV ESP, EBP
 			POP EBP
 			RETN
-		}
+    }
+}
 
-	}
+;
 
-	;
-
-}//unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-void injectRepairOrderHook() {
-	jmpPatch(orders_Repair1Wrapper,	0x004673D0,	1);
-}
+void injectRepairOrderHook() { jmpPatch(orders_Repair1Wrapper, 0x004673D0, 1); }
 
-} //hooks
+}  // namespace hooks

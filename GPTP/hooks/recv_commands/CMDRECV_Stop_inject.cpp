@@ -1,80 +1,74 @@
-//Injector source file for the CMDRECV Stop hooks module.
-#include "CMDRECV_Stop.h"
+// Injector source file for the CMDRECV Stop hooks module.
 #include <hook_tools.h>
+#include "CMDRECV_Stop.h"
 
 namespace {
 
 void __declspec(naked) CMDRECV_ReaverStopWrapper() {
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		PUSHAD
-	}
+    }
 
-	hooks::CMDRECV_ReaverStop();
+    hooks::CMDRECV_ReaverStop();
 
-	__asm {
+    __asm {
 		POPAD
 		MOV ESP, EBP
 		POP EBP
 		RETN
-	}
-
+    }
 }
 
 ;
 
 void __declspec(naked) CMDRECV_CarrierStopWrapper() {
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		PUSHAD
-	}
+    }
 
-	hooks::CMDRECV_CarrierStop();
+    hooks::CMDRECV_CarrierStop();
 
-	__asm {
+    __asm {
 		POPAD
 		MOV ESP, EBP
 		POP EBP
 		RETN
-	}
-
+    }
 }
 
 ;
 
 void __declspec(naked) CMDRECV_StopWrapper() {
+    static u8 bCommandType;
 
-	static u8 bCommandType;
-
-	__asm {
+    __asm {
 		MOV AL, [EDI+0x01]
 		MOV bCommandType, AL
 		PUSHAD
-	}
+    }
 
-	hooks::CMDRECV_Stop(bCommandType);
+    hooks::CMDRECV_Stop(bCommandType);
 
-	__asm {
+    __asm {
 		POPAD
 		RETN
-	}
-
+    }
 }
 
 ;
 
-}//unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-	void injectCMDRECV_StopHooks() {
-		jmpPatch(CMDRECV_ReaverStopWrapper,	0x004C1240, 1);
-		jmpPatch(CMDRECV_CarrierStopWrapper,0x004C1430, 1);
-		jmpPatch(CMDRECV_StopWrapper,		0x004C2190, 3);
-	}
+void injectCMDRECV_StopHooks() {
+    jmpPatch(CMDRECV_ReaverStopWrapper, 0x004C1240, 1);
+    jmpPatch(CMDRECV_CarrierStopWrapper, 0x004C1430, 1);
+    jmpPatch(CMDRECV_StopWrapper, 0x004C2190, 3);
+}
 
-} //hooks
+}  // namespace hooks

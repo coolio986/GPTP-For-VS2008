@@ -8,4 +8,4 @@ bool nextFrame();
 
 void injectGameHooks();
 
-} //hooks
+}  // namespace hooks

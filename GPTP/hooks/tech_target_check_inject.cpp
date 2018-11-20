@@ -1,19 +1,18 @@
-//Injector source file for the Tech Target Check hook module.
-#include "tech_target_check.h"
+// Injector source file for the Tech Target Check hook module.
 #include <hook_tools.h>
+#include "tech_target_check.h"
 
 namespace {
 
 const u32 Func_GetTechUseErrorMessage = 0x00491E80;
 
 void __declspec(naked) getTechUseErrorMessageWrapper() {
+    static CUnit* target;
+    static u8 castingPlayer;
+    static u16 techId;
+    static u32 errorMessage;
 
-	static CUnit* target;
-	static u8 castingPlayer;
-	static u16 techId;
-	static u32 errorMessage;
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		MOV target, EAX
@@ -21,25 +20,25 @@ void __declspec(naked) getTechUseErrorMessageWrapper() {
 		MOV EAX, [EBP+0x08]
 		MOV techId, AX
 		PUSHAD
-	}
+    }
 
-	errorMessage = hooks::getTechUseErrorMessageHook(target, castingPlayer, techId);
+    errorMessage =
+        hooks::getTechUseErrorMessageHook(target, castingPlayer, techId);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV EAX, errorMessage
 		POP EBP
 		RETN 4
-	}
-
+    }
 }
 
-} //Unnamed namespace
+}  // Unnamed namespace
 
 namespace hooks {
 
 void injectTechTargetCheckHooks() {
-	jmpPatch(getTechUseErrorMessageWrapper, Func_GetTechUseErrorMessage, 4);
+    jmpPatch(getTechUseErrorMessageWrapper, Func_GetTechUseErrorMessage, 4);
 }
 
-} //hooks
+}  // namespace hooks

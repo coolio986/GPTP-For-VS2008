@@ -4,10 +4,10 @@ namespace AI {
 
 bool AI_spellcasterHook(CUnit* unit, bool isUnitBeingAttacked);
 
-} //AI
+}  // namespace AI
 
 namespace hooks {
 
 void injectSpellcasterAI();
 
-} //hooks
+}  // namespace hooks

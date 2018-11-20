@@ -1,32 +1,30 @@
-#include "cloak_nearby_units.h"
 #include <hook_tools.h>
+#include "cloak_nearby_units.h"
 
 void __declspec(naked) cloakNearbyUnitsWrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		MOV unit, EDI
 		PUSHAD
-	}
+    }
 
-	hooks::cloakNearbyUnitsHook(unit);
+    hooks::cloakNearbyUnitsHook(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV ESP, EBP
 		POP EBP
 		RETN
-	}
-
+    }
 }
 
 namespace hooks {
 
 void injectCloakNearbyUnits() {
-	jmpPatch(cloakNearbyUnitsWrapper, 0x00491C20, 1);
+    jmpPatch(cloakNearbyUnitsWrapper, 0x00491C20, 1);
 }
 
-} //hooks
+}  // namespace hooks

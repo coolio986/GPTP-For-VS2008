@@ -1,92 +1,86 @@
-//Injector source file for the Recall Spell Order hook module.
-#include "recall_spell.h"
+// Injector source file for the Recall Spell Order hook module.
 #include <hook_tools.h>
+#include "recall_spell.h"
 
 namespace {
 
-	void __declspec(naked) spells_Recall_ActionOnValidTargetForRecallWrapper() {
+void __declspec(naked) spells_Recall_ActionOnValidTargetForRecallWrapper() {
+    static CUnit* target;
+    static CUnit* caster;
 
-		static CUnit* target;
-		static CUnit* caster;
-
-		__asm {
+    __asm {
 			PUSH EBP
 			MOV EBP, ESP
 			MOV EAX, [EBP+0x08]
 			MOV caster, EAX
 			MOV target, EBX
 			PUSHAD
-		}
+    }
 
-		hooks::spells_Recall_ActionOnValidTargetForRecall(target,caster);
+    hooks::spells_Recall_ActionOnValidTargetForRecall(target, caster);
 
-		__asm {
+    __asm {
 			POPAD
 			MOV ESP, EBP
 			POP EBP
 			RETN 4
-		}
+    }
+}
 
-	}
+;
 
-	;
+void __declspec(naked) spells_Recall_ActionOnTargetInRangeWrapper() {
+    static CUnit* target;
+    static CUnit* caster;
 
-	void __declspec(naked) spells_Recall_ActionOnTargetInRangeWrapper() {
-
-		static CUnit* target;
-		static CUnit* caster;
-
-		__asm {
+    __asm {
 			MOV target, ECX
 			MOV caster, EDX
 			PUSHAD
-		}
+    }
 
-		hooks::spells_Recall_ActionOnTargetInRange(target,caster);
+    hooks::spells_Recall_ActionOnTargetInRange(target, caster);
 
-		__asm {
+    __asm {
 			POPAD
-			XOR EAX, EAX //EAX is cleared regardless of the result, keeping it for safety
+			XOR EAX, EAX  // EAX is cleared regardless of the result, keeping it for safety
 			RETN
-		}
+    }
+}
 
-	}
+;
 
-	;
+void __declspec(naked) orders_RecallWrapper() {
+    static CUnit* unit;
 
-	void __declspec(naked) orders_RecallWrapper() {
-
-		static CUnit* unit;
-
-		__asm {
+    __asm {
 			PUSH EBP
 			MOV EBP, ESP
 			MOV EAX, [EBP+0x08]
 			MOV unit, EAX
 			PUSHAD
-		}
+    }
 
-		hooks::orders_Recall(unit);
+    hooks::orders_Recall(unit);
 
-		__asm {
+    __asm {
 			POPAD
 			MOV ESP, EBP
 			POP EBP
 			RETN 4
-		}
+    }
+}
 
-	}
+;
 
-	;
-
-}//unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-	void injectRecallSpellHooks() {
-		jmpPatch(spells_Recall_ActionOnValidTargetForRecallWrapper,	0x004942D0, 1);
-		jmpPatch(spells_Recall_ActionOnTargetInRangeWrapper,		0x00494400, 3);
-		jmpPatch(orders_RecallWrapper,								0x00494470,	1);
-	}
+void injectRecallSpellHooks() {
+    jmpPatch(spells_Recall_ActionOnValidTargetForRecallWrapper, 0x004942D0, 1);
+    jmpPatch(spells_Recall_ActionOnTargetInRangeWrapper, 0x00494400, 3);
+    jmpPatch(orders_RecallWrapper, 0x00494470, 1);
+}
 
-} //hooks
+}  // namespace hooks

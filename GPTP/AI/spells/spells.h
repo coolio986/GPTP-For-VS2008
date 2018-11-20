@@ -27,4 +27,4 @@ CUnit* findBestFeedbackTarget(CUnit* caster, bool isUnderAttack);
 CUnit* findBestMaelstromTarget(CUnit* caster, bool isUnderAttack);
 CUnit* findBestMindControlTarget(CUnit* caster, bool isUnderAttack);
 
-} //AI
+}  // namespace AI

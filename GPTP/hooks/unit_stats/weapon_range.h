@@ -8,4 +8,4 @@ u32 getMaxWeaponRangeHook(CUnit* unit, u8 weaponId);
 
 void injectWeaponRangeHooks();
 
-} //hooks
+}  // namespace hooks

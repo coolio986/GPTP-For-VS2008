@@ -1,58 +1,54 @@
-//Injector source file for the CMDRECV Merge Archon hooks module.
-#include "CMDRECV_MergeArchon.h"
+// Injector source file for the CMDRECV Merge Archon hooks module.
 #include <hook_tools.h>
+#include "CMDRECV_MergeArchon.h"
 
 namespace {
 
 void __declspec(naked) CMDRECV_MergeDarkArchonWrapper() {
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		PUSHAD
-	}
+    }
 
-	hooks::CMDRECV_MergeDarkArchon();
+    hooks::CMDRECV_MergeDarkArchon();
 
-	__asm {
+    __asm {
 		POPAD
 		MOV ESP, EBP
 		POP EBP
 		RETN
-	}
-
+    }
 }
 
 ;
 
 void __declspec(naked) CMDRECV_MergeArchonWrapper() {
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		PUSHAD
-	}
+    }
 
-	hooks::CMDRECV_MergeArchon();
+    hooks::CMDRECV_MergeArchon();
 
-	__asm {
+    __asm {
 		POPAD
 		MOV ESP, EBP
 		POP EBP
 		RETN
-	}
-
+    }
 }
 
 ;
 
-}//unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-	void injectCMDRECV_MergeArchonHooks() {
-		jmpPatch(CMDRECV_MergeDarkArchonWrapper,0x004C0CD0, 1);
-		jmpPatch(CMDRECV_MergeArchonWrapper,	0x004C0E90, 1);
-	}
+void injectCMDRECV_MergeArchonHooks() {
+    jmpPatch(CMDRECV_MergeDarkArchonWrapper, 0x004C0CD0, 1);
+    jmpPatch(CMDRECV_MergeArchonWrapper, 0x004C0E90, 1);
+}
 
-} //hooks
+}  // namespace hooks

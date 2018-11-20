@@ -1,22 +1,21 @@
-#include "weapon_damage.h"
 #include "../../hook_tools.h"
+#include "weapon_damage.h"
 
-extern const u32 Func_DoWeaponDamage; //Defined in CUnit.cpp
+extern const u32 Func_DoWeaponDamage;  // Defined in CUnit.cpp
 
 namespace {
 
-//Inject with JmpPatch
+// Inject with JmpPatch
 void __declspec(naked) weaponDamageWrapper() {
+    static CUnit* target;
+    static CUnit* attacker;
+    static s32 damage;
+    static s32 direction;
+    static u32 weaponId;
+    static u32 damageDivisor;
+    static u32 attackingPlayerId;
 
-	static CUnit* target;
-	static CUnit* attacker;
-	static s32 damage;
-	static s32 direction;
-	static u32 weaponId;
-	static u32 damageDivisor;
-	static u32 attackingPlayerId;
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		MOV damage, EAX
@@ -32,24 +31,27 @@ void __declspec(naked) weaponDamageWrapper() {
 		MOV EAX, [EBP+0x18]
 		MOV attackingPlayerId, EAX
 		PUSHAD
-	}
+    }
 
-	hooks::weaponDamageHook(damage, target, weaponId, attacker, attackingPlayerId,
-							direction, damageDivisor);
+    hooks::weaponDamageHook(damage,
+                            target,
+                            weaponId,
+                            attacker,
+                            attackingPlayerId,
+                            direction,
+                            damageDivisor);
 
-	__asm {
+    __asm {
 		POPAD
 		POP EBP
 		RETN 0x14
-	}
+    }
 }
 
-} //unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-void injectWeaponDamageHook() {
-	jmpPatch(weaponDamageWrapper, 0x00479930, 1);
-}
+void injectWeaponDamageHook() { jmpPatch(weaponDamageWrapper, 0x00479930, 1); }
 
-} //hooks
+}  // namespace hooks

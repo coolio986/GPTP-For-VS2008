@@ -1,62 +1,58 @@
-//Injector source file for the Enter Nydus Order hook module.
-#include "research_upgrade_orders.h"
+// Injector source file for the Enter Nydus Order hook module.
 #include <hook_tools.h>
+#include "research_upgrade_orders.h"
 
 namespace {
 
-	void __declspec(naked) orders_UpgradeWrapper() {
+void __declspec(naked) orders_UpgradeWrapper() {
+    static CUnit* unit;
 
-		static CUnit* unit;
-
-		__asm {
+    __asm {
 			PUSH EBP
 			MOV EBP, ESP
 			MOV unit, EAX
 			PUSHAD
-		}
+    }
 
-		hooks::orders_Upgrade(unit);
+    hooks::orders_Upgrade(unit);
 
-		__asm {
+    __asm {
 			POPAD
 			MOV ESP, EBP
 			POP EBP
 			RETN
-		}
+    }
+}
 
-	}
+;
 
-	;
+void __declspec(naked) orders_ResearchTechWrapper() {
+    static CUnit* unit;
 
-	void __declspec(naked) orders_ResearchTechWrapper() {
-
-		static CUnit* unit;
-
-		__asm {
+    __asm {
 			PUSH EBP
 			MOV EBP, ESP
 			MOV unit, EAX
 			PUSHAD
-		}
+    }
 
-		hooks::orders_ResearchTech(unit);
+    hooks::orders_ResearchTech(unit);
 
-		__asm {
+    __asm {
 			POPAD
 			MOV ESP, EBP
 			POP EBP
 			RETN
-		}
+    }
+}
 
-	}
-
-}//unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-	void injectResearchUpgradeOrdersHooks() {
-		jmpPatch(orders_UpgradeWrapper,			0x004546A0, 1);
-		jmpPatch(orders_ResearchTechWrapper,	0x004548B0, 1);
-	}
+void injectResearchUpgradeOrdersHooks() {
+    jmpPatch(orders_UpgradeWrapper, 0x004546A0, 1);
+    jmpPatch(orders_ResearchTechWrapper, 0x004548B0, 1);
+}
 
-} //hooks
+}  // namespace hooks

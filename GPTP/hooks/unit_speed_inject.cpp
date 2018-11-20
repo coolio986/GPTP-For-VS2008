@@ -1,79 +1,74 @@
-#include "unit_speed.h"
 #include "../hook_tools.h"
+#include "unit_speed.h"
 
 namespace {
 
-//Inject with jmpPatch()
+// Inject with jmpPatch()
 void __declspec(naked) getModifiedUnitSpeedWrapper() {
+    static CUnit* unit;
+    static u32 speed;
 
-	static CUnit* unit;
-	static u32 speed;
-
-	__asm {
+    __asm {
 		MOV unit, EDX
 		MOV speed, EAX
 		PUSHAD
-	}
+    }
 
-	speed = hooks::getModifiedUnitSpeedHook(unit, speed);
+    speed = hooks::getModifiedUnitSpeedHook(unit, speed);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV EAX, speed
 		RETN
-	}
-
+    }
 }
 
-//Inject with jmpPatch()
+// Inject with jmpPatch()
 void __declspec(naked) getModifiedUnitAccelerationWrapper() {
+    static CUnit* unit;
+    static u32 acceleration;
 
-	static CUnit* unit;
-	static u32 acceleration;
-
-	__asm {
+    __asm {
 		MOV unit, ECX
 		PUSHAD
-	}
+    }
 
-	acceleration = hooks::getModifiedUnitAccelerationHook(unit);
+    acceleration = hooks::getModifiedUnitAccelerationHook(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV EAX, acceleration
 		RETN
-	}
-
+    }
 }
 
-//Inject with jmpPatch()
+// Inject with jmpPatch()
 void __declspec(naked) getModifiedUnitTurnSpeedWrapper() {
+    static CUnit* unit;
+    static u32 turnSpeed;
 
-	static CUnit* unit;
-	static u32 turnSpeed;
-
-	__asm {
+    __asm {
 		MOV unit, ECX
 		PUSHAD
-	}
+    }
 
-	turnSpeed = hooks::getModifiedUnitTurnSpeedHook(unit);
+    turnSpeed = hooks::getModifiedUnitTurnSpeedHook(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV EAX, turnSpeed
 		RETN
-	}
+    }
 }
 
-} //unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
 void injectUnitSpeedHooks() {
-	jmpPatch(getModifiedUnitSpeedWrapper,         0x0047B5F0, 2);
-	jmpPatch(getModifiedUnitAccelerationWrapper,  0x0047B8A0, 6);
-	jmpPatch(getModifiedUnitTurnSpeedWrapper,     0x0047B850, 6);
+    jmpPatch(getModifiedUnitSpeedWrapper, 0x0047B5F0, 2);
+    jmpPatch(getModifiedUnitAccelerationWrapper, 0x0047B8A0, 6);
+    jmpPatch(getModifiedUnitTurnSpeedWrapper, 0x0047B850, 6);
 }
 
-} //hooks
+}  // namespace hooks

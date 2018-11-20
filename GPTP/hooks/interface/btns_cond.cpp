@@ -14,42 +14,43 @@ namespace hooks {
 /// use these for anything you need.
 
 s32 BTNSCOND_NoNydusExit(CUnit* unit) {
-	return (unit->building.nydusExit == NULL) ? BUTTON_ENABLED : BUTTON_HIDDEN;
+    return (unit->building.nydusExit == NULL) ? BUTTON_ENABLED : BUTTON_HIDDEN;
 }
 
 ;
 
 s32 BTNSCOND_Movement(CUnit* unit) {
+    s32 return_value = BUTTON_ENABLED;
 
-	s32 return_value = BUTTON_ENABLED;
+    for (int i = 0;
+         return_value == BUTTON_ENABLED && i < SELECTION_ARRAY_LENGTH;
+         i++)
+        if (clientSelectionGroup->unit[i] != NULL &&
+            clientSelectionGroup->unit[i]->status & UnitStatus::Burrowed)
+            return_value = BUTTON_HIDDEN;
 
-	for(int i = 0;return_value == BUTTON_ENABLED && i < SELECTION_ARRAY_LENGTH;i++)
-		if(clientSelectionGroup->unit[i] != NULL && clientSelectionGroup->unit[i]->status & UnitStatus::Burrowed)
-			return_value = BUTTON_HIDDEN;
-
-	return return_value;
-
+    return return_value;
 }
 
 ;
 
 s32 BTNSCOND_HasScarabs(CUnit* unit) {
+    s32 return_value = BUTTON_DISABLED;
 
-	s32 return_value = BUTTON_DISABLED;
+    for (int i = 0;
+         return_value == BUTTON_DISABLED && i < SELECTION_ARRAY_LENGTH;
+         i++)
+        if (clientSelectionGroup->unit[i] != NULL &&
+            (clientSelectionGroup->unit[i]->id == UnitId::Hero_Warbringer ||
+             clientSelectionGroup->unit[i]->id == UnitId::ProtossReaver) &&
+            clientSelectionGroup->unit[i]->carrier.inHangarCount != 0)
+            return_value = BUTTON_ENABLED;
 
-	for(int i = 0;return_value == BUTTON_DISABLED && i < SELECTION_ARRAY_LENGTH;i++)
-		if(	clientSelectionGroup->unit[i] != NULL && 
-			(clientSelectionGroup->unit[i]->id == UnitId::Hero_Warbringer || clientSelectionGroup->unit[i]->id == UnitId::ProtossReaver) &&
-			clientSelectionGroup->unit[i]->carrier.inHangarCount != 0
-		)
-			return_value = BUTTON_ENABLED;
-
-	return return_value;
-
+    return return_value;
 }
 
 #undef BUTTON_ENABLED
 #undef BUTTON_HIDDEN
-#undef BUTTON_DISABLED 
+#undef BUTTON_DISABLED
 
-} //hooks
+}  // namespace hooks

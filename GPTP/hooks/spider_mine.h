@@ -8,4 +8,4 @@ void orders_VultureMine(CUnit* unit);
 
 void injectSpiderMineHooks();
 
-} //hooks
+}  // namespace hooks

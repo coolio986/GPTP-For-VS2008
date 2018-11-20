@@ -1,40 +1,38 @@
-//Injector source file for the Mind Control Spell Order hook module.
-#include "mindcontrol_spell.h"
+// Injector source file for the Mind Control Spell Order hook module.
 #include <hook_tools.h>
+#include "mindcontrol_spell.h"
 
 namespace {
 
 void __declspec(naked) orders_CastMindControlWrapper() {
+    static CUnit* unit;
 
-	static CUnit* unit;
-
-	__asm {
+    __asm {
 		PUSH EBP
 		MOV EBP, ESP
 		MOV EAX, [EBP+0x08]
 		MOV unit, EAX
 		PUSHAD
-	}
+    }
 
-	hooks::ordersCastMindControl(unit);
+    hooks::ordersCastMindControl(unit);
 
-	__asm {
+    __asm {
 		POPAD
 		MOV ESP, EBP
 		POP EBP
 		RETN 4
-	}
-
+    }
 }
 
 ;
 
-}//unnamed namespace
+}  // unnamed namespace
 
 namespace hooks {
 
-	void injectMindControlSpellHook() {
-		jmpPatch(orders_CastMindControlWrapper,	0x004F6950, 0);
-	}
+void injectMindControlSpellHook() {
+    jmpPatch(orders_CastMindControlWrapper, 0x004F6950, 0);
+}
 
-} //hooks
+}  // namespace hooks

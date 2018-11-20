@@ -2,8 +2,8 @@
 // hook functions.
 
 #pragma once
-#include <SCBW/scbwdata.h>
 #include <SCBW/enumerations.h>
+#include <SCBW/scbwdata.h>
 
 namespace scbw {
 
@@ -47,16 +47,17 @@ bool canBeEnteredBy(CUnit* transport, CUnit* unit);
 /// @param  target    If NULL is passed, the function checks whether the
 ///                   weapon can target a position on the ground. If @p target
 ///                   is invincible, the function returns false.
-bool canWeaponTargetUnit(u8 weaponId, CUnit* target = NULL,
+bool canWeaponTargetUnit(u8 weaponId,
+                         CUnit* target = NULL,
                          CUnit* attacker = NULL);
 
 /// Checks if @p unit is under a Dark Swarm. This does NOT check whether the
 /// unit is a ground unit or a building.
 bool isUnderDarkSwarm(CUnit* unit);
 
-//Checks if the @p target can be targeted by player @p castingPlayer with
-//tech/spell @p techId
-//If yes, return 0, else return error message id in stat_txt.tbl to use
+// Checks if the @p target can be targeted by player @p castingPlayer with
+// tech/spell @p techId
+// If yes, return 0, else return error message id in stat_txt.tbl to use
 u16 getTechUseErrorMessage(CUnit* target, u8 castingPlayer, u16 techId);
 
 //////////////////////////////////////////////////////////////// @}
@@ -87,24 +88,18 @@ s32 getPolarY(s32 distance, u8 angle);
 //////////////////////////////////////////////////////////////// @{
 
 /// Checks whether the game is in Brood War mode (instead of vanilla StarCraft).
-inline bool isBroodWarMode() {
-  return (*IS_BROOD_WAR) != 0;
-}
+inline bool isBroodWarMode() { return (*IS_BROOD_WAR) != 0; }
 
 /// Checks whether the given cheat flag is enabled.
 inline bool isCheatEnabled(u32 cheatFlag) {
-  return ((*CHEAT_STATE) & cheatFlag) != 0;
+    return ((*CHEAT_STATE) & cheatFlag) != 0;
 }
 
 /// Checks whether the game is paused.
-inline bool isGamePaused() {
-  return (*IS_GAME_PAUSED) != 0;
-}
+inline bool isGamePaused() { return (*IS_GAME_PAUSED) != 0; }
 
 /// Checks whether the game is in replay mode.
-inline bool isInReplay() {
-  return (*IS_IN_REPLAY) != 0;
-}
+inline bool isInReplay() { return (*IS_IN_REPLAY) != 0; }
 
 //////////////////////////////////////////////////////////////// @}
 
@@ -114,18 +109,17 @@ inline bool isInReplay() {
 /// Checks whether @p playerB is recognized by @p playerA as an ally.
 /// Warning: The opposite may not necessarily be true!
 inline bool isAlliedTo(u8 playerA, u8 playerB) {
-  return 0 != playerAlliance[playerA].flags[playerB];
+    return 0 != playerAlliance[playerA].flags[playerB];
 }
 
 /// Checks whether the @p unit is recognized by @p playerId as an enemy.
 /// This will work even when the owner of the @p unit has left the game.
 /// @see CUnit::isTargetEnemy().
 inline bool isUnitEnemy(u8 playerId, CUnit* unit) {
-  //Identical to function @ 0x0047B740
-  u8 unitOwner = unit->playerId;
-    if (unitOwner == 11)
-      unitOwner = unit->sprite->playerId;
-  return 0 == playerAlliance[playerId].flags[unitOwner];
+    // Identical to function @ 0x0047B740
+    u8 unitOwner = unit->playerId;
+    if (unitOwner == 11) unitOwner = unit->sprite->playerId;
+    return 0 == playerAlliance[playerId].flags[unitOwner];
 }
 
 /// Returns the amount of remaining supply (total available - total used) for
@@ -156,7 +150,7 @@ void setUpgradeLevel(u8 playerId, u8 upgradeId, u8 level);
 
 /// Returns the pointer to the active tile data at (x, y).
 inline ActiveTile& getActiveTileAt(s32 x, s32 y) {
-  return (*activeTileArray)[(x / 32) + mapTileSize->width * (y / 32)];
+    return (*activeTileArray)[(x / 32) + mapTileSize->width * (y / 32)];
 }
 
 /// Returns the elevation of the tile at (x, y). 0 for low terrain, 1 for
@@ -183,7 +177,12 @@ void prepareUnitMove(CUnit* unit, bool hideUnit = false);
 ///
 /// @return True if the unit does not collide with other units, or can be moved
 ///         to a nearby non-colliding position.
-bool checkUnitCollisionPos(CUnit* unit, const Point16* inPos, Point16* outPos, Box16* moveArea = NULL, bool hideErrorMsg = false, u32 someFlag = 0);
+bool checkUnitCollisionPos(CUnit* unit,
+                           const Point16* inPos,
+                           Point16* outPos,
+                           Box16* moveArea = NULL,
+                           bool hideErrorMsg = false,
+                           u32 someFlag = 0);
 
 /// Moves the unit's position to @p (x, y). If the unit is a ground unit and the
 /// the target position is on unwalkable terrain, this function moves the unit
@@ -246,45 +245,51 @@ void minimapPing(u32 x, u32 y, s32 color, u32 playerId = 8);
 
 // Functionally identical to the [playfram] opcode in iscript.bin.
 inline void playFrame(CImage* image, u16 frameset) {
-  if (image->frameSet != frameset) {
-    image->frameSet = frameset;
-    u16 frameIndex = frameset + image->direction;
-    if (image->frameIndex != frameIndex) {
-		image->flags |= CImage_Flags::Redraw;	//Order the game to redraw the image
-		image->frameIndex = frameIndex;
+    if (image->frameSet != frameset) {
+        image->frameSet = frameset;
+        u16 frameIndex = frameset + image->direction;
+        if (image->frameIndex != frameIndex) {
+            image->flags |=
+                CImage_Flags::Redraw;  // Order the game to redraw the image
+            image->frameIndex = frameIndex;
+        }
     }
-  }
 }
 
 /// Sets the data of the Anywhere location.
 inline void setAnywhereLocation() {
-  LOCATION* location = &locationTable[63];
-  location->dimensions.left   = 0;
-  location->dimensions.top    = 0;
-  location->dimensions.right  = 32 * mapTileSize->width;
-  location->dimensions.bottom = 32 * mapTileSize->height;
-  location->flags = 63;
+    LOCATION* location = &locationTable[63];
+    location->dimensions.left = 0;
+    location->dimensions.top = 0;
+    location->dimensions.right = 32 * mapTileSize->width;
+    location->dimensions.bottom = 32 * mapTileSize->height;
+    location->flags = 63;
 }
 
 /// Sets the data of location @p locNumber.
-inline void setLocation(int locNumber, int left, int top, int right, int bottom, int flags) {
-  LOCATION* location = &locationTable[locNumber];
-  location->dimensions.left   = left;
-  location->dimensions.top    = top;
-  location->dimensions.right  = right;
-  location->dimensions.bottom = bottom;
-  location->flags = flags;
+inline void setLocation(int locNumber,
+                        int left,
+                        int top,
+                        int right,
+                        int bottom,
+                        int flags) {
+    LOCATION* location = &locationTable[locNumber];
+    location->dimensions.left = left;
+    location->dimensions.top = top;
+    location->dimensions.right = right;
+    location->dimensions.bottom = bottom;
+    location->flags = flags;
 }
 
 /// Sets or clears the "is currently inside the game loop" property.
 /// This must be called in nextFrame() to use scbw::random() there.
 inline bool setInGameLoopState(bool newState) {
-  //Identical to function @ 0x004DC540
-  Bool32 previousState = *IS_IN_GAME_LOOP;
-  *IS_IN_GAME_LOOP = (newState ? 1 : 0);
-  return previousState != 0;
+    // Identical to function @ 0x004DC540
+    Bool32 previousState = *IS_IN_GAME_LOOP;
+    *IS_IN_GAME_LOOP = (newState ? 1 : 0);
+    return previousState != 0;
 }
 
 //////////////////////////////////////////////////////////////// @}
 
-} //scbw
+}  // namespace scbw
