@@ -53,6 +53,7 @@ namespace plugins {
 	void runZealotCharge(CUnit *unit);
 	void runReactorBehaviour(CUnit *unit);
 	void runBurrowedMovement(CUnit *unit);
+	void showWorkerCount(CUnit *selUnit);
 }
 
 namespace warpgateMechanic {
@@ -155,6 +156,9 @@ namespace smartCasting {
 
 namespace hooks {
 
+	void showProgressBar(CUnit* unit );
+	
+
 /// This hook is called every frame; most of your plugin's logic goes here.
 bool nextFrame() {
 
@@ -166,7 +170,6 @@ bool nextFrame() {
 
 		//smartCasting::runSmartCast();
 		//KYSXD idle worker amount
-
 		bool isOperationCwalEnabled = scbw::isCheatEnabled(CheatFlags::OperationCwal);
 		u32 idleWorkerCount = 0;
 
@@ -180,6 +183,18 @@ bool nextFrame() {
 		for (CUnit *unit = *firstVisibleUnit; unit; unit = unit->link.next) {
 			plugins::manageWorkerCollision(unit);
 			//buildingPreview::manageBuildingPreview(unit);
+			
+			//btech - add progress bar for units being built
+			if(unit->playerId == *LOCAL_NATION_ID){
+				if(unit && unit->remainingBuildTime > 0){
+					showProgressBar(unit);
+				}
+			}
+			if(unit->buildQueue && unit->buildQueue[unit->buildQueueSlot] != unit->orderUnitType 
+				&& unit->playerId == *LOCAL_NATION_ID 
+				&& unit->currentBuildUnit){
+				showProgressBar(unit->currentBuildUnit);
+			}
 
 			//KYSXD Idle worker count
 			if((unit->playerId == *LOCAL_NATION_ID || scbw::isInReplay())
@@ -212,6 +227,9 @@ bool nextFrame() {
 
 			//KYSXD - Zerg plugins
 			plugins::runBurrowedMovement(unit);
+
+			//btech - Worker Count (updated from KYSXD code)
+			plugins::showWorkerCount(unit);
 		} //Loop through all visible units in the game - end
 
 		//KYSXD - Selection plugins
@@ -247,6 +265,18 @@ bool nextFrame() {
 	}
 	return true;
 
+}
+
+void showProgressBar(CUnit* unit ){
+	u16 totalBuildTime = units_dat::TimeCost[unit->id];
+	if(unit->remainingBuildTime == totalBuildTime){
+		return;
+	}
+	graphics::drawFilledBox(unit->getX()-59, unit->getY()-51, unit->getX()+59, unit->getY()-53, graphics::GREY, graphics::ON_MAP);
+	graphics::drawBox(unit->getX()+60, unit->getY()-50, unit->getX()-60, unit->getY()-54, graphics::BLUE, graphics::ON_MAP);
+	u16 buildTimeSoFar = totalBuildTime - unit->remainingBuildTime;
+	int pixelsBuilt = ((buildTimeSoFar * 118) / totalBuildTime) - 59;
+	graphics::drawFilledBox(unit->getX()-59, unit->getY()-51, unit->getX()+pixelsBuilt, unit->getY()-53, graphics::GREEN, graphics::ON_MAP);
 }
 
 bool gameOn() {
@@ -492,6 +522,9 @@ namespace plugins {
 	}
 
 	bool isInHarvestState(const CUnit *worker) {
+		if(!(worker->status & UnitStatus::IsGathering)){
+			return false;
+		}
 		if(worker->unusedTimer == 0) {
 			return false;
 		}
@@ -534,8 +567,10 @@ namespace plugins {
 
 	class ContainerTargetFinder: public scbw::UnitFinderCallbackMatchInterface {
 		CUnit *mineral;
+		u32 unitStatusFlags;
 		public:
 			void setMineral(CUnit *mineral) { this->mineral = mineral; }
+			void setStatusFlags(u32 unitStatusFlags) {this->unitStatusFlags = unitStatusFlags;}
 			bool match(CUnit *unit) {
 				if(!unit)
 					return false;
@@ -551,6 +586,9 @@ namespace plugins {
 					return false;
 
 				if(!(unit->hasPathToUnit(mineral)))
+					return false;
+
+				if(!(unit->status & unitStatusFlags) && unitStatusFlags > 0)
 					return false;
 
 				return true;
@@ -977,6 +1015,61 @@ namespace plugins {
 			}
 		}
 	} //KYSXD - Burrow movement end
+
+
+
+	void showWorkerCount(CUnit *unit) {
+
+	  //KYSXD unit worker count start  
+      if(unit->playerId == *LOCAL_NATION_ID
+		&& unit->status & UnitStatus::Completed
+        && units_dat::BaseProperty[unit->id] & UnitProperty::ResourceDepot) {
+
+        int nearmineral = 0;
+        int nearworkers = 0;
+        CUnit *nearestContainer = NULL;
+
+        //KYSXD count the nearest minerals
+        static scbw::UnitFinder mineralfinder;
+        mineralfinder.search(unit->getX()-256, unit->getY()-256, unit->getX()+256, unit->getY()+256);
+        for(int k = 0; k < mineralfinder.getUnitCount(); ++k) {
+          CUnit *curMin = mineralfinder.getUnit(k);
+          if(isMineral(curMin)) {
+            containerTargetFinder.setMineral(curMin);
+			containerTargetFinder.setStatusFlags(UnitStatus::GroundedBuilding);
+			//containerTargetFinder.setStatusFlags(0);
+            nearestContainer = scbw::UnitFinder::getNearestTarget(
+            curMin->getX() - 300, curMin->getY() - 300,
+            curMin->getX() + 300, curMin->getY() + 300,
+            curMin,
+            containerTargetFinder);
+            if(nearestContainer != NULL
+              && nearestContainer == unit) {
+              nearmineral++;
+            }
+          }
+		  
+          for(int k = 0; k < mineralfinder.getUnitCount(); ++k) {
+			  CUnit *thisUnit = mineralfinder.getUnit(k);
+			  if(thisUnit->playerId == *LOCAL_NATION_ID
+              && (units_dat::BaseProperty[thisUnit->id] & UnitProperty::Worker)
+              && isInHarvestState(thisUnit)
+              && thisUnit->worker.targetResource.unit != NULL
+              && thisUnit->worker.targetResource.unit == curMin) {
+                nearworkers++;
+            }
+          }
+        }
+        //KYSXD count the nearest Workers
+        if(nearmineral > 0) {
+          static char unitcount[64];
+          sprintf_s(unitcount, "%d/%d", nearworkers, nearmineral * 2); //* 2 since 2 units can use a single mineral at a time
+		  graphics::drawText(unit->getX() - 12, unit->getY() - 72, unitcount, graphics::FONT_LARGE, graphics::ON_MAP);
+		  
+        }
+      }
+      //KYSXD unit worker count end
+	}
 } //namespace plugins
 
 namespace warpgateMechanic {
