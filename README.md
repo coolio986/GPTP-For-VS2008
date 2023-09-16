@@ -48,12 +48,12 @@ Other short-lived branches may pop-up from time to time as i stabilize new relea
 - Smart Casting.
 - Starting hangar units (for carrier/reaver).
 - Terran/Protoss building placement preview.
+- Add worker count for CC, Nexus and Hatchery/Lair/Hive.
 
 **To do:**
 
 - Add rally point for zerg-eggs.
 - Add code for burrowed movement.
-- Add worker count for CC, Nexus and Hatchery/Lair/Hive.
 - Add worker count for Refinery, Assimilator and Extractor.
 - Add 12/15 button box (from the 3x3 command box).
 - Rework the pathfinding, like SCII pathfinding, based on the [Daedalus Lib](https://www.youtube.com/watch?v=SDH1AZLMZkY).
